@@ -1,26 +1,88 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Estilo base dos links */
+a {
+    color: #063db4; /* Azul vibrante moderno */
+    text-decoration: none;
+    font-weight: 600; /* Deixa a palavra um pouco mais gordinha */
+    padding: 2px 4px; /* Espaçamento interno */
+    border-radius: 4px; /* Bordas arredondadas */
+    transition: all 0.2s ease-in-out; /* Faz a mágica da animação suave */
+}
+
+/* O que acontece quando passa o mouse em cima */
+a:hover {
+    color: #1e40af; /* Azul mais escuro */
+    background-color: #dbeafe; /* Fundo azul bem clarinho para dar destaque */
+    text-decoration: underline; /* Linha embaixo */
+    text-decoration-thickness: 2px; /* Deixa a linha mais grossa */
+    text-underline-offset: 4px; /* Afasta a linha da palavra */
+}
+
+/* Links que já foram visitados ficam com cor de uva (como na Wiki original) */
+#wikicontent a:visited {
+    color: #5a0000;
+}
+
+/* PROTEÇÃO: Tira esse efeito de "fundo azul" se o link for apenas uma foto */
+a:has(img) {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* Animação do Ponto Subindo */
+@keyframes float-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.8); /* Começa embaixo e menorzinho */
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(0px) scale(1.2); /* Sobe pro centro e dá um pulinho de tamanho */
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-25px) scale(1); /* Sobe mais um pouco e some (fade out) */
+    }
+}
+.animate-float-up {
+    animation: float-up 1s ease-out forwards; /* Duração de 1 segundo */
+}
+
+/* =========================================
+   LIMPANDO AS SUJEIRAS DA WIKIPEDIA
+   ========================================= */
+
+.ambox, /* Esconde aquelas caixas de alerta feias (ex: "Este artigo precisa de fontes") */
+.navbox, /* Esconde as caixonas de navegação que ficam lá no final da página */
+.mw-editsection, /* Esconde os links de [editar] que ficam nos títulos */
+.reference, /* Esconde as referências numéricas como [1], [2], [3] */
+.hatnote,  /* Esconde as notas de definição do ínicio da página (ex: "Para outros usos, veja...") */
+.reflist, /* Esconde a lista de referências/fontes no rodapé */
+ul,   /* Esconde a lista */
+.wikitable  /* Esconde wikitables*/,
+.infobox:nth-of-type(n + 2) /* Esconde as infoboxs, menos a primeira */ {
+    display: none !important;
+}
+
+/* Remove os links da infobox principal */
+tbody a {
+    /* 1. Impede qualquer clique, hover ou evento de mouse */
+    pointer-events: none;
+
+    /* 2. Muda o cursor para o símbolo de bloqueado (opcional) */
+    cursor: not-allowed;
+
+    color: black;
+    font-weight: normal;
 }
