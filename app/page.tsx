@@ -4,17 +4,21 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
     const [wikiHtml, setWikiHtml] = useState<string>("Carregando...............");
-    const [paginaAtual, setPaginaAtual] = useState("Brasil");
+    const [paginaAtual, setPaginaAtual] = useState("Cordilheira_dos_Andes");
+    const [paginaObjetivo, setPaginaObjetivo] = useState("Brasil");
     const [historico, setHistorico] = useState<string[]>([paginaAtual]);
     const [pontos, setPontos] = useState<number>(0);
     // Guarda o ID da animação (para ele rodar várias vezes seguidas) e o Valor (+1, +2)
     const [pontoFlutuante, setPontoFlutuante] = useState<{ id: number; valor: number } | null>(null);
+    const [carregando, setCarregando] = useState(false);
+    const [voceVenceu, setVoceVenceu] = useState<boolean>(false);
 
     useEffect(() => {
         // busca na api apartir do link
         async function buscarNaApiDaWiki() {
+            setCarregando(true); // BLOQUEIA A TELA
             try {
-                const resposta = await fetch(`/api/wikipedia?pagina=${paginaAtual}`);
+                const resposta = await fetch(`/api/wiki?pagina=${paginaAtual}`);
                 const dados = await resposta.json();
 
                 const textoHtml = dados.parse.text["*"];
@@ -22,6 +26,7 @@ export default function Home() {
             } catch (erro) {
                 setWikiHtml("Ops, erro aqui parça...");
             }
+            setCarregando(false); // DESBLOQUEIA A TELA
         }
         // executa
         buscarNaApiDaWiki();
@@ -51,14 +56,21 @@ export default function Home() {
         }
 
         if (href && href.startsWith("/wiki/")) {
-            let paginaDestino = href.replace("/wiki/", ""); // remove o /wiki da frente
-            paginaDestino = decodeURIComponent(paginaDestino); // decodifica, para as acentuações, ç, etc....
-            console.log(paginaDestino);
-            setHistorico([...historico, paginaDestino]);
-            setPaginaAtual(paginaDestino);
+            // remove o /wiki da frente
+            let paginaClicada = href.replace("/wiki/", "");
+
+            setHistorico([...historico, paginaClicada]);
+            setPaginaAtual(paginaClicada);
+
             setPontos((pontos) => pontos + 1);
-            // DISPARA A ANIMAÇÃO DO +1
-            setPontoFlutuante({ id: Date.now(), valor: 1 });
+            setPontoFlutuante({ id: Date.now(), valor: 1 }); // DISPARA A ANIMAÇÃO DO +1
+
+            // DEBUG
+            console.log("\npagina destino", paginaClicada, "\npagina objetivo", paginaObjetivo);
+            console.log(paginaClicada, "decoded", decodeURIComponent(paginaClicada));
+
+            console.log("essa é a paginaClicada", paginaClicada);
+            checarVitoria(paginaClicada);
         }
     };
 
@@ -66,17 +78,27 @@ export default function Home() {
         if (historico.length < 1) return; // historico vazio? retorna
 
         const copiaDoHistorico = [...historico];
-        const ultimaPagina = copiaDoHistorico.pop();
+        copiaDoHistorico.pop();
 
         setPaginaAtual(copiaDoHistorico[copiaDoHistorico.length - 1] || "");
         setHistorico(copiaDoHistorico);
         setPontos((pontos) => pontos + 2);
+
         // DISPARA A ANIMAÇÃO DO +1
         setPontoFlutuante({ id: Date.now(), valor: 2 });
     };
 
+    const checarVitoria = (pagina: string) => {
+        if (decodeURIComponent(pagina) === paginaObjetivo) {
+            setVoceVenceu(true);
+        }
+    };
+
     return (
         <div>
+            {voceVenceu && <p>Parabéns!!</p>}
+            {/* Impede de outro link ser clicado */}
+            {carregando && <div className="fixed inset-0 z-[999] bg-black/10 flex items-center justify-center"></div>}
             {/* BARRA SUPERIOR FIXA (Header do Jogo) */}
             <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-300 p-4 flex justify-between items-center shadow-md">
                 {/* Lado Esquerdo: Botão de Voltar */}
@@ -93,15 +115,18 @@ export default function Home() {
                             disabled={historico.length <= 1}
                             className={` 
                               ${historico.length <= 1 ? "bg-gray-500 hover:bg-gray-400" : "bg-green-600 cursor-pointer hover:bg-green-700"} 
-                              relative  px-5 py-2   text-white font-semibold rounded-lg transition-all flex items-center  shadow-sm `}
+                              relative  px-5 py-2 border-2 text-white font-semibold rounded-lg transition-all flex items-center  shadow-sm `}
                         >
                             ◀️ Voltar
                             <span className="text-xs opacity-80 bg-green-800/50 px-2 py-1 rounded-md ml-1 truncate flex items-center gap-1">
                                 {/* Se tem mais de 4 itens no histórico, só apresenta os últimos 5
                             Se tem menos, mostra todo o histórico
                             por fim,  mapeia todos para pegar o último e aplicar uma estilização */}
-                                {(historico.length > 4 ? historico.slice(-5) : historico).map((item, index, arr) => {
+                                {(historico.length > 4 ? historico.slice(-4) : historico).map((item, index, arr) => {
                                     const ehOUltimo = index === arr.length - 1;
+
+                                    // decodifica e coloca espaços
+                                    item = decodeURIComponent(item.replace(/_/g, " "));
 
                                     return (
                                         <span key={index} className="flex items-center">
@@ -145,6 +170,7 @@ export default function Home() {
             {/* CONTEÚDO DA WIKIPEDIA (Com um padding extra no topo para o Header não cobrir o texto) */}
             <div
                 onClick={handleLinkClicado}
+                id="wikicontent"
                 className="p-8 max-w-5xl mx-auto bg-white shadow-xl min-h-screen"
                 dangerouslySetInnerHTML={{ __html: wikiHtml }}
             />

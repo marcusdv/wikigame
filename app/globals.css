@@ -9,37 +9,6 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
 }
-
-/* Estilo base dos links */
-a {
-    color: #063db4; /* Azul vibrante moderno */
-    text-decoration: none;
-    font-weight: 600; /* Deixa a palavra um pouco mais gordinha */
-    padding: 2px 4px; /* Espaçamento interno */
-    border-radius: 4px; /* Bordas arredondadas */
-    transition: all 0.2s ease-in-out; /* Faz a mágica da animação suave */
-}
-
-/* O que acontece quando passa o mouse em cima */
-a:hover {
-    color: #1e40af; /* Azul mais escuro */
-    background-color: #dbeafe; /* Fundo azul bem clarinho para dar destaque */
-    text-decoration: underline; /* Linha embaixo */
-    text-decoration-thickness: 2px; /* Deixa a linha mais grossa */
-    text-underline-offset: 4px; /* Afasta a linha da palavra */
-}
-
-/* Links que já foram visitados ficam com cor de uva (como na Wiki original) */
-#wikicontent a:visited {
-    color: #5a0000;
-}
-
-/* PROTEÇÃO: Tira esse efeito de "fundo azul" se o link for apenas uma foto */
-a:has(img) {
-    background-color: transparent;
-    padding: 0;
-}
-
 /* Animação do Ponto Subindo */
 @keyframes float-up {
     0% {
@@ -59,30 +28,63 @@ a:has(img) {
     animation: float-up 1s ease-out forwards; /* Duração de 1 segundo */
 }
 
-/* =========================================
+#wikicontent {
+    /* Estilo base dos links */
+    a {
+        color: #063db4; /* Azul vibrante moderno */
+        text-decoration: none;
+        font-weight: 600; /* Deixa a palavra um pouco mais gordinha */
+        padding: 2px 4px; /* Espaçamento interno */
+        border-radius: 4px; /* Bordas arredondadas */
+        transition: all 0.2s ease-in-out; /* Faz a mágica da animação suave */
+    }
+
+    /* O que acontece quando passa o mouse em cima */
+    a:hover {
+        color: #1e40af; /* Azul mais escuro */
+        background-color: #dbeafe; /* Fundo azul bem clarinho para dar destaque */
+        text-decoration: underline; /* Linha embaixo */
+        text-decoration-thickness: 2px; /* Deixa a linha mais grossa */
+        text-underline-offset: 4px; /* Afasta a linha da palavra */
+    }
+
+    /* Links que já foram visitados ficam com cor de uva (como na Wiki original) */
+    #wikicontent a:visited {
+        color: #5a0000;
+    }
+
+    /* PROTEÇÃO: Tira esse efeito de "fundo azul" se o link for apenas uma foto */
+    a:has(img) {
+        background-color: transparent;
+        padding: 0;
+    }
+
+    /* =========================================
    LIMPANDO AS SUJEIRAS DA WIKIPEDIA
    ========================================= */
 
-.ambox, /* Esconde aquelas caixas de alerta feias (ex: "Este artigo precisa de fontes") */
+    .ambox, /* Esconde aquelas caixas de alerta feias (ex: "Este artigo precisa de fontes") */
 .navbox, /* Esconde as caixonas de navegação que ficam lá no final da página */
 .mw-editsection, /* Esconde os links de [editar] que ficam nos títulos */
 .reference, /* Esconde as referências numéricas como [1], [2], [3] */
 .hatnote,  /* Esconde as notas de definição do ínicio da página (ex: "Para outros usos, veja...") */
 .reflist, /* Esconde a lista de referências/fontes no rodapé */
 ul,   /* Esconde a lista */
+.noprint, /* Esconde uma caixa com mensagem da commons*/
 .wikitable  /* Esconde wikitables*/,
 .infobox:nth-of-type(n + 2) /* Esconde as infoboxs, menos a primeira */ {
-    display: none !important;
-}
+        display: none !important;
+    }
 
-/* Remove os links da infobox principal */
-tbody a {
-    /* 1. Impede qualquer clique, hover ou evento de mouse */
-    pointer-events: none;
+    /* Remove os links da infobox principal */
+    tbody a {
+        /* 1. Impede qualquer clique, hover ou evento de mouse */
+        pointer-events: none;
 
-    /* 2. Muda o cursor para o símbolo de bloqueado (opcional) */
-    cursor: not-allowed;
+        /* 2. Muda o cursor para o símbolo de bloqueado (opcional) */
+        cursor: not-allowed;
 
-    color: black;
-    font-weight: normal;
+        color: black;
+        font-weight: normal;
+    }
 }
