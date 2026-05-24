@@ -134,12 +134,12 @@ export default function BarraSuperiorFixa({
                                 border-t-2 ${t.secaoBorderObjetivo} md:border-t-0`}
                         >
                             <span
-                                className={`pixel-font ${t.labelTexto} tracking-widest w-full text-[7.3px] md:text-xs overflow-hidden whitespace-nowrap`}
+                                className={`pixel-font ${t.labelTexto} tracking-widest w-full text-[6.9px] md:text-xs overflow-hidden whitespace-nowrap`}
                             >
                                 ★ {titulo} ★
                             </span>
                             <span
-                                className={`pixel-font ${t.valorTexto} leading-tight line-clamp-2 mt-1 text-lg `}
+                                className={`pixel-font ${t.valorTexto} leading-tight line-clamp-2 mt-1 text-xs md:text-lg break-all px-1`}
                                 title={paginaObjetivo}
                             >
                                 {paginaObjetivo}
