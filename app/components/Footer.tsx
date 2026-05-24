@@ -48,13 +48,11 @@ export default function Footer({ historico }: FooterProps) {
                         by Marcus
                     </span>
                     <a
-                        href="https://portfolio-delta-brown-34.vercel.app/"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href="mailto:marcus.vinicius.bittencourt.c@gmail.com"
                         className="nes-btn is-primary pixel-font"
                         style={{ fontSize: "9px", padding: "6px 12px" }}
                     >
-                        Portfolio
+                        Contato
                     </a>
                 </div>
             </div>
