@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "verificar": "npx tsx scripts/verificar-paginas.ts",
+    "inspecionar": "npx tsx scripts/inspecionar-paginas.ts"
   },
   "dependencies": {
     "nes.css": "^2.2.1",
