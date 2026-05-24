@@ -12,7 +12,7 @@ type BarraSuperiorFixaProps = {
     reiniciarJogo: () => void;
 };
 
-const BTN_STYLE = { fontSize: "16px" } as const;
+const BTN_STYLE = { fontSize: "14px", padding: "6px 24px" } as const;
 
 export default function BarraSuperiorFixa({
     historico,

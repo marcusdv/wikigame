@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const maxDuration = 30;
+
 // Rota GET chamada pelo frontend quando o jogador clica em um link da Wikipedia.
 // Recebe o nome da página como query param e devolve o HTML completo para renderizar.
 // Exemplo de chamada: GET /api/wiki?pagina=Imp%C3%A9rio%20Romano
@@ -26,36 +28,31 @@ export async function GET(request: Request) {
         //   → GET https://pt.wikipedia.org/api/rest_v1/page/summary/EUA
         //   → dadosSumario.title = "Estados Unidos"
         //   → tituloOficial = "Estados_Unidos"  (underlines para o passo 2)
+        // User-Agent obrigatório para requests de servidores em cloud (Vercel, AWS, etc.).
+        // Sem ele, a Wikipedia bloqueia ou limita requests vindos de IPs de datacenter.
+        const headers = {
+            "User-Agent": "WikiRun/1.0 (https://github.com/wikirun; marcus.vinicius.bittencourt.c@gmail.com)",
+        };
+
         const urlSumario = `https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURI(paginaLimpa)}`;
-        const respostaSumario = await fetch(urlSumario);
+        const respostaSumario = await fetch(urlSumario, { headers });
 
-        console.log("SUMARIO URL:", urlSumario);
-
-        // Começa com o valor que temos; só substitui se o sumário responder com sucesso.
         let tituloOficial = paginaLimpa;
 
         if (respostaSumario.ok) {
             const dadosSumario = await respostaSumario.json();
-            // A Wikipedia devolve o título com espaços. Trocamos por underlines
-            // porque a API de parse (passo 2) espera esse formato.
-            // Ex: "Estados Unidos" → "Estados_Unidos"
             tituloOficial = dadosSumario.title.replace(/\s+/g, "_");
         }
 
-        // PASSO 2 — Buscar o HTML completo da página via API de Parse
-        //
-        // Agora que temos o título canônico, pedimos o conteúdo renderizado em HTML.
-        // O encodeURI garante que acentos (ex: "á" → "%C3%A1") sejam enviados corretamente.
-        //
-        // Ex:  tituloOficial = "Estados_Unidos"
-        //   → GET https://pt.wikipedia.org/w/api.php?action=parse&page=Estados_Unidos&...
-        //   → dados.parse.text["*"]  contém o HTML da página, que o frontend renderiza
         const url = `https://pt.wikipedia.org/w/api.php?action=parse&page=${encodeURI(tituloOficial)}&format=json&prop=text`;
 
-        const response = await fetch(url);
+        const response = await fetch(url, { headers });
         const dados = await response.json();
 
-        // Devolve o JSON completo da Wikipedia para o frontend extrair o HTML.
+        if (!dados.parse) {
+            throw new Error(dados.error?.info ?? "Página não encontrada na Wikipedia");
+        }
+
         return NextResponse.json(dados);
     } catch (err) {
         // Se qualquer fetch falhar (rede, JSON inválido, etc.), devolve uma mensagem

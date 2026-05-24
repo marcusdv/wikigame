@@ -3,17 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import BarraSuperiorFixa from "./BarraSuperiorFixa";
 import Footer from "./Footer";
-import { palavrasObjetivo } from "../../data/objetivos";
-import { palavrasIniciais } from "../../data/inicial";
+import { paginas } from "../../data/paginas";
 import VoceVenceu from "./VoceVenceu";
 
 // Sorteia páginas de início e objetivo sem repetição.
 // Definida fora do componente para ser usada como lazy initializer do useState sem causar re-renders.
 function sortearJogo() {
-    const start = palavrasIniciais[Math.floor(Math.random() * palavrasIniciais.length)] || "América do Sul";
-    let target = palavrasObjetivo[Math.floor(Math.random() * palavrasObjetivo.length)] || "Egito";
+    const start = paginas[Math.floor(Math.random() * paginas.length)] || "América do Sul";
+    let target = paginas[Math.floor(Math.random() * paginas.length)] || "Egito";
     while (target.toLowerCase() === start.toLowerCase()) {
-        target = palavrasObjetivo[Math.floor(Math.random() * palavrasObjetivo.length)] || "Egito";
+        target = paginas[Math.floor(Math.random() * paginas.length)] || "Egito";
     }
     return { start, target };
 }
