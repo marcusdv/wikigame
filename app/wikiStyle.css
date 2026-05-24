@@ -1,5 +1,6 @@
 #wikicontent {
     display: flow-root; /* Evita que elementos flutuados (floats) vazem do container e quebrem o layout ou o rodapé */
+    font-size: 0.9rem;
 
     /* =========================================================================
        1. REGRAS DE OCULTAÇÃO E BLOQUEIO DE ELEMENTOS WIKI
@@ -49,8 +50,8 @@
         clear: right !important;
         margin-left: 1.5rem !important;
         margin-bottom: 1.5rem !important;
-        max-width: 300px !important;
-        width: 300px !important;
+        max-width: min(280px, 45%) !important;
+        width: min(280px, 45%) !important;
         display: table !important;
         box-sizing: border-box !important;
         background-color: #f8fafc !important; /* Slate 50 background */
@@ -69,6 +70,24 @@
         height: auto !important;
         border-radius: 8px !important;
         margin-bottom: 8px !important;
+    }
+
+    /* Figures dentro de infoboxes não devem flutuar nem expandir — ficam contidas na tabela */
+    .infobox figure,
+    .sidebar figure {
+        float: none !important;
+        clear: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+        margin: 0 !important;
+    }
+
+    .infobox figure img,
+    .sidebar figure img {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
     }
 
     /* Limpando as bordas e polindo as linhas de dados */
@@ -108,7 +127,25 @@
     }
 
     /* =========================================================================
-       4. PROTEÇÃO PARA GALERIAS, MULTI-IMAGENS E PANORAMAS
+       4. INFOBOX/SIDEBAR EM MOBILE (< 640px) — ocupa 100% e para de flutuar
+       ========================================================================= */
+    @media (max-width: 640px) {
+        .infobox,
+        .infobox_v2,
+        table.infobox,
+        .sidebar,
+        table.sidebar {
+            float: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            clear: both !important;
+        }
+    }
+
+    /* =========================================================================
+       5. PROTEÇÃO PARA GALERIAS, MULTI-IMAGENS E PANORAMAS
        ========================================================================= */
     .gallery,
     .mw-gallery-traditional,

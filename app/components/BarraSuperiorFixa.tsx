@@ -75,7 +75,7 @@ export default function BarraSuperiorFixa({
                     </span>
                     <span
                         className="pixel-font text-white leading-tight line-clamp-2 mt-1"
-                        style={{ fontSize: "28px" }}
+                        style={{ fontSize: "16px" }}
                         title={paginaObjetivo}
                     >
                         {paginaObjetivo}
@@ -146,12 +146,12 @@ export default function BarraSuperiorFixa({
                                             ? "text-blue-300 cursor-default"
                                             : "text-slate-400 hover:text-white cursor-pointer"
                                     }`}
-                                    style={{ fontSize: "11px" }}
+                                    style={{ fontSize: "8px" }}
                                 >
                                     {item}
                                 </button>
                                 {!ehOUltimo && (
-                                    <span className="text-slate-500 pixel-font shrink-0" style={{ fontSize: "11px" }}>
+                                    <span className="text-slate-500 pixel-font shrink-0" style={{ fontSize: "8px" }}>
                                         /
                                     </span>
                                 )}
