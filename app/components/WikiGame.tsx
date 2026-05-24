@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import BarraSuperiorFixa from "./BarraSuperiorFixa";
 import Footer from "./Footer";
 import { paginas } from "../../data/paginas";
-import VoceVenceu from "./VoceVenceu";
+import VoceVenceu from "./VoceVenceuTela";
 
 // Sorteia páginas de início e objetivo sem repetição.
 // Definida fora do componente para ser usada como lazy initializer do useState sem causar re-renders.
@@ -79,7 +79,9 @@ export default function WikiGame() {
             } catch {
                 setWikiHtml("Ops, erro ao carregar página da Wiki. Tente outro caminho!");
             }
+
             setCarregando(false);
+            window.scrollTo({ top: 0, behavior: "instant" });
         }
         buscarNaApiDaWiki();
     }, [paginaAtual]);
@@ -120,7 +122,6 @@ export default function WikiGame() {
 
             setHistorico([...historico, paginaClicada]);
             setPaginaAtual(paginaClicada);
-            window.scrollTo({ top: 0, behavior: "instant" });
 
             setPontos((pontos) => pontos + 1);
             setPontoFlutuante({ id: ++animacaoId.current, valor: 1 });
@@ -147,7 +148,9 @@ export default function WikiGame() {
     // Ref que sempre aponta para a versão mais recente de handleVoltar.
     // Necessário para que os listeners registrados uma única vez nunca usem um closure desatualizado.
     const handleVoltarRef = useRef(handleVoltar);
-    useEffect(() => { handleVoltarRef.current = handleVoltar; });
+    useEffect(() => {
+        handleVoltarRef.current = handleVoltar;
+    });
 
     // Registra Backspace (teclado) e botão lateral de voltar do mouse para acionar handleVoltar.
     // mousedown com button === 3 é o botão de voltar presente em mouses com botões extras.
@@ -227,7 +230,7 @@ export default function WikiGame() {
                 <div
                     onClick={handleLinkClicado}
                     id="wikicontent"
-                    className="my-10 px-4 sm:px-8 py-8 max-w-6xl mx-auto bg-white shadow-xl min-h-screen"
+                    className="my-3 px-4 sm:px-8 py-6 max-w-6xl mx-auto bg-white shadow-xl min-h-screen"
                     dangerouslySetInnerHTML={{ __html: wikiHtml }}
                 />
             </div>

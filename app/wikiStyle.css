@@ -1,6 +1,17 @@
 #wikicontent {
     display: flow-root; /* Evita que elementos flutuados (floats) vazem do container e quebrem o layout ou o rodapé */
     font-size: 0.9rem;
+    overflow-x: hidden; /* Impede que elementos largos demais causem scroll horizontal */
+
+    /* Garante que nenhum filho ultrapasse a largura do container */
+    table,
+    img,
+    figure,
+    video,
+    iframe,
+    pre {
+        max-width: 100% !important;
+    }
 
     /* =========================================================================
        1. REGRAS DE OCULTAÇÃO E BLOQUEIO DE ELEMENTOS WIKI

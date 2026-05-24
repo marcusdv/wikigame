@@ -1,4 +1,5 @@
 "use client";
+import { redirect } from "next/navigation";
 
 import dynamic from "next/dynamic";
 
@@ -8,5 +9,5 @@ import dynamic from "next/dynamic";
 const WikiGame = dynamic(() => import("./components/WikiGame"), { ssr: false });
 
 export default function Page() {
-    return <WikiGame />;
+    redirect("/diario");
 }
