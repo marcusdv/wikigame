@@ -38,7 +38,7 @@ export function useGameLogic(seed?: string) {
     // Seguro usar lazy initialization aqui porque o componente WikiGame é renderizado apenas no cliente (ssr: false).
     // Se uma seed for passada, o jogo será o mesmo par.
     // se não, será um par aleatório a cada nova reinicialização.
-    const [jogoInicial] = useState<{ start: string; target: string }>(sortearJogo(seed));
+    const [jogoInicial] = useState<{ start: string; target: string }>(() => sortearJogo(seed));
 
     // Título da página atual do jogo. Inicializado com jogoInicial.start, que é a página sorteada.
     const [paginaAtual, setPaginaAtual] = useState<string>(jogoInicial.start);

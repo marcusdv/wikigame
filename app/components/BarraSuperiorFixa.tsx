@@ -90,7 +90,7 @@ export default function BarraSuperiorFixa({
                 }}
             >
                 <div style={{ overflow: "hidden", minHeight: 0 }}>
-                    <div className="grid grid-cols-3 md:grid-cols-[auto_1fr_auto] items-stretch">
+                    <div className="grid grid-cols-[1fr_1.4fr_1fr] md:grid-cols-[auto_1fr_auto] items-stretch">
                         {/* ── VOLTAR ── */}
                         <div
                             className={`col-start-1 row-start-1 flex items-center justify-center p-3 md:pl-5 md:pr-4 border-r-2 ${t.secaoBorderInterno}`}
@@ -113,59 +113,84 @@ export default function BarraSuperiorFixa({
                             </div>
                         </div>
 
-                        {/* ── OBJETIVO ──
-                    Mobile:  col 1-3, row 2
-                    Desktop: col 2,   row 1 */}
+                        {/* ── NAV MOBILE: Desafio Diário (col 1, row 2) ── */}
+                        <Link
+                            href="/diario"
+                            className={`md:hidden col-start-1 row-start-2 flex flex-col items-center justify-center px-3
+                                border-t-2 border-r-2 ${t.secaoBorderObjetivo} pixel-font transition-colors
+                                ${tema === "desafio" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
+                            style={{ fontSize: "8px" }}
+                        >
+                            Desafio
+                            <br />
+                            Diário
+                        </Link>
+
+                        {/* ── TITULO ── */}
                         <div
-                            className={`col-span-3 row-start-2 md:col-span-1 md:col-start-2 md:row-start-1
+                            className={`col-start-2 col-span-1 row-start-2 md:col-start-2 md:row-start-1
                                 flex flex-col items-center justify-center text-center
-                                py-3 px-4 overflow-hidden
+                                py-2  overflow-hidden
                                 border-t-2 ${t.secaoBorderObjetivo} md:border-t-0`}
                         >
-                            <span className={`pixel-font ${t.labelTexto} tracking-widest`} style={{ fontSize: "9px" }}>
+                            <span
+                                className={`pixel-font ${t.labelTexto} tracking-widest w-full text-[7.3px] md:text-xs overflow-hidden whitespace-nowrap`}
+                            >
                                 ★ {titulo} ★
                             </span>
                             <span
-                                className={`pixel-font ${t.valorTexto} leading-tight line-clamp-2 mt-1`}
-                                style={{ fontSize: "16px" }}
+                                className={`pixel-font ${t.valorTexto} leading-tight line-clamp-2 mt-1 text-lg `}
                                 title={paginaObjetivo}
                             >
                                 {paginaObjetivo}
                             </span>
                         </div>
 
-                        {/* ── PASSOS + NOVO ──
-                    Mobile:  col 2-3, row 1 — grid interno 2 colunas
-                    Desktop: col 3,   row 1 — flex row */}
+                        {/* BOTÃO DE JGOAR ALEATORIO */}
+                        <Link
+                            href="/jogar"
+                            className={`md:hidden col-start-3 row-start-2 flex flex-col items-center justify-center px-3
+                                border-t-2 border-l-2 ${t.secaoBorderObjetivo} pixel-font transition-colors
+                                ${tema === "jogoNormal" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
+                            style={{ fontSize: "8px" }}
+                        >
+                            Desafio
+                            <br />
+                            Aleatório
+                        </Link>
+
+                        {/* ── PASSOS + NOVO ── */}
                         <div
                             className={`col-start-2 col-span-2 row-start-1
                                 md:col-start-3 md:col-span-1 md:row-start-1
-                                flex flex-row items-stretch
-                                border-l-2 ${t.secaoBorderInterno}`}
+                                grid grid-cols-subgrid md:flex md:flex-row md:items-stretch
+                                md:border-l-2 ${t.secaoBorderInterno}`}
                         >
-                            {/* DIÁRIO */}
+                            {/* DIÁRIO — só desktop */}
                             <Link
                                 href="/diario"
-                                className={`select-none flex flex-col items-center justify-center px-3 border-r-2 ${t.secaoBorderInterno} pixel-font transition-colors ${tema === "desafio" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
+                                className={`hidden md:flex flex-col items-center justify-center px-3 border-r-2 ${t.secaoBorderInterno} pixel-font transition-colors ${tema === "desafio" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
                                 style={{ fontSize: "8px" }}
                             >
                                 Desafio
                                 <br />
                                 Diário
                             </Link>
-                            {/* JOGAR */}
+
+                            {/* JOGAR — só desktop */}
                             <Link
                                 href="/jogar"
-                                className={`select-none flex flex-col items-center justify-center px-3 border-r-2 ${t.secaoBorderInterno} pixel-font transition-colors ${tema === "jogoNormal" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
+                                className={`hidden md:flex flex-col items-center justify-center px-3 border-r-2 ${t.secaoBorderInterno} pixel-font transition-colors ${tema === "jogoNormal" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
                                 style={{ fontSize: "8px" }}
                             >
                                 Desafio
                                 <br />
                                 Aleatório
                             </Link>
-                            {/* Passos */}
+
+                            {/* PASSOS  */}
                             <div
-                                className={`flex flex-col items-center justify-center py-2 px-3 border-r-2 ${t.secaoBorderObjetivo}`}
+                                className={`flex flex-col items-center justify-center py-2 px-3 md:border-r-2 ${t.secaoBorderObjetivo}`}
                             >
                                 <div className={`pixel-font ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}>
                                     PASSOS
@@ -188,7 +213,9 @@ export default function BarraSuperiorFixa({
                             </div>
 
                             {/* Reiniciar */}
-                            <div className="flex items-center justify-center py-2 px-3 md:pr-5">
+                            <div
+                                className={`flex items-center justify-center border-l-2 ${t.secaoBorderObjetivo} md:border-0 py-2 px-3 md:pr-5`}
+                            >
                                 <button
                                     onClick={reiniciarJogo}
                                     title="Reiniciar Corrida"
