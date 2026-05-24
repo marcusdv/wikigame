@@ -8,8 +8,8 @@
 // Dica: se a Wikipedia devolve um título diferente, copie o título correto do terminal
 // e cole no array de páginas.
 
-import { paginas } from "../data/paginas";
-
+import { paginas as paginasUtilizadas } from "../data/paginas";
+import { paginasNovas } from "./novosDados";
 const DELAY_MS = 600;
 const USER_AGENT = "WikiRun/1.0 (verificacao de titulos; marcus.vinicius.bittencourt.c@gmail.com)";
 
@@ -32,6 +32,8 @@ async function verificar(titulo: string) {
         return { titulo, tituloWiki: null, ok: false, erro: String(err) };
     }
 }
+
+const paginas = paginasNovas;
 
 // Itera sobre todas as páginas do array, verifica cada uma e imprime o resultado no terminal.
 async function main() {

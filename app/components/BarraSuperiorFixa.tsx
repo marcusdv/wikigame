@@ -19,8 +19,8 @@ const temas = {
     jogoNormal: {
         divPaiBg: "bg-slate-700",
         divPaiBorder: "border-blue-400",
-        secaoBorderInterno: "border-slate-500",
-        secaoBorderObjetivo: "border-slate-600",
+        secaoBorderInterno: "border-slate-400",
+        secaoBorderObjetivo: "border-slate-400",
         breadcrumbBg: "bg-slate-800",
         breadcrumbBorder: "border-slate-600",
         breadcrumbItemAtual: "text-blue-300",

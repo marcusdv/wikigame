@@ -4,7 +4,9 @@
 //
 // Uso: npm run inspecionar
 
-import { paginas } from "../data/paginas";
+import { paginas as paginasUtilizadas } from "../data/paginas";
+
+import { paginasNovas } from "./novosDados";
 
 const DELAY_MS = 700;
 const LIMITE_PALAVRAS = 300;
@@ -31,6 +33,8 @@ function primeirasNPalavras(texto: string, n: number): string {
     const cortado = palavras.slice(0, n).join(" ");
     return palavras.length > n ? cortado + "..." : cortado;
 }
+
+const paginas = paginasNovas;
 
 // Itera sobre o array, busca o resumo de cada página e imprime no console.
 async function main() {
