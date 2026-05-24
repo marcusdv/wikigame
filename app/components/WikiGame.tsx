@@ -144,6 +144,36 @@ export default function WikiGame() {
         setPontoFlutuante({ id: ++animacaoId.current, valor: 2 });
     };
 
+    // Ref que sempre aponta para a versão mais recente de handleVoltar.
+    // Necessário para que os listeners registrados uma única vez nunca usem um closure desatualizado.
+    const handleVoltarRef = useRef(handleVoltar);
+    useEffect(() => { handleVoltarRef.current = handleVoltar; });
+
+    // Registra Backspace (teclado) e botão lateral de voltar do mouse para acionar handleVoltar.
+    // mousedown com button === 3 é o botão de voltar presente em mouses com botões extras.
+    // Backspace é bloqueado se o foco estiver em um campo de texto para não interferir na digitação.
+    useEffect(() => {
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key !== "Backspace") return;
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            e.preventDefault();
+            handleVoltarRef.current();
+        };
+
+        const onMouseDown = (e: MouseEvent) => {
+            if (e.button !== 3) return;
+            e.preventDefault();
+            handleVoltarRef.current();
+        };
+
+        window.addEventListener("keydown", onKeyDown);
+        window.addEventListener("mousedown", onMouseDown);
+        return () => {
+            window.removeEventListener("keydown", onKeyDown);
+            window.removeEventListener("mousedown", onMouseDown);
+        };
+    }, []);
+
     // Permite voltar a qualquer página do histórico diretamente pelo breadcrumb.
     // Descarta tudo que veio depois do índice escolhido e aplica +2 de penalidade.
     const handleNavegarParaHistorico = (index: number) => {

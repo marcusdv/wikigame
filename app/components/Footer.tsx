@@ -43,16 +43,16 @@ export default function Footer({ historico }: FooterProps) {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col items-center sm:items-end gap-1">
                     <span className="pixel-font text-slate-500 select-none" style={{ fontSize: "9px" }}>
                         by Marcus
                     </span>
                     <a
                         href="mailto:marcus.vinicius.bittencourt.c@gmail.com"
-                        className="nes-btn is-primary pixel-font"
-                        style={{ fontSize: "9px", padding: "6px 12px" }}
+                        className="pixel-font text-blue-400 hover:text-blue-300 transition-colors"
+                        style={{ fontSize: "8px" }}
                     >
-                        Contato
+                        marcus.vinicius.bittencourt.c@gmail.com
                     </a>
                 </div>
             </div>
