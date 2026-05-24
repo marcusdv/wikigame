@@ -8,9 +8,20 @@ export default function Footer({ historico }: FooterProps) {
     return (
         <footer className="bg-slate-800 border-t-4 border-blue-500 mt-12">
             <div className="max-w-5xl mx-auto px-4 sm:px-8 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <p className="pixel-font text-slate-500 select-none hidden sm:block" style={{ fontSize: "9px" }}>
-                    WIKIGAME v1.0.0
-                </p>
+                <div className="hidden sm:flex flex-col gap-1">
+                    <p className="pixel-font text-slate-500 select-none" style={{ fontSize: "9px" }}>
+                        WIKIGAME v1.0.0
+                    </p>
+                    <a
+                        href="https://www.wikipedia.org"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="pixel-font text-slate-500 hover:text-slate-300 transition-colors"
+                        style={{ fontSize: "8px" }}
+                    >
+                        Conteúdo © Wikipedia
+                    </a>
+                </div>
 
                 <div
                     className="nes-container is-dark is-rounded select-none w-full sm:w-auto"

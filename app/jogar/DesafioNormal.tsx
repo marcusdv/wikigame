@@ -4,14 +4,7 @@ import BarraSuperiorFixa from "../components/BarraSuperiorFixa";
 import Footer from "../components/Footer";
 import VoceVenceu from "../components/VoceVenceuTela";
 
-export default function DesafioDiario() {
-    // Gera a seed com a data de hoje no formato "2026-05-24".
-    // Isso garante que todos os jogadores recebem o mesmo par
-    // de páginas no mesmo dia, como o Wordle.
-    const seed = new Date().toISOString().slice(0, 10);
-
-    // Passa a seed pro hook — com seed, sortearJogo() é
-    // determinístico em vez de aleatório.
+export default function DesafioNormal() {
     const {
         carregando,
         voceVenceu,
@@ -24,7 +17,7 @@ export default function DesafioDiario() {
         handleVoltar,
         handleNavegarPeloHistorico,
         handleLinkClicado,
-    } = useGameLogic(seed);
+    } = useGameLogic();
 
     return (
         <div className="min-h-screen flex flex-col justify-between">
@@ -46,12 +39,13 @@ export default function DesafioDiario() {
                 <BarraSuperiorFixa
                     historico={historico}
                     pontos={pontos}
+                    titulo={"Encontrar Página"}
                     handleVoltar={handleVoltar}
                     pontoFlutuante={pontoFlutuante}
                     paginaObjetivo={paginaObjetivo}
                     handleNavegarParaHistorico={handleNavegarPeloHistorico}
-                    tema={"desafio"}
-                    titulo={"Desafio Diário"}
+                    reiniciarJogo={iniciarNovoJogo}
+                    tema={"jogoNormal"}
                 />
 
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}

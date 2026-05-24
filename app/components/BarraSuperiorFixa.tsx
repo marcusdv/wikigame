@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import Link from "next/link";
 
 type BarraSuperiorFixaProps = {
     historico: string[];
@@ -10,6 +11,7 @@ type BarraSuperiorFixaProps = {
     paginaObjetivo: string;
     handleNavegarParaHistorico: (index: number) => void;
     reiniciarJogo?: () => void;
+    titulo: "Desafio Diário" | "Encontrar Página";
     tema?: "desafio" | "jogoNormal";
 };
 
@@ -58,6 +60,7 @@ export default function BarraSuperiorFixa({
     paginaObjetivo,
     handleNavegarParaHistorico,
     reiniciarJogo,
+    titulo,
     tema = "jogoNormal",
 }: BarraSuperiorFixaProps) {
     const breadcrumbRef = useRef<HTMLDivElement>(null);
@@ -71,7 +74,7 @@ export default function BarraSuperiorFixa({
     }, [historico]);
 
     return (
-        <div className={`sticky top-0 z-50 ${t.divPaiBg} border-b-4 ${t.divPaiBorder} shadow-lg`}>
+        <div className={`sticky top-0 z-50 select-none ${t.divPaiBg} border-b-4 ${t.divPaiBorder} shadow-lg`}>
             {/*
               Mobile:  grid 3 colunas
                 Row 1: [Voltar] [Passos] [Novo]
@@ -120,7 +123,7 @@ export default function BarraSuperiorFixa({
                                 border-t-2 ${t.secaoBorderObjetivo} md:border-t-0`}
                         >
                             <span className={`pixel-font ${t.labelTexto} tracking-widest`} style={{ fontSize: "9px" }}>
-                                ★ Encontrar Página ★
+                                ★ {titulo} ★
                             </span>
                             <span
                                 className={`pixel-font ${t.valorTexto} leading-tight line-clamp-2 mt-1`}
@@ -137,12 +140,32 @@ export default function BarraSuperiorFixa({
                         <div
                             className={`col-start-2 col-span-2 row-start-1
                                 md:col-start-3 md:col-span-1 md:row-start-1
-                                grid grid-cols-2 md:flex md:flex-row md:items-center
-                                border-l-2 ${t.secaoBorderInterno} md:gap-5 md:pr-5 md:pl-4`}
+                                flex flex-row items-stretch
+                                border-l-2 ${t.secaoBorderInterno}`}
                         >
+                            {/* DIÁRIO */}
+                            <Link
+                                href="/diario"
+                                className={`select-none flex flex-col items-center justify-center px-3 border-r-2 ${t.secaoBorderInterno} pixel-font transition-colors ${tema === "desafio" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
+                                style={{ fontSize: "8px" }}
+                            >
+                                Desafio
+                                <br />
+                                Diário
+                            </Link>
+                            {/* JOGAR */}
+                            <Link
+                                href="/jogar"
+                                className={`select-none flex flex-col items-center justify-center px-3 border-r-2 ${t.secaoBorderInterno} pixel-font transition-colors ${tema === "jogoNormal" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
+                                style={{ fontSize: "8px" }}
+                            >
+                                Desafio
+                                <br />
+                                Aleatório
+                            </Link>
                             {/* Passos */}
                             <div
-                                className={`flex flex-col items-center justify-center py-2 px-3 border-r-2 ${t.secaoBorderObjetivo} md:border-r-0`}
+                                className={`flex flex-col items-center justify-center py-2 px-3 border-r-2 ${t.secaoBorderObjetivo}`}
                             >
                                 <div className={`pixel-font ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}>
                                     PASSOS
@@ -165,13 +188,12 @@ export default function BarraSuperiorFixa({
                             </div>
 
                             {/* Reiniciar */}
-                            {/* Se não for passado, desabilita  */}
-                            <div className="flex items-center justify-center py-2 px-3">
+                            <div className="flex items-center justify-center py-2 px-3 md:pr-5">
                                 <button
                                     onClick={reiniciarJogo}
                                     title="Reiniciar Corrida"
                                     disabled={!reiniciarJogo}
-                                    className={`nes-btn  pixel-font  ${!reiniciarJogo ? "is-disabled" : "is-primary"}`}
+                                    className={`nes-btn pixel-font ${!reiniciarJogo ? "is-disabled" : "is-primary"}`}
                                     style={BTN_STYLE}
                                 >
                                     ↺
