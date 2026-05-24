@@ -1,90 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
 @import "tailwindcss";
 
 :root {
-}
-
-@theme inline {
+    --primary-font: 'Plus Jakarta Sans', sans-serif;
+    --serif-font: 'Playfair Display', serif;
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--primary-font);
+    background-color: #f1f5f9;
+    /* Adiciona um background premium com um sutil gradiente radial e grid */
+    background-image: 
+        radial-gradient(at 50% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(20, 184, 166, 0.05) 0px, transparent 50%),
+        linear-gradient(rgba(148, 163, 184, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+    min-height: 100vh;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
-/* Animação do Ponto Subindo */
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+    border: 2px solid #f8fafc;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Animação do Número de Pontos Flutuando (+1, +2) */
 @keyframes float-up {
     0% {
         opacity: 0;
-        transform: translateY(20px) scale(0.8); /* Começa embaixo e menorzinho */
+        transform: translateY(45px) scale(0.7); /* Começa embaixo dos pontos, menor e invisível */
     }
-    20% {
+    40% {
         opacity: 1;
-        transform: translateY(0px) scale(1.2); /* Sobe pro centro e dá um pulinho de tamanho */
+        transform: translateY(20px) scale(1.25); /* Sobe um pouco, ganha destaque */
     }
     100% {
         opacity: 0;
-        transform: translateY(-25px) scale(1); /* Sobe mais um pouco e some (fade out) */
+        transform: translateY(0px) scale(0.8); /* Sobe diretamente para o placar e se funde com os números */
     }
 }
+
 .animate-float-up {
-    animation: float-up 1s ease-out forwards; /* Duração de 1 segundo */
+    animation: float-up 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* =========================================================================
+   CANVAS DE LEITURA DA WIKIPÉDIA (#wikicontent)
+   ========================================================================= */
 #wikicontent {
-    /* Estilo base dos links */
+    font-family: var(--primary-font);
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: #334155; /* Cor Slate 700 super confortável de ler */
+    border-radius: 24px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    transition: all 0.3s ease;
+
+    /* Títulos do Artigo */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--primary-font);
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.025em;
+        line-height: 1.3;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 3px solid #f1f5f9;
+        padding-bottom: 0.75rem;
+    }
+
+    h2 {
+        font-size: 1.65rem;
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 0.5rem;
+    }
+
+    h3 {
+        font-size: 1.3rem;
+        margin-top: 2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    p {
+        margin-bottom: 1.40rem;
+    }
+
+    /* Estilo base super premium dos links (Clickable game items) */
     a {
-        color: #063db4; /* Azul vibrante moderno */
+        color: #4f46e5; /* Indigo moderno e charmoso */
         text-decoration: none;
-        font-weight: 600; /* Deixa a palavra um pouco mais gordinha */
-        padding: 2px 4px; /* Espaçamento interno */
-        border-radius: 4px; /* Bordas arredondadas */
-        transition: all 0.2s ease-in-out; /* Faz a mágica da animação suave */
+        font-weight: 600;
+        padding: 0.1em 0.3em;
+        margin: 0 -0.1em;
+        border-radius: 6px;
+        background-color: rgba(79, 70, 229, 0.05); /* Fundo extremamente sutil */
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        display: inline;
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
     }
 
-    /* O que acontece quando passa o mouse em cima */
+    /* Hover nos links */
     a:hover {
-        color: #1e40af; /* Azul mais escuro */
-        background-color: #dbeafe; /* Fundo azul bem clarinho para dar destaque */
-        text-decoration: underline; /* Linha embaixo */
-        text-decoration-thickness: 2px; /* Deixa a linha mais grossa */
-        text-underline-offset: 4px; /* Afasta a linha da palavra */
+        color: #ffffff;
+        background-color: #4f46e5; /* Fundo sólido indigo ao passar o mouse */
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25); /* Sombra elegante */
+        text-decoration: none;
+        transform: translateY(-1px);
     }
 
-    /* Links que já foram visitados ficam com cor de uva (como na Wiki original) */
-    #wikicontent a:visited {
-        color: #5a0000;
+    /* Links já visitados (Ficam com cor ameixa suave, sem fundo agressivo) */
+    a:visited {
+        color: #8b5cf6; /* Violeta charmoso */
+        background-color: rgba(139, 92, 246, 0.04);
     }
 
-    /* PROTEÇÃO: Tira esse efeito de "fundo azul" se o link for apenas uma foto */
+    a:visited:hover {
+        color: #ffffff;
+        background-color: #8b5cf6;
+        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.25);
+    }
+
+    /* PROTEÇÃO: Garante que imagens de link não tenham o fundo colorido */
     a:has(img) {
-        background-color: transparent;
-        padding: 0;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
-    /* =========================================
-   LIMPANDO AS SUJEIRAS DA WIKIPEDIA
-   ========================================= */
-
-    .ambox, /* Esconde aquelas caixas de alerta feias (ex: "Este artigo precisa de fontes") */
-.navbox, /* Esconde as caixonas de navegação que ficam lá no final da página */
-.mw-editsection, /* Esconde os links de [editar] que ficam nos títulos */
-.reference, /* Esconde as referências numéricas como [1], [2], [3] */
-.hatnote,  /* Esconde as notas de definição do ínicio da página (ex: "Para outros usos, veja...") */
-.reflist, /* Esconde a lista de referências/fontes no rodapé */
-ul,   /* Esconde a lista */
-.noprint, /* Esconde uma caixa com mensagem da commons*/
-.wikitable  /* Esconde wikitables*/,
-.infobox:nth-of-type(n + 2) /* Esconde as infoboxs, menos a primeira */ {
-        display: none !important;
+    /* Tabela da Wiki - Limpando e polindo tabelas */
+    table {
+        margin: 1.5rem 0;
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.95rem;
     }
 
-    /* Remove os links da infobox principal */
-    tbody a {
-        /* 1. Impede qualquer clique, hover ou evento de mouse */
-        pointer-events: none;
+    th, td {
+        padding: 10px 12px;
+        border: 1px solid #e2e8f0;
+    }
 
-        /* 2. Muda o cursor para o símbolo de bloqueado (opcional) */
-        cursor: not-allowed;
+    th {
+        background-color: #f8fafc;
+        font-weight: 700;
+        color: #0f172a;
+    }
 
-        color: black;
-        font-weight: normal;
+    /* Estilo de listas */
+    ul, ol {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+    }
+
+    li {
+        margin-bottom: 0.5rem;
+    }
+
+    /* Citações e blocos destacados */
+    blockquote {
+        border-left: 4px solid #cbd5e1;
+        padding-left: 1rem;
+        font-style: italic;
+        color: #64748b;
+        margin: 1.5rem 0;
     }
 }
