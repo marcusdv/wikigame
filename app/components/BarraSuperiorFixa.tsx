@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef, useEffect } from "react";
+
 type BarraSuperiorFixaProps = {
     historico: string[];
     pontos: number;
@@ -10,6 +12,8 @@ type BarraSuperiorFixaProps = {
     reiniciarJogo: () => void;
 };
 
+const BTN_STYLE = { fontSize: "16px" } as const;
+
 export default function BarraSuperiorFixa({
     historico,
     pontos,
@@ -19,118 +23,143 @@ export default function BarraSuperiorFixa({
     handleNavegarParaHistorico,
     reiniciarJogo,
 }: BarraSuperiorFixaProps) {
+    const breadcrumbRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (breadcrumbRef.current) {
+            breadcrumbRef.current.scrollLeft = breadcrumbRef.current.scrollWidth;
+        }
+    }, [historico]);
+
     return (
-        <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-3.5 flex flex-col sm:flex-row gap-4 justify-between items-center shadow-xs transition-all duration-300">
-            {/* LADO ESQUERDO: botão Voltar + breadcrumb do histórico */}
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
-                <div className="relative inline-block shrink-0">
-                    {/* Badge de custo fixo (+2) — informa o jogador antes de clicar */}
-                    <div className="absolute -top-4 -right-4 rotate-12 bg-red-500 text-white text-xs font-black px-2.5 py-0.5 rounded-md shadow-md z-10 border-2 border-white pointer-events-none">
-                        +2
-                    </div>
-
-                    <button
-                        onClick={handleVoltar}
-                        disabled={historico.length <= 1}
-                        className={`
-                          ${
-                              historico.length <= 1
-                                  ? "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed opacity-50"
-                                  : "bg-slate-900 hover:bg-slate-800 text-white shadow-sm active:scale-95 cursor-pointer"
-                          }
-                          relative px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 border border-transparent`}
-                    >
-                        <svg className="w-3 h-3 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Voltar
-                    </button>
-                </div>
-
-                {/* Breadcrumb clicável — mostra os últimos 5 passos do jogador.
-                    Clicar em qualquer item volta para aquela página (custo +2). */}
-                <div className="hidden md:flex items-center bg-slate-50 border border-slate-200 px-5 py-2.5 rounded-xl text-sm text-slate-500 shadow-inner max-w-md lg:max-w-2xl overflow-hidden">
-                    <div className="flex flex-row flex-nowrap items-center gap-1.5 select-none overflow-hidden justify-end">
-                        {historico.map((item, index) => {
-                            // Limita o breadcrumb aos últimos 5 itens para não transbordar a barra.
-                            const mostrar = index >= historico.length - 5;
-                            if (!mostrar) return null;
-
-                            const ehOUltimo = index === historico.length - 1;
-
-                            return (
-                                <span key={index} className="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
-                                    <button
-                                        onClick={() => handleNavegarParaHistorico(index)}
-                                        disabled={ehOUltimo}
-                                        title={ehOUltimo ? "" : `Voltar para esta página (Custo: +2 pontos)`}
-                                        className={`transition-all text-sm shrink-0 whitespace-nowrap ${
-                                            ehOUltimo
-                                                ? "font-extrabold text-indigo-600 cursor-default"
-                                                : "hover:text-indigo-500 hover:underline cursor-pointer opacity-70 font-semibold"
-                                        }`}
-                                    >
-                                        {item}
-                                    </button>
-                                    {!ehOUltimo && <span className="text-slate-300 shrink-0">/</span>}
-                                </span>
-                            );
-                        })}
+        <div className="sticky top-0 z-50 bg-slate-700 border-b-4 border-blue-400 shadow-lg">
+            {/*
+              Mobile:  grid 3 colunas
+                Row 1: [Voltar] [Passos] [Novo]
+                Row 2: [Objetivo — span 3]
+              Desktop (md+): grid [auto 1fr auto]
+                Row 1: [Voltar] [Objetivo] [Passos + Novo]
+            */}
+            <div className="grid grid-cols-3 md:grid-cols-[auto_1fr_auto] items-stretch">
+                {/* ── VOLTAR ── */}
+                <div className="col-start-1 row-start-1 flex items-center justify-center p-3 md:pl-5 md:pr-4 border-r-2 border-slate-500">
+                    <div className="relative">
+                        <div
+                            className="absolute -top-2 -right-3 rotate-12 z-10 rounded pointer-events-none pixel-font bg-red-600 text-white"
+                            style={{ fontSize: "12px", padding: "2px 5px" }}
+                        >
+                            +2
+                        </div>
+                        <button
+                            onClick={handleVoltar}
+                            disabled={historico.length <= 1}
+                            className={`nes-btn ${historico.length <= 1 ? "is-disabled" : "is-primary"} pixel-font`}
+                            style={BTN_STYLE}
+                        >
+                            ←
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            {/* LADO DIREITO: objetivo, placar e botão de reiniciar */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto shrink-0">
-                {/* Caixa do objetivo — mostra a página-destino que o jogador precisa atingir */}
-                <div className="flex flex-col items-center sm:items-start bg-slate-50 border border-slate-200 px-6 py-2.5 rounded-2xl shadow-inner w-full sm:w-auto text-center sm:text-left shrink-0">
-                    <span className="text-[11px] text-slate-400 font-black uppercase tracking-widest block leading-none mb-1 select-none">
-                        Objetivo Final
+                {/* ── OBJETIVO ──
+                    Mobile:  col 1-3, row 2
+                    Desktop: col 2,   row 1 */}
+                <div
+                    className="col-span-3 row-start-2 md:col-span-1 md:col-start-2 md:row-start-1
+                                flex flex-col items-center justify-center text-center
+                                py-3 px-4 overflow-hidden
+                                border-t-2 border-slate-600 md:border-t-0"
+                >
+                    <span className="pixel-font text-blue-300 tracking-widest" style={{ fontSize: "9px" }}>
+                        ★ Página do Dia ★
                     </span>
-                    <span className="text-slate-950 font-black text-lg tracking-wide block leading-none">
+                    <span
+                        className="pixel-font text-white leading-tight line-clamp-2 mt-1"
+                        style={{ fontSize: "28px" }}
+                        title={paginaObjetivo}
+                    >
                         {paginaObjetivo}
                     </span>
                 </div>
 
-                {/* Placar com animação flutuante.
-                    O pontoFlutuante é remontado via `key` sempre que seu `id` muda,
-                    garantindo que a animação CSS rode mesmo para valores repetidos (+1 seguido de +1). */}
-                <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 pr-2.5 pl-5 py-2.5 rounded-2xl shadow-inner relative w-full sm:w-auto justify-between sm:justify-start shrink-0">
-                    <span className="text-slate-500 font-extrabold uppercase tracking-widest text-[11px] select-none">
-                        Pontos
-                    </span>
-
-                    <div className="relative shrink-0">
-                        <div className="bg-slate-950 text-white font-black text-2xl px-6 py-1.5 rounded-xl shadow-md min-w-[70px] text-center select-none">
-                            {pontos}
+                {/* ── PASSOS + NOVO ──
+                    Mobile:  col 2-3, row 1 — grid interno 2 colunas
+                    Desktop: col 3,   row 1 — flex row */}
+                <div
+                    className="col-start-2 col-span-2 row-start-1
+                                md:col-start-3 md:col-span-1 md:row-start-1
+                                grid grid-cols-2 md:flex md:flex-row md:items-center
+                                border-l-2 border-slate-500 md:gap-5 md:pr-5 md:pl-4"
+                >
+                    {/* Passos */}
+                    <div className="flex flex-col items-center justify-center py-2 px-3 border-r-2 border-slate-600 md:border-r-0">
+                        <div className="pixel-font text-blue-300 mb-1" style={{ fontSize: "9px" }}>
+                            PASSOS
                         </div>
+                        <div
+                            className="pixel-font text-white relative inline-block"
+                            style={{ fontSize: "28px", lineHeight: 1 }}
+                        >
+                            {pontos}
+                            {pontoFlutuante && (
+                                <div
+                                    key={pontoFlutuante.id}
+                                    className="absolute inset-0 flex items-center justify-center pixel-font text-blue-300 pointer-events-none animate-float-up z-50"
+                                    style={{ fontSize: "22px" }}
+                                >
+                                    +{pontoFlutuante.valor}
+                                </div>
+                            )}
+                        </div>
+                    </div>
 
-                        {pontoFlutuante && (
-                            <div
-                                key={pontoFlutuante.id}
-                                className="absolute inset-0 flex items-center justify-center font-black text-indigo-600 text-2xl pointer-events-none animate-float-up z-50"
-                            >
-                                +{pontoFlutuante.valor}
-                            </div>
-                        )}
+                    {/* Reiniciar */}
+                    <div className="flex items-center justify-center py-2 px-3">
+                        <button
+                            onClick={reiniciarJogo}
+                            title="Reiniciar Corrida"
+                            className="nes-btn is-primary pixel-font"
+                            style={BTN_STYLE}
+                        >
+                            ↺
+                        </button>
                     </div>
                 </div>
-
-                {/* Botão de reiniciar — sorteia novas páginas e reseta o jogo */}
-                <button
-                    onClick={reiniciarJogo}
-                    title="Reiniciar Corrida (Sortear novas páginas)"
-                    className="p-3.5 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200 rounded-2xl transition-all active:scale-90 active:rotate-45 shadow-inner cursor-pointer flex items-center justify-center shrink-0"
-                >
-                    <svg className="w-5 h-5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                        />
-                    </svg>
-                </button>
             </div>
+
+            {/* ── BREADCRUMB ── */}
+            {historico.length > 0 && (
+                <div
+                    ref={breadcrumbRef}
+                    className="border-t-2 border-slate-600 bg-slate-800 px-5 py-2.5 flex items-center gap-3 overflow-x-auto no-scrollbar"
+                >
+                    {historico.map((item, index) => {
+                        const ehOUltimo = index === historico.length - 1;
+                        return (
+                            <span key={index} className="flex items-center gap-3 shrink-0 whitespace-nowrap">
+                                <button
+                                    onClick={() => handleNavegarParaHistorico(index)}
+                                    disabled={ehOUltimo}
+                                    title={ehOUltimo ? "" : "Voltar para esta página (+2 pontos)"}
+                                    className={`pixel-font shrink-0 transition-colors ${
+                                        ehOUltimo
+                                            ? "text-blue-300 cursor-default"
+                                            : "text-slate-400 hover:text-white cursor-pointer"
+                                    }`}
+                                    style={{ fontSize: "11px" }}
+                                >
+                                    {item}
+                                </button>
+                                {!ehOUltimo && (
+                                    <span className="text-slate-500 pixel-font shrink-0" style={{ fontSize: "11px" }}>
+                                        /
+                                    </span>
+                                )}
+                            </span>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }

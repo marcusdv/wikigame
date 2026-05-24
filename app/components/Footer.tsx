@@ -3,47 +3,48 @@ type FooterProps = {
 };
 
 export default function Footer({ historico }: FooterProps) {
-    // Pega o último item do histórico para exibir a página atual no rodapé.
-    // O fallback "Início" evita exibir undefined se o histórico estiver vazio.
     const ultimoNo = historico[historico.length - 1] || "Início";
 
     return (
-        <footer className="bg-slate-950 text-slate-400 border-t border-slate-900/80 mt-12 transition-all">
-            <div className="max-w-5xl mx-auto px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
-                {/* Identidade do projeto */}
-                <div className="flex items-center gap-2 select-none">
-                    <span className="text-emerald-400 font-mono font-bold animate-pulse">&lt;/&gt;</span>
-                    <p className="font-medium tracking-wide">
-                        WikiGame <span className="text-slate-700">|</span>{" "}
-                        <span className="text-slate-500 font-mono">v1.0.0</span>
-                    </p>
+        <footer className="bg-slate-800 border-t-4 border-blue-500 mt-12">
+            <div className="max-w-5xl mx-auto px-4 sm:px-8 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+
+                <p className="pixel-font text-slate-500 select-none hidden sm:block" style={{ fontSize: "9px" }}>
+                    WIKIGAME v1.0.0
+                </p>
+
+                <div className="nes-container is-dark is-rounded select-none w-full sm:w-auto" style={{ padding: "8px 20px", borderColor: "#1e40af" }}>
+                    <div className="flex items-center justify-center gap-5">
+                        <div className="flex items-center gap-2">
+                            <span className="pixel-font text-blue-400" style={{ fontSize: "8px" }}>PASSOS:</span>
+                            <span className="pixel-font text-white" style={{ fontSize: "13px" }}>
+                                {historico.length - 1}
+                            </span>
+                        </div>
+                        <span className="pixel-font text-slate-600" style={{ fontSize: "10px" }}>|</span>
+                        <div className="flex items-center gap-2">
+                            <span className="pixel-font text-blue-400" style={{ fontSize: "8px" }}>PÁGINA:</span>
+                            <span
+                                className="pixel-font text-slate-300 truncate"
+                                style={{ fontSize: "9px", maxWidth: "150px" }}
+                                title={ultimoNo}
+                            >
+                                {ultimoNo}
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Estatísticas rápidas da partida atual: passos dados e página onde o jogador está */}
-                <div className="flex items-center gap-6 bg-slate-900/40 border border-slate-900/60 px-4 py-2 rounded-xl text-xs font-mono select-none">
-                    <div className="flex items-center gap-1.5">
-                        <span className="text-slate-500">Passos:</span>
-                        <span className="text-white font-bold">{historico.length - 1}</span>
-                    </div>
-                    <span className="text-slate-800">|</span>
-                    <div className="flex items-center gap-1.5">
-                        <span className="text-slate-500">Página Atual:</span>
-                        <span className="text-amber-400 font-bold truncate max-w-37.5" title={ultimoNo}>
-                            {ultimoNo}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Créditos e link para portfólio */}
-                <div className="flex items-center gap-4 text-xs">
-                    <span className="text-slate-600 font-mono select-none">Criado por Marcus</span>
+                <div className="flex items-center gap-3">
+                    <span className="pixel-font text-slate-500 select-none" style={{ fontSize: "9px" }}>by Marcus</span>
                     <a
                         href="https://shre.ink/7lQx"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-slate-900 hover:bg-indigo-950 hover:text-white px-3 py-1.5 rounded-lg border border-slate-900 transition-all flex items-center gap-1 hover:border-indigo-900/50"
+                        className="nes-btn is-primary pixel-font"
+                        style={{ fontSize: "9px", padding: "6px 12px" }}
                     >
-                        💻 Portfólio
+                        Portfolio
                     </a>
                 </div>
             </div>

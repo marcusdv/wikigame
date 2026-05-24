@@ -1,9 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Press+Start+2P&display=swap');
+@import "nes.css/css/nes.min.css";
 @import "tailwindcss";
 
 :root {
     --primary-font: 'Plus Jakarta Sans', sans-serif;
     --serif-font: 'Playfair Display', serif;
+    --pixel-font: 'Press Start 2P', cursive;
+}
+
+.pixel-font {
+    font-family: var(--pixel-font) !important;
 }
 
 body {
@@ -42,20 +48,28 @@ body {
 @keyframes float-up {
     0% {
         opacity: 0;
-        transform: translateY(45px) scale(0.7); /* Começa embaixo dos pontos, menor e invisível */
+        transform: translateY(0px) scale(0.7);   /* Nasce no centro do número */
     }
-    40% {
+    25% {
         opacity: 1;
-        transform: translateY(20px) scale(1.25); /* Sobe um pouco, ganha destaque */
+        transform: translateY(-8px) scale(1.3);  /* Aparece com destaque logo acima */
     }
     100% {
         opacity: 0;
-        transform: translateY(0px) scale(0.8); /* Sobe diretamente para o placar e se funde com os números */
+        transform: translateY(-60px) scale(0.9); /* Sobe e some */
     }
 }
 
 .animate-float-up {
     animation: float-up 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }
 
 /* =========================================================================

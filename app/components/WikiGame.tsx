@@ -121,6 +121,7 @@ export default function WikiGame() {
 
             setHistorico([...historico, paginaClicada]);
             setPaginaAtual(paginaClicada);
+            window.scrollTo({ top: 0, behavior: "instant" });
 
             setPontos((pontos) => pontos + 1);
             setPontoFlutuante({ id: ++animacaoId.current, valor: 1 });
