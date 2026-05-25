@@ -9,7 +9,7 @@ export default function DesafioNormal() {
         carregando,
         voceVenceu,
         historico,
-        pontos,
+        passos,
         paginaObjetivo,
         pontoFlutuante,
         wikiHtml,
@@ -32,13 +32,13 @@ export default function DesafioNormal() {
             )}
 
             {/* Modal de vitória — aparece quando o jogador atinge o objetivo */}
-            {voceVenceu && <VoceVenceu historico={historico} pontos={pontos} iniciarNovoJogo={iniciarNovoJogo} />}
+            {voceVenceu && <VoceVenceu historico={historico} passos={passos} iniciarNovoJogo={iniciarNovoJogo} />}
 
             <div>
                 {/* Barra fixa com HUD de pontos, breadcrumb do histórico e objetivo */}
                 <BarraSuperiorFixa
                     historico={historico}
-                    pontos={pontos}
+                    passos={passos}
                     titulo={"Encontrar Página"}
                     handleVoltar={handleVoltar}
                     pontoFlutuante={pontoFlutuante}

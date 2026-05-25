@@ -55,20 +55,20 @@ export function useGameLogic(seed?: string) {
     // mesmo que o valor (+1 ou +2) seja igual ao da vez anterior.
     const [pontoFlutuante, setPontoFlutuante] = useState<{ id: number; valor: number } | null>(null);
 
-    const [pontos, setPontos] = useState(0);
+    const [passos, setPassos] = useState(0);
     const [voceVenceu, setVoceVenceu] = useState(false);
 
     // Cortina de carregamento que aparece enquanto o HTML da Wikipedia está sendo buscado.
     const [carregando, setCarregando] = useState(false);
 
-    const animacaoIdRef = useRef(0); // Ref para gerar IDs únicos para animações de pontos flutuantes.
+    const animacaoIdRef = useRef(0); // Ref para gerar IDs únicos para animações de passos flutuantes.
 
     const iniciarNovoJogo = () => {
         const { start, target } = sortearJogo(seed);
         setPaginaAtual(start);
         setHistorico([start]);
         setPaginaObjetivo(target);
-        setPontos(0);
+        setPassos(0);
         setVoceVenceu(false);
     };
 
@@ -134,8 +134,8 @@ export function useGameLogic(seed?: string) {
 
             setPaginaAtual(paginaClicada);
             setHistorico((historicoAnterior) => [...historicoAnterior, paginaClicada]);
-            setPontos((pontos) => pontos + 1);
             setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 1 });
+            setPassos((passos) => passos + 1);
             checarVitoria(paginaClicada);
         }
     };
@@ -151,7 +151,7 @@ export function useGameLogic(seed?: string) {
 
         setHistorico(historicoCopia);
         setPaginaAtual(paginaAtual);
-        setPontos((pontos) => pontos + 2);
+        setPassos((passos) => passos + 2);
         setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 2 });
     };
 
@@ -191,7 +191,7 @@ export function useGameLogic(seed?: string) {
     // Permite navegar pelo histórico clicando diretamente nas páginas na barra superior.
     // Ex. se o histórico for [Brasil, América do Sul, Argentina] e o jogador clicar em "América do Sul",
     // o jogo volta para essa página e o histórico vira [Brasil, América do Sul].
-    // Custa 2 pontos
+    // Custa 2 passos
     const handleNavegarPeloHistorico = (index: number) => {
         if (index === historico.length - 1) return; // Não navega para a página atual
 
@@ -200,7 +200,7 @@ export function useGameLogic(seed?: string) {
 
         setHistorico(novoHistorico);
         setPaginaAtual(paginaAtual);
-        setPontos((pontos) => pontos + 2);
+        setPassos((passos) => passos + 2);
         setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 2 });
     };
 
@@ -216,7 +216,7 @@ export function useGameLogic(seed?: string) {
         paginaAtual,
         paginaObjetivo,
         historico,
-        pontos,
+        passos,
         pontoFlutuante,
         voceVenceu,
         carregando,

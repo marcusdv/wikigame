@@ -5,7 +5,7 @@ import Link from "next/link";
 
 type BarraSuperiorFixaProps = {
     historico: string[];
-    pontos: number;
+    passos: number;
     handleVoltar: () => void;
     pontoFlutuante: { id: number; valor: number } | null;
     paginaObjetivo: string;
@@ -50,11 +50,11 @@ const temas = {
     },
 };
 
-const BTN_STYLE = { fontSize: "14px", padding: "6px 24px" } as const;
+const BTN_STYLE = { padding: "6px 24px" } as const;
 
 export default function BarraSuperiorFixa({
     historico,
-    pontos,
+    passos,
     handleVoltar,
     pontoFlutuante,
     paginaObjetivo,
@@ -108,68 +108,102 @@ export default function BarraSuperiorFixa({
                                     className={`nes-btn ${historico.length <= 1 ? "is-disabled" : "is-primary"} pixel-font`}
                                     style={BTN_STYLE}
                                 >
-                                    ←
+                                    {"<"}
                                 </button>
                             </div>
                         </div>
 
-                        {/* ── NAV MOBILE: Desafio Diário (col 1, row 2) ── */}
+                        {/* ── MOBILE: link para o OUTRO modo (col 2, linha 1) ── */}
                         <Link
-                            href="/diario"
-                            className={`md:hidden col-start-1 row-start-2 flex flex-col items-center justify-center px-3
-                                border-t-2 border-r-2 ${t.secaoBorderObjetivo} pixel-font transition-colors
-                                ${tema === "desafio" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
+                            href={tema === "jogoNormal" ? "/diario" : "/jogar"}
+                            className={`md:hidden col-start-2 row-start-1 flex flex-col items-center justify-center px-3 pixel-font transition-colors ${t.breadcrumbItemAnterior}`}
                             style={{ fontSize: "8px" }}
                         >
-                            Desafio
-                            <br />
-                            Diário
+                            <button type="button" className="nes-btn  is-primary pixel-font" style={BTN_STYLE}>
+                                {tema === "jogoNormal" ? (
+                                    <>
+                                        Desafio
+                                        <br />
+                                        Diário
+                                    </>
+                                ) : (
+                                    <>
+                                        Desafio
+                                        <br />
+                                        Aleatório
+                                    </>
+                                )}
+                            </button>
                         </Link>
 
-                        {/* ── TITULO ── */}
+                        {/* ── MOBILE: REINICIAR (col 3, linha 1) ── */}
                         <div
-                            className={`col-start-2 col-span-1 row-start-2 md:col-start-2 md:row-start-1
+                            className={`md:hidden col-start-3 row-start-1 flex items-center justify-center border-l-2 ${t.secaoBorderInterno} py-2 px-3`}
+                        >
+                            <button
+                                onClick={reiniciarJogo}
+                                title="Reiniciar Corrida"
+                                disabled={!reiniciarJogo}
+                                className={`nes-btn pixel-font ${!reiniciarJogo ? "is-disabled" : "is-error"}`}
+                                style={BTN_STYLE}
+                            >
+                                X
+                            </button>
+                        </div>
+
+                        {/* ── MOBILE: PASSOS (col 1, linha 2) ── */}
+                        <div
+                            className={`md:hidden col-start-1 row-start-2 flex flex-col items-center justify-center py-2 px-3 border-r-2 border-t-2 ${t.secaoBorderInterno}`}
+                        >
+                            <div className={`pixel-font ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}>
+                                PASSOS
+                            </div>
+                            <div
+                                className={`pixel-font ${t.valorTexto} relative inline-block`}
+                                style={{ fontSize: "28px", lineHeight: 1 }}
+                            >
+                                {passos}
+                                {pontoFlutuante && (
+                                    <div
+                                        key={pontoFlutuante.id}
+                                        className={`absolute inset-0 flex items-center justify-center pixel-font ${t.labelTexto} pointer-events-none animate-float-up z-50`}
+                                        style={{ fontSize: "22px" }}
+                                    >
+                                        +{pontoFlutuante.valor}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* ── TITULO/OBJETIVO ── */}
+                        {/* Mobile: col 2-3, linha 2 | Desktop: col 2, linha 1 */}
+                        <div
+                            className={`col-start-2 col-span-2 row-start-2 md:col-start-2 md:col-span-1 md:row-start-1
                                 flex flex-col items-center justify-center text-center
-                                py-2  overflow-hidden
+                                py-2 overflow-hidden
                                 border-t-2 ${t.secaoBorderObjetivo} md:border-t-0`}
                         >
                             <span
-                                className={`pixel-font ${t.labelTexto} tracking-widest w-full text-[6.9px] md:text-xs overflow-hidden whitespace-nowrap`}
+                                className={`pixel-font ${t.labelTexto} tracking-widest w-full text-[10px] md:text-xs overflow-hidden whitespace-nowrap`}
                             >
                                 ★ {titulo} ★
                             </span>
                             <span
-                                className={`pixel-font ${t.valorTexto} leading-tight line-clamp-2 mt-1 text-xs md:text-lg break-all px-1`}
+                                className={`pixel-font ${t.valorTexto} leading-tight line-clamp-2 my-1 text-sm md:text-lg break-all px-1`}
                                 title={paginaObjetivo}
                             >
                                 {paginaObjetivo}
                             </span>
                         </div>
 
-                        {/* BOTÃO DE JGOAR ALEATORIO */}
-                        <Link
-                            href="/jogar"
-                            className={`md:hidden col-start-3 row-start-2 flex flex-col items-center justify-center px-3
-                                border-t-2 border-l-2 ${t.secaoBorderObjetivo} pixel-font transition-colors
-                                ${tema === "jogoNormal" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
-                            style={{ fontSize: "8px" }}
-                        >
-                            Desafio
-                            <br />
-                            Aleatório
-                        </Link>
-
-                        {/* ── PASSOS + NOVO ── */}
+                        {/* ── DESKTOP ONLY: DIÁRIO + ALEATÓRIO + PASSOS + REINICIAR ── */}
                         <div
-                            className={`col-start-2 col-span-2 row-start-1
-                                md:col-start-3 md:col-span-1 md:row-start-1
-                                grid grid-cols-subgrid md:flex md:flex-row md:items-stretch
-                                md:border-l-2 ${t.secaoBorderInterno}`}
+                            className={`hidden md:flex col-start-3 row-start-1 flex-row items-stretch border-l-2 ${t.secaoBorderInterno}`}
                         >
-                            {/* DIÁRIO — só desktop */}
+                            {/* DIÁRIO */}
                             <Link
                                 href="/diario"
-                                className={`hidden md:flex flex-col items-center justify-center px-3 border-r-2 ${t.secaoBorderInterno} pixel-font transition-colors ${tema === "desafio" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
+                                className={`flex flex-col items-center justify-center px-3 border-r-2 ${t.secaoBorderInterno} pixel-font transition-colors ${tema === "desafio" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
                                 style={{ fontSize: "8px" }}
                             >
                                 Desafio
@@ -177,10 +211,10 @@ export default function BarraSuperiorFixa({
                                 Diário
                             </Link>
 
-                            {/* JOGAR — só desktop */}
+                            {/* JOGAR */}
                             <Link
                                 href="/jogar"
-                                className={`hidden md:flex flex-col items-center justify-center px-3 border-r-2 ${t.secaoBorderInterno} pixel-font transition-colors ${tema === "jogoNormal" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
+                                className={`flex flex-col items-center justify-center px-3 border-r-2 ${t.secaoBorderInterno} pixel-font transition-colors ${tema === "jogoNormal" ? t.labelTexto + " pointer-events-none" : t.breadcrumbItemAnterior}`}
                                 style={{ fontSize: "8px" }}
                             >
                                 Desafio
@@ -188,9 +222,9 @@ export default function BarraSuperiorFixa({
                                 Aleatório
                             </Link>
 
-                            {/* PASSOS  */}
+                            {/* PASSOS */}
                             <div
-                                className={`flex flex-col items-center justify-center py-2 px-3 md:border-r-2 ${t.secaoBorderObjetivo}`}
+                                className={`flex flex-col items-center justify-center py-2 px-3 border-r-2 ${t.secaoBorderObjetivo}`}
                             >
                                 <div className={`pixel-font ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}>
                                     PASSOS
@@ -199,7 +233,7 @@ export default function BarraSuperiorFixa({
                                     className={`pixel-font ${t.valorTexto} relative inline-block`}
                                     style={{ fontSize: "28px", lineHeight: 1 }}
                                 >
-                                    {pontos}
+                                    {passos}
                                     {pontoFlutuante && (
                                         <div
                                             key={pontoFlutuante.id}
@@ -213,9 +247,7 @@ export default function BarraSuperiorFixa({
                             </div>
 
                             {/* Reiniciar */}
-                            <div
-                                className={`flex items-center justify-center border-l-2 ${t.secaoBorderObjetivo} md:border-0 py-2 px-3 md:pr-5`}
-                            >
+                            <div className="flex items-center justify-center py-2 px-3 pr-5">
                                 <button
                                     onClick={reiniciarJogo}
                                     title="Reiniciar Corrida"
@@ -223,7 +255,7 @@ export default function BarraSuperiorFixa({
                                     className={`nes-btn pixel-font ${!reiniciarJogo ? "is-disabled" : "is-primary"}`}
                                     style={BTN_STYLE}
                                 >
-                                    ↺
+                                    X
                                 </button>
                             </div>
                         </div>

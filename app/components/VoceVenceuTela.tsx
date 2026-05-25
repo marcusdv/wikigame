@@ -1,10 +1,10 @@
 type VoceVenceuProps = {
     historico: string[];
-    pontos: number;
+    passos: number;
     iniciarNovoJogo: () => void;
 };
 
-export default function VoceVenceu({ historico, pontos, iniciarNovoJogo }: VoceVenceuProps) {
+export default function VoceVenceu({ historico, passos, iniciarNovoJogo }: VoceVenceuProps) {
     return (
         <div className="fixed inset-0 z-1000 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
             <div
@@ -21,16 +21,26 @@ export default function VoceVenceu({ historico, pontos, iniciarNovoJogo }: VoceV
                 </p>
 
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="nes-container is-dark is-rounded" style={{ padding: "0.75rem", borderColor: "#334155" }}>
-                        <span className="pixel-font text-blue-400 block mb-2" style={{ fontSize: "8px" }}>PASSOS</span>
+                    <div
+                        className="nes-container is-dark is-rounded"
+                        style={{ padding: "0.75rem", borderColor: "#334155" }}
+                    >
+                        <span className="pixel-font text-blue-400 block mb-2" style={{ fontSize: "8px" }}>
+                            SALTOS
+                        </span>
                         <span className="pixel-font text-white" style={{ fontSize: "24px" }}>
                             {historico.length - 1}
                         </span>
                     </div>
-                    <div className="nes-container is-dark is-rounded" style={{ padding: "0.75rem", borderColor: "#334155" }}>
-                        <span className="pixel-font text-blue-400 block mb-2" style={{ fontSize: "8px" }}>PONTOS</span>
+                    <div
+                        className="nes-container is-dark is-rounded"
+                        style={{ padding: "0.75rem", borderColor: "#334155" }}
+                    >
+                        <span className="pixel-font text-blue-400 block mb-2" style={{ fontSize: "8px" }}>
+                            PASSOS
+                        </span>
                         <span className="pixel-font text-white" style={{ fontSize: "24px" }}>
-                            {pontos}
+                            {passos}
                         </span>
                     </div>
                 </div>
@@ -55,7 +65,9 @@ export default function VoceVenceu({ historico, pontos, iniciarNovoJogo }: VoceV
                                     {item}
                                 </span>
                                 {idx < historico.length - 1 && (
-                                    <span className="text-slate-600 shrink-0" style={{ fontSize: "10px" }}>▶</span>
+                                    <span className="text-slate-600 shrink-0" style={{ fontSize: "10px" }}>
+                                        ▶
+                                    </span>
                                 )}
                             </div>
                         ))}

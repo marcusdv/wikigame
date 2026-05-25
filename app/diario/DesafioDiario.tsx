@@ -16,7 +16,7 @@ export default function DesafioDiario() {
         carregando,
         voceVenceu,
         historico,
-        pontos,
+        passos,
         paginaObjetivo,
         pontoFlutuante,
         wikiHtml,
@@ -39,13 +39,13 @@ export default function DesafioDiario() {
             )}
 
             {/* Modal de vitória — aparece quando o jogador atinge o objetivo */}
-            {voceVenceu && <VoceVenceu historico={historico} pontos={pontos} iniciarNovoJogo={iniciarNovoJogo} />}
+            {voceVenceu && <VoceVenceu historico={historico} passos={passos} iniciarNovoJogo={iniciarNovoJogo} />}
 
             <div>
                 {/* Barra fixa com HUD de pontos, breadcrumb do histórico e objetivo */}
                 <BarraSuperiorFixa
                     historico={historico}
-                    pontos={pontos}
+                    passos={passos}
                     handleVoltar={handleVoltar}
                     pontoFlutuante={pontoFlutuante}
                     paginaObjetivo={paginaObjetivo}
