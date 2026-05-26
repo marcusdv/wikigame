@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
 
 type VoceVenceuProps = {
@@ -16,9 +17,36 @@ type Recorde = {
 };
 
 export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJogo }: VoceVenceuProps) {
+    const router = useRouter();
     const [nome, setNome] = useState("");
     const [recordes, setRecordes] = useState<Recorde[]>([]);
     const [idPalavraDoDia, setIdPalavraDoDia] = useState<number | null>(null);
+    const [tempoRestante, setTempoRestante] = useState("");
+
+    useEffect(() => {
+        if (modoDeJogo !== "diario") return;
+
+        const calcular = () => {
+            const agora = new Date();
+            const meianoite = new Date();
+            meianoite.setHours(24, 0, 0, 0);
+            const diff = meianoite.getTime() - agora.getTime();
+            const h = Math.floor(diff / 3600000)
+                .toString()
+                .padStart(2, "0");
+            const m = Math.floor((diff % 3600000) / 60000)
+                .toString()
+                .padStart(2, "0");
+            const s = Math.floor((diff % 60000) / 1000)
+                .toString()
+                .padStart(2, "0");
+            setTempoRestante(`${h}:${m}:${s}`);
+        };
+
+        calcular();
+        const intervalo = setInterval(calcular, 1000);
+        return () => clearInterval(intervalo);
+    }, [modoDeJogo]);
 
     const handleEnviar = async () => {
         if (nome.length < 1 || nome.length > 20) {
@@ -85,10 +113,10 @@ export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJ
                 <div className="text-5xl mb-4">🏆</div>
 
                 <h2 className=" text-white mb-2" style={{ fontSize: "22px" }}>
-                    VITÓRIA! {idPalavraDoDia}
+                    VITÓRIA!
                 </h2>
                 <p className=" text-blue-400 mb-6 leading-7" style={{ fontSize: "9px" }}>
-                    VOCÊ CHEGOU AO DESTINO!
+                    {modoDeJogo === "diario" ? "DESAFIO DIÁRIO CONCLUÍDO" : "VOCÊ CHEGOU AO DESTINO!"}
                 </p>
 
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -147,6 +175,17 @@ export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJ
 
                 {modoDeJogo === "diario" && (
                     <div className="flex flex-col gap-3 mb-4">
+                        <div
+                            className="nes-container is-dark is-rounded"
+                            style={{ padding: "0.5rem", borderColor: "#334155" }}
+                        >
+                            <span className="text-slate-400 block" style={{ fontSize: "8px" }}>
+                                PRÓXIMA PALAVRA EM
+                            </span>
+                            <span className="text-white font-mono" style={{ fontSize: "20px" }}>
+                                {tempoRestante}
+                            </span>
+                        </div>
                         <input
                             type="text"
                             className="nes-input is-dark w-full "
@@ -204,8 +243,12 @@ export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJ
                     </div>
                 )}
 
-                <button onClick={iniciarNovoJogo} className="nes-btn is-primary w-full " style={{ fontSize: "11px" }}>
-                    ► JOGAR NOVAMENTE
+                <button
+                    onClick={() => router.push("/jogar")}
+                    className="nes-btn is-primary w-full "
+                    style={{ fontSize: "11px" }}
+                >
+                    ► JOGAR MODO ALEATÓRIO
                 </button>
             </div>
         </div>

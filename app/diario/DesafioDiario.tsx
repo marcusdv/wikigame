@@ -26,6 +26,7 @@ export default function DesafioDiario() {
     const {
         carregando,
         voceVenceu,
+        setVoceVenceu,
         historico,
         passos,
         setHistorico,
@@ -61,12 +62,16 @@ export default function DesafioDiario() {
                     setPaginaAtual(dados.historico[dados.historico.length - 1]);
                 }
             }
+
+            if (localStorage.getItem(`desafio-diario-${seed}-vitoria`)) {
+                setVoceVenceu(true);
+            }
         } catch (error) {
             console.error("Erro ao carregar progresso do localStorage:", error);
         } finally {
             setLocalStorageCarregado(true);
         }
-    }, [seed, setHistorico, setPassos, setPaginaAtual]);
+    }, [seed, setHistorico, setPassos, setPaginaAtual, setVoceVenceu]);
 
     // Salva o progresso no localStorage a cada mudança no histórico ou passos.
     // Quero salvar sempre que o jogador fizer um movimento.
@@ -90,6 +95,12 @@ export default function DesafioDiario() {
             console.error("Erro ao salvar progresso");
         }
     }, [historico, passos, seed, localStorageCarregado]);
+
+    // Salva a vitória no localStorage para mostrar o modal mesmo se o jogador recarregar a página após vencer.
+    useEffect(() => {
+        if (!voceVenceu) return;
+        localStorage.setItem(`desafio-diario-${seed}-vitoria`, "true");
+    }, [voceVenceu, seed]);
 
     // Ao carregar o desafio diário, salva a configuração do dia no banco, caso ainda não exista.
     useEffect(() => {

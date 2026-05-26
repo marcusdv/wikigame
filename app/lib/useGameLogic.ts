@@ -238,6 +238,7 @@ export function useGameLogic(seed?: string, podeChamarAPI: boolean = true) {
         passos,
         pontoFlutuante,
         voceVenceu,
+        setVoceVenceu,
         carregando,
         setCarregando,
         iniciarNovoJogo,
