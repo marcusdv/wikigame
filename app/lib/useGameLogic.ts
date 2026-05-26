@@ -30,7 +30,12 @@ function sortearJogo(seed?: string): { start: string; target: string } {
 
 // Se passado uma seed, sortearJogo() é determinístico — ou seja, sempre retorna o mesmo par de páginas para a mesma seed.
 // Utilizado par desafio diário, para que todos os jogadores recebam o mesmo par no mesmo dia.
-export function useGameLogic(seed?: string, paginaAtualPassada?: string) {
+export function useGameLogic(
+    seed?: string,
+    paginaAtualPassada?: string,
+    historicoPassado?: string[],
+    passosPassados?: number,
+) {
     // HTML cru retornado pela Wikipedia via nossa API. Injetado no DOM via dangerouslySetInnerHTML.
     const [wikiHtml, setWikiHtml] = useState<string>("");
 
@@ -48,14 +53,14 @@ export function useGameLogic(seed?: string, paginaAtualPassada?: string) {
 
     // Histórico de páginas visitadas pelo jogador, usado para mostrar o breadcrumb e permitir voltar para páginas anteriores.
     // O primeiro item é sempre a página inicial sorteada, e o último item é a página atual.
-    const [historico, setHistorico] = useState<string[]>([jogoInicial.start]);
+    const [historico, setHistorico] = useState<string[]>(historicoPassado || [jogoInicial.start]);
 
     // Controla a animação de +1 / +2 que flutua sobre o placar.
     // O campo `id` muda a cada disparo para forçar o React a remontar a animação,
     // mesmo que o valor (+1 ou +2) seja igual ao da vez anterior.
     const [pontoFlutuante, setPontoFlutuante] = useState<{ id: number; valor: number } | null>(null);
 
-    const [passos, setPassos] = useState(0);
+    const [passos, setPassos] = useState(passosPassados || 0);
     const [voceVenceu, setVoceVenceu] = useState(false);
 
     // Cortina de carregamento que aparece enquanto o HTML da Wikipedia está sendo buscado.

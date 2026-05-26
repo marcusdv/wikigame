@@ -50,7 +50,7 @@ const temas = {
     },
 };
 
-const BTN_STYLE = { padding: "6px 24px" } as const;
+const BTN_STYLE = { padding: "8px 20px", margin: "5px 10px" } as const;
 
 export default function BarraSuperiorFixa({
     historico,
@@ -74,7 +74,9 @@ export default function BarraSuperiorFixa({
     }, [historico]);
 
     return (
-        <div className={`sticky top-0 z-50 select-none ${t.divPaiBg} border-b-4 ${t.divPaiBorder} shadow-lg`}>
+        <div
+            className={`sticky pixel-font top-0 z-50 select-none ${t.divPaiBg} border-b-4 ${t.divPaiBorder} shadow-lg`}
+        >
             {/*
               GRID — mobile 3 cols / desktop 5 cols (md:)
               ┌──────────────────────────────────────────────────────────────┐
@@ -106,7 +108,7 @@ export default function BarraSuperiorFixa({
                             <div className="relative">
                                 <div
                                     className={`
-                                        absolute -top-2 -right-3 rotate-12 z-10 rounded pointer-events-none pixel-font  text-white
+                                        absolute -top-2 -right-3 rotate-12 z-10 rounded pointer-events-none   text-white
                                         ${historico.length <= 1 ? "bg-gray-500" : "bg-red-600"}
                                         `}
                                     style={{ fontSize: "14px", padding: "2px 5px" }}
@@ -116,7 +118,7 @@ export default function BarraSuperiorFixa({
                                 <button
                                     onClick={handleVoltar}
                                     disabled={historico.length <= 1}
-                                    className={`nes-btn ${historico.length <= 1 ? "is-disabled" : "is-primary"} pixel-font`}
+                                    className={`nes-btn ${historico.length <= 1 ? "is-disabled" : "is-primary"} `}
                                     style={BTN_STYLE}
                                 >
                                     {"<"}
@@ -133,12 +135,12 @@ export default function BarraSuperiorFixa({
                                 `}
                         >
                             <span
-                                className={`pixel-font ${t.labelTexto} tracking-widest w-full text-[10px] md:text-xs overflow-hidden whitespace-nowrap`}
+                                className={` ${t.labelTexto} tracking-widest w-full text-[10px] md:text-xs overflow-hidden whitespace-nowrap`}
                             >
                                 ★ {titulo} ★
                             </span>
                             <span
-                                className={`pixel-font ${t.valorTexto} leading-tight line-clamp-2 my-1 text-sm md:text-lg break-all px-1`}
+                                className={` ${t.valorTexto} leading-tight line-clamp-2 my-1 text-sm md:text-lg break-all px-1`}
                                 title={paginaObjetivo}
                             >
                                 {paginaObjetivo}
@@ -152,18 +154,18 @@ export default function BarraSuperiorFixa({
                                 md:col-start-4 md:row-start-1 md:border-t-0 ${t.secaoBorderInterno}  md:border-t-0
                                 `}
                         >
-                            <div className={`pixel-font ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}>
+                            <div className={` ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}>
                                 PASSOS
                             </div>
                             <div
-                                className={`pixel-font ${t.valorTexto} relative inline-block`}
+                                className={` ${t.valorTexto} relative inline-block`}
                                 style={{ fontSize: "28px", lineHeight: 1 }}
                             >
                                 {passos}
                                 {pontoFlutuante && (
                                     <div
                                         key={pontoFlutuante.id}
-                                        className={`absolute inset-0 flex items-center justify-center pixel-font ${t.labelTexto} pointer-events-none animate-float-up z-50`}
+                                        className={`absolute inset-0 flex items-center justify-center  ${t.labelTexto} pointer-events-none animate-float-up z-50`}
                                         style={{ fontSize: "22px" }}
                                     >
                                         +{pontoFlutuante.valor}
@@ -182,7 +184,7 @@ export default function BarraSuperiorFixa({
                             `}
                             style={{ fontSize: "8px" }}
                         >
-                            <button type="button" className="nes-btn  is-primary pixel-font" style={BTN_STYLE}>
+                            <button type="button" className="nes-btn is-primary " style={BTN_STYLE}>
                                 {tema === "jogoNormal" ? (
                                     <>
                                         Desafio
@@ -210,7 +212,7 @@ export default function BarraSuperiorFixa({
                                 onClick={reiniciarJogo}
                                 title="Reiniciar Corrida"
                                 disabled={!reiniciarJogo}
-                                className={`nes-btn pixel-font ${!reiniciarJogo ? "is-disabled" : "is-error"}`}
+                                className={`nes-btn  ${!reiniciarJogo ? "is-disabled" : "is-error"}`}
                                 style={BTN_STYLE}
                             >
                                 X
@@ -234,7 +236,7 @@ export default function BarraSuperiorFixa({
                                     onClick={() => handleNavegarParaHistorico(index)}
                                     disabled={ehOUltimo}
                                     title={ehOUltimo ? "" : "Voltar para esta página (+2 pontos)"}
-                                    className={`pixel-font shrink-0 transition-colors ${
+                                    className={` shrink-0 transition-colors ${
                                         ehOUltimo
                                             ? t.breadcrumbItemAtual + " cursor-default"
                                             : t.breadcrumbItemAnterior + " cursor-pointer"
@@ -244,10 +246,7 @@ export default function BarraSuperiorFixa({
                                     {item}
                                 </button>
                                 {!ehOUltimo && (
-                                    <span
-                                        className={`${t.breadcrumbSeparador} pixel-font shrink-0`}
-                                        style={{ fontSize: "8px" }}
-                                    >
+                                    <span className={`${t.breadcrumbSeparador}  shrink-0`} style={{ fontSize: "8px" }}>
                                         /
                                     </span>
                                 )}
@@ -261,7 +260,7 @@ export default function BarraSuperiorFixa({
             <button
                 onClick={() => setHudOculto((v) => !v)}
                 title={hudOculto ? "Mostrar barra" : "Ocultar barra"}
-                className={`absolute -bottom-1 right-4 translate-y-full pixel-font ${t.botaoToggleBg} ${t.botaoToggleTexto} border-4 border-t-0 ${t.botaoToggleBorder} transition-colors no-outline`}
+                className={`absolute -bottom-1 right-4 translate-y-full  ${t.botaoToggleBg} ${t.botaoToggleTexto} border-4 border-t-0 ${t.botaoToggleBorder} transition-colors no-outline`}
                 style={{ fontSize: "10px", padding: "2px 10px 4px" }}
             >
                 {hudOculto ? "▼" : "▲"}

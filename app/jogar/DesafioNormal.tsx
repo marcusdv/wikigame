@@ -52,7 +52,7 @@ export default function DesafioNormal() {
                 <div
                     onClick={handleLinkClicado}
                     id="wikicontent"
-                    className="my-3 px-4 sm:px-8 py-6 max-w-6xl mx-auto bg-white shadow-xl min-h-screen"
+                    className="my-3 px-4 sm:px-8 py-6  max-w-7xl mx-auto bg-white shadow-xl min-h-screen"
                     dangerouslySetInnerHTML={{ __html: wikiHtml }}
                 />
             </div>

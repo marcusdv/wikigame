@@ -17,8 +17,8 @@ export const paginas = [
         "Cruzadas",
         "Escravatura",
         "Império Britânico",
-        "Guerra de Troia",
         "Império Mongol",
+        "Guerra de Troia",
         "Antiguidade clássica",
         "Império Otomano",
         "Feudalismo",
@@ -202,6 +202,7 @@ export const paginas = [
         "Sabão",
         "Queijo",
         "Vinho",
+        "Diamante",
         "Cerveja",
 
         // Corpo e Saúde

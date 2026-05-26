@@ -29,13 +29,6 @@
         display: none !important;
     }
 
-    ul a {
-        pointer-events: none;
-        cursor: not-allowed;
-        color: black;
-        font-weight: normal;
-    }
-
     /* =========================================================================
        2. REGRAS DE CORTE SELETIVO (Remove o "Ver também" e o que vem depois)
        ========================================================================= */
@@ -72,7 +65,8 @@
         background-color: #f8fafc !important; /* Slate 50 background */
         border: 1px solid rgba(226, 232, 240, 0.8) !important;
         border-radius: 16px !important;
-        overflow: hidden !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
         padding: 12px !important;
         font-size: 0.825rem !important;
         line-height: 1.5 !important;
@@ -103,6 +97,15 @@
         width: 100% !important;
         max-width: 100% !important;
         height: auto !important;
+    }
+
+    /* Tabelas internas do infobox: libera a largura natural para que
+       overflow-x: auto do container ative o scroll horizontal */
+    .infobox table,
+    .infobox_v2 table,
+    .sidebar table {
+        max-width: none !important;
+        width: auto !important;
     }
 
     /* Limpando as bordas e polindo as linhas de dados */
@@ -259,7 +262,8 @@
     /* =========================================================================
        7. DIMENSIONAMENTO DAS IMAGENS (Evita caixas vazias ou esmagadas)
        ========================================================================= */
-    figure:not(.gallerybox *):not(.mw-halign-center),
+    /* Figuras com vídeo ficam de fora — vídeo precisa de largura explícita, não min-content */
+    figure:not(.gallerybox *):not(.mw-halign-center):not(:has(video)),
     div.thumb:not(.tnone):not(.tmulti):not(.gallerybox *) {
         display: block !important;
         width: min-content !important;
@@ -281,6 +285,34 @@
         width: auto !important;
         max-width: 100% !important;
         height: auto !important;
+    }
+
+    /* Figuras com vídeo não flutuam e ocupam toda a largura disponível.
+       width: min-content quebra o layout de vídeo — vídeo precisa de largura explícita. */
+    figure:has(video) {
+        float: none !important;
+        clear: both !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Em telas grandes, limita o vídeo a metade da largura e centraliza */
+    @media (min-width: 640px) {
+        figure:has(video) {
+            width: 50% !important;
+            max-width: 50% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+    }
+
+    /* Vídeos responsivos dentro de figuras */
+    figure video {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        border-radius: 8px !important;
     }
 
     img {
@@ -307,6 +339,12 @@
    ========================================================================= */
     font-family: var(--primary-font);
     font-size: 1.05rem;
+
+    /* NES.css define font-family diretamente em code/pre/kbd/samp — sem isso,
+       esses elementos herdam o pixel font mesmo dentro do #wikicontent */
+    code, pre, kbd, samp {
+        font-family: var(--primary-font) !important;
+    }
     line-height: 1.85;
     color: #334155; /* Cor Slate 700 super confortável de ler */
     border-radius: 24px;

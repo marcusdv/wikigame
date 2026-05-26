@@ -26,7 +26,11 @@ export default function DesafioDiario() {
         try {
             const dados = JSON.parse(dadosSalvosJSON);
             if (dados.historico && dados.passos) {
-                return dados.historico[dados.historico.length - 1];
+                return {
+                    pagina: dados.historico[dados.historico.length - 1],
+                    historico: dados.historico,
+                    passos: dados.passos,
+                };
             }
         } catch (error) {
             console.error("Erro ao parsear dados do localStorage:", error);
@@ -51,7 +55,7 @@ export default function DesafioDiario() {
         handleVoltar,
         handleNavegarPeloHistorico,
         handleLinkClicado,
-    } = useGameLogic(seed, checarLocalStorage());
+    } = useGameLogic(seed, checarLocalStorage()?.pagina, checarLocalStorage()?.historico, checarLocalStorage()?.passos);
 
     useEffect(() => {
         function carregarLocalStorage() {
@@ -83,7 +87,7 @@ export default function DesafioDiario() {
     // Salva o progresso no localStorage a cada mudança no histórico ou passos.
     // Quero salvar sempre que o jogador fizer um movimento.
     useEffect(() => {
-        if (historico.length <= 1) return;
+        if (historico.length < 1) return;
 
         try {
             const dados: DadosLocalStorage = {
@@ -133,7 +137,7 @@ export default function DesafioDiario() {
                 <div
                     onClick={handleLinkClicado}
                     id="wikicontent"
-                    className="my-3 px-4 sm:px-8 py-6 max-w-6xl mx-auto bg-white shadow-xl min-h-screen"
+                    className="my-3 px-4 sm:px-8 py-6 max-w-7xl mx-auto bg-white shadow-xl min-h-screen"
                     dangerouslySetInnerHTML={{ __html: wikiHtml }}
                 />
             </div>
