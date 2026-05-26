@@ -18,10 +18,13 @@ type Recorde = {
 
 export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJogo }: VoceVenceuProps) {
     const router = useRouter();
+    const seed = new Date().toISOString().slice(0, 10);
+    const chaveRecorde = `desafio-diario-${seed}-recorde-enviado`;
     const [nome, setNome] = useState("");
     const [recordes, setRecordes] = useState<Recorde[]>([]);
     const [idPalavraDoDia, setIdPalavraDoDia] = useState<number | null>(null);
     const [tempoRestante, setTempoRestante] = useState("");
+    const [recordeEnviado, setRecordeEnviado] = useState(() => !!localStorage.getItem(chaveRecorde));
 
     useEffect(() => {
         if (modoDeJogo !== "diario") return;
@@ -55,7 +58,7 @@ export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJ
         }
         if (!nome.trim()) return;
 
-        const { data, error } = await supabase.from("recordes").insert({
+        const { error } = await supabase.from("recordes").insert({
             jogador_nome: nome,
             pontuacao: passos,
             id_palavras_do_dia: idPalavraDoDia, // Substitua pelo ID correto do desafio diário
@@ -63,11 +66,11 @@ export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJ
 
         if (error) {
             console.error("Erro ao enviar recorde:", error);
+            return;
         }
 
-        if (data) {
-            console.log("Recorde enviado com sucesso:", data);
-        }
+        localStorage.setItem(chaveRecorde, "true");
+        setRecordeEnviado(true);
     };
 
     useEffect(() => {
@@ -188,19 +191,21 @@ export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJ
                         </div>
                         <input
                             type="text"
-                            className="nes-input is-dark w-full "
-                            placeholder="SEU NOME"
+                            className="nes-input is-dark w-full"
+                            placeholder={recordeEnviado ? "RECORDE JÁ ENVIADO" : "SEU NOME"}
                             maxLength={20}
                             value={nome}
                             onChange={(e) => setNome(e.target.value)}
+                            disabled={recordeEnviado}
                             style={{ fontSize: "11px" }}
                         />
                         <button
                             onClick={handleEnviar}
-                            className="nes-btn is-success w-full  "
+                            className="nes-btn is-success w-full"
+                            disabled={recordeEnviado}
                             style={{ fontSize: "11px" }}
                         >
-                            ► ENVIAR RECORDE
+                            {recordeEnviado ? "✓ RECORDE ENVIADO" : "► ENVIAR RECORDE"}
                         </button>
 
                         <div className="flex flex-col gap-2">
