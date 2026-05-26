@@ -229,6 +229,7 @@ export function useGameLogic(seed?: string) {
         historico,
         setHistorico,
         setPassos,
+        setPaginaAtual,
         passos,
         pontoFlutuante,
         voceVenceu,

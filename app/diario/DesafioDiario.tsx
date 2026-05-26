@@ -26,6 +26,7 @@ export default function DesafioDiario() {
         passos,
         setHistorico,
         setPassos,
+        setPaginaAtual,
         paginaObjetivo,
         pontoFlutuante,
         wikiHtml,
@@ -50,6 +51,7 @@ export default function DesafioDiario() {
                 console.log("OS DADOS PARSEADOS", dados);
                 setHistorico(dados.historico);
                 setPassos(dados.passos);
+                setPaginaAtual(dados.historico[dados.historico.length - 1]);
             } catch (error) {
                 // JSON.parse falha se a string estiver corrompida/inválida
                 // localStorage.getItem falha se o storage estiver bloqueado
@@ -57,7 +59,7 @@ export default function DesafioDiario() {
             }
         }
         carregarLocalStorage();
-    }, [setHistorico, setPassos, seed]);
+    }, [setHistorico, setPassos, setPaginaAtual, seed]);
 
     // Salva o progresso no localStorage a cada mudança no histórico ou passos.
     // Quero salvar sempre que o jogador fizer um movimento.
