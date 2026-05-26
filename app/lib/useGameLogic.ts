@@ -30,7 +30,7 @@ function sortearJogo(seed?: string): { start: string; target: string } {
 
 // Se passado uma seed, sortearJogo() é determinístico — ou seja, sempre retorna o mesmo par de páginas para a mesma seed.
 // Utilizado par desafio diário, para que todos os jogadores recebam o mesmo par no mesmo dia.
-export function useGameLogic(seed?: string) {
+export function useGameLogic(seed?: string, paginaAtualPassada?: string) {
     // HTML cru retornado pela Wikipedia via nossa API. Injetado no DOM via dangerouslySetInnerHTML.
     const [wikiHtml, setWikiHtml] = useState<string>("");
 
@@ -41,7 +41,7 @@ export function useGameLogic(seed?: string) {
     const [jogoInicial] = useState<{ start: string; target: string }>(() => sortearJogo(seed));
 
     // Título da página atual do jogo. Inicializado com jogoInicial.start, que é a página sorteada.
-    const [paginaAtual, setPaginaAtual] = useState<string>(jogoInicial.start);
+    const [paginaAtual, setPaginaAtual] = useState<string>(paginaAtualPassada || jogoInicial.start);
 
     // Titulo que o jogador deve encontrar para vencer. Inicializado com jogoInicial.target, que é a página sorteada.
     const [paginaObjetivo, setPaginaObjetivo] = useState<string>(jogoInicial.target);
@@ -234,6 +234,7 @@ export function useGameLogic(seed?: string) {
         pontoFlutuante,
         voceVenceu,
         carregando,
+        setCarregando,
         iniciarNovoJogo,
         handleLinkClicado,
         handleVoltar,

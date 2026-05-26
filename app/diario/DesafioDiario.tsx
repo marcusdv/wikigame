@@ -17,6 +17,22 @@ export default function DesafioDiario() {
 
     const seed = new Date().toISOString().slice(0, 10);
 
+    function checarLocalStorage() {
+        const chave = `desafio-diario-${seed}`;
+        const dadosSalvosJSON = localStorage.getItem(chave);
+
+        if (!dadosSalvosJSON) return;
+
+        try {
+            const dados = JSON.parse(dadosSalvosJSON);
+            if (dados.historico && dados.passos) {
+                return dados.historico[dados.historico.length - 1];
+            }
+        } catch (error) {
+            console.error("Erro ao parsear dados do localStorage:", error);
+        }
+    }
+
     // Passa a seed pro hook — com seed, sortearJogo() é
     // determinístico em vez de aleatório.
     const {
@@ -27,6 +43,7 @@ export default function DesafioDiario() {
         setHistorico,
         setPassos,
         setPaginaAtual,
+        setCarregando,
         paginaObjetivo,
         pontoFlutuante,
         wikiHtml,
@@ -34,11 +51,12 @@ export default function DesafioDiario() {
         handleVoltar,
         handleNavegarPeloHistorico,
         handleLinkClicado,
-    } = useGameLogic(seed);
+    } = useGameLogic(seed, checarLocalStorage());
 
     useEffect(() => {
         function carregarLocalStorage() {
             try {
+                setCarregando(true);
                 const dadosSalvosJSON = localStorage.getItem(`desafio-diario-${seed}`);
 
                 if (!dadosSalvosJSON) {
@@ -52,6 +70,7 @@ export default function DesafioDiario() {
                 setHistorico(dados.historico);
                 setPassos(dados.passos);
                 setPaginaAtual(dados.historico[dados.historico.length - 1]);
+                setCarregando(false);
             } catch (error) {
                 // JSON.parse falha se a string estiver corrompida/inválida
                 // localStorage.getItem falha se o storage estiver bloqueado
@@ -59,7 +78,7 @@ export default function DesafioDiario() {
             }
         }
         carregarLocalStorage();
-    }, [setHistorico, setPassos, setPaginaAtual, seed]);
+    }, [setHistorico, setPassos, setPaginaAtual, setCarregando, seed]);
 
     // Salva o progresso no localStorage a cada mudança no histórico ou passos.
     // Quero salvar sempre que o jogador fizer um movimento.
