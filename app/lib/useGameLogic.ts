@@ -29,13 +29,8 @@ function sortearJogo(seed?: string): { start: string; target: string } {
 }
 
 // Se passado uma seed, sortearJogo() é determinístico — ou seja, sempre retorna o mesmo par de páginas para a mesma seed.
-// Utilizado par desafio diário, para que todos os jogadores recebam o mesmo par no mesmo dia.
-export function useGameLogic(
-    seed?: string,
-    paginaAtualPassada?: string,
-    historicoPassado?: string[],
-    passosPassados?: number,
-) {
+// Utilizado par desafio diário, para que todos os jogadores recebam o mesmo par no mesmo day.
+export function useGameLogic(seed?: string, podeChamarAPI: boolean = true) {
     // HTML cru retornado pela Wikipedia via nossa API. Injetado no DOM via dangerouslySetInnerHTML.
     const [wikiHtml, setWikiHtml] = useState<string>("");
 
@@ -45,22 +40,21 @@ export function useGameLogic(
     // se não, será um par aleatório a cada nova reinicialização.
     const [jogoInicial] = useState<{ start: string; target: string }>(() => sortearJogo(seed));
 
-    // Título da página atual do jogo. Inicializado com jogoInicial.start, que é a página sorteada.
-    const [paginaAtual, setPaginaAtual] = useState<string>(paginaAtualPassada || jogoInicial.start);
-
-    // Titulo que o jogador deve encontrar para vencer. Inicializado com jogoInicial.target, que é a página sorteada.
-    const [paginaObjetivo, setPaginaObjetivo] = useState<string>(jogoInicial.target);
-
     // Histórico de páginas visitadas pelo jogador, usado para mostrar o breadcrumb e permitir voltar para páginas anteriores.
     // O primeiro item é sempre a página inicial sorteada, e o último item é a página atual.
-    const [historico, setHistorico] = useState<string[]>(historicoPassado || [jogoInicial.start]);
+    const [historico, setHistorico] = useState<string[]>([jogoInicial.start]);
+
+    // Título da página atual do jogo. Inicializado com jogoInicial.start, que é a página sorteada.
+    const [paginaAtual, setPaginaAtual] = useState<string>(historico[historico.length - 1]);
+    // Titulo que o jogador deve encontrar para vencer. Inicializado com jogoInicial.target, que é a página sorteada.
+    const [paginaObjetivo, setPaginaObjetivo] = useState<string>(jogoInicial.target);
 
     // Controla a animação de +1 / +2 que flutua sobre o placar.
     // O campo `id` muda a cada disparo para forçar o React a remontar a animação,
     // mesmo que o valor (+1 ou +2) seja igual ao da vez anterior.
     const [pontoFlutuante, setPontoFlutuante] = useState<{ id: number; valor: number } | null>(null);
 
-    const [passos, setPassos] = useState(passosPassados || 0);
+    const [passos, setPassos] = useState(0);
     const [voceVenceu, setVoceVenceu] = useState(false);
 
     // Cortina de carregamento que aparece enquanto o HTML da Wikipedia está sendo buscado.
@@ -73,6 +67,9 @@ export function useGameLogic(
 
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             e.preventDefault();
+            // garante compatibilidade com firefox e safari, que exigem que returnValue seja setada para mostrar o alerta de confirmação
+            // foi o claude que me disse
+            e.returnValue = "";
         };
 
         window.addEventListener("beforeunload", handleBeforeUnload);
@@ -81,8 +78,8 @@ export function useGameLogic(
 
     const iniciarNovoJogo = () => {
         const { start, target } = sortearJogo(seed);
-        setPaginaAtual(start);
         setHistorico([start]);
+        setPaginaAtual(start);
         setPaginaObjetivo(target);
         setPassos(0);
         setVoceVenceu(false);
@@ -91,7 +88,10 @@ export function useGameLogic(
     // Toda vez que paginaAtual muda, busca o HTML da nova página via nossa API proxy.
     // O HTML é renderizado no DOM via dangerouslySetInnerHTML, e handleLinkClicado() captura cliques em links para atualizar paginaAtual sem recarregar a página.
     useEffect(() => {
-        if (!paginaAtual) return;
+        // o pronto é necessário para evitar que a página inicial seja carregada antes de o localStorage ser carregado.
+        // quando pegamos a pagian do localStorage, nós fazemos a requisição com ela, depois marcamos o pronto como true.
+        // sem isso, a página inicial seria carregada com a página sorteada, e logo depois recarregada com a página do localStorage, causando um flash indesejado.
+        if (!paginaAtual || !podeChamarAPI) return;
         async function buscarNaApiDaWiki() {
             setCarregando(true);
 
@@ -113,7 +113,7 @@ export function useGameLogic(
         }
 
         buscarNaApiDaWiki();
-    }, [paginaAtual]);
+    }, [paginaAtual, podeChamarAPI]);
 
     const handleLinkClicado = (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault();

@@ -3,40 +3,24 @@ import { useGameLogic } from "../lib/useGameLogic";
 import BarraSuperiorFixa from "../components/BarraSuperiorFixa";
 import Footer from "../components/Footer";
 import VoceVenceu from "../components/VoceVenceuTela";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 type DadosLocalStorage = {
+    pagina: string;
     historico: string[];
     passos: number;
 };
 
 export default function DesafioDiario() {
+    const [localStorageCarregado, setLocalStorageCarregado] = useState(false);
+
     // Gera a seed com a data de hoje no formato "2026-05-24".
     // Isso garante que todos os jogadores recebem o mesmo par
     // de páginas no mesmo dia, como o Wordle.
-
     const seed = new Date().toISOString().slice(0, 10);
 
-    function checarLocalStorage() {
-        const chave = `desafio-diario-${seed}`;
-        const dadosSalvosJSON = localStorage.getItem(chave);
-
-        if (!dadosSalvosJSON) return;
-
-        try {
-            const dados = JSON.parse(dadosSalvosJSON);
-            if (dados.historico && dados.passos) {
-                return {
-                    pagina: dados.historico[dados.historico.length - 1],
-                    historico: dados.historico,
-                    passos: dados.passos,
-                };
-            }
-        } catch (error) {
-            console.error("Erro ao parsear dados do localStorage:", error);
-        }
-    }
-
+    //
     // Passa a seed pro hook — com seed, sortearJogo() é
     // determinístico em vez de aleatório.
     const {
@@ -47,7 +31,6 @@ export default function DesafioDiario() {
         setHistorico,
         setPassos,
         setPaginaAtual,
-        setCarregando,
         paginaObjetivo,
         pontoFlutuante,
         wikiHtml,
@@ -55,42 +38,45 @@ export default function DesafioDiario() {
         handleVoltar,
         handleNavegarPeloHistorico,
         handleLinkClicado,
-    } = useGameLogic(seed, checarLocalStorage()?.pagina, checarLocalStorage()?.historico, checarLocalStorage()?.passos);
+    } = useGameLogic(seed, localStorageCarregado);
+
+    // Ao carregar a página, tenta recuperar o progresso salvo no localStorage.
+    // O useGameLogic, se enviado como false no 2 parametro, ele bloqueia a requisição a API do wiki.
+    // Isso é importante para evitar que a página inicial seja carregada antes de o localStorage ser carregado,
+    // E protege para que não carregue a página inicial sorteada.
+
+    // 1. paginaAtual = "Canguru", podeChamarAPI = false
+    // 2. fetch tenta rodar → !podeChamarAPI → bloqueia ← nenhuma requisição
+    // 3. localStorage carrega → setPaginaAtual("Artiodátilos") + podeChamarAPI = true
+    // 4. fetch roda → busca "Artiodátilos" ← única requisição, certa
 
     useEffect(() => {
-        function carregarLocalStorage() {
-            try {
-                setCarregando(true);
-                const dadosSalvosJSON = localStorage.getItem(`desafio-diario-${seed}`);
-
-                if (!dadosSalvosJSON) {
-                    console.log("Nenhum progresso salvo para hoje.");
-                    return;
+        try {
+            const dadosSalvosJSON = localStorage.getItem(`desafio-diario-${seed}`);
+            if (dadosSalvosJSON) {
+                const dados = JSON.parse(dadosSalvosJSON);
+                if (dados.historico && dados.passos) {
+                    setHistorico(dados.historico);
+                    setPassos(dados.passos);
+                    setPaginaAtual(dados.historico[dados.historico.length - 1]);
                 }
-
-                const dados: DadosLocalStorage = JSON.parse(dadosSalvosJSON);
-
-                console.log("OS DADOS PARSEADOS", dados);
-                setHistorico(dados.historico);
-                setPassos(dados.passos);
-                setPaginaAtual(dados.historico[dados.historico.length - 1]);
-                setCarregando(false);
-            } catch (error) {
-                // JSON.parse falha se a string estiver corrompida/inválida
-                // localStorage.getItem falha se o storage estiver bloqueado
-                console.error("Erro ao carregar progresso do localStorage:", error);
             }
+        } catch (error) {
+            console.error("Erro ao carregar progresso do localStorage:", error);
+        } finally {
+            setLocalStorageCarregado(true);
         }
-        carregarLocalStorage();
-    }, [setHistorico, setPassos, setPaginaAtual, setCarregando, seed]);
+    }, [seed, setHistorico, setPassos, setPaginaAtual]);
 
     // Salva o progresso no localStorage a cada mudança no histórico ou passos.
     // Quero salvar sempre que o jogador fizer um movimento.
     useEffect(() => {
+        if (!localStorageCarregado) return;
         if (historico.length < 1) return;
 
         try {
             const dados: DadosLocalStorage = {
+                pagina: historico[historico.length - 1],
                 historico: [...historico],
                 passos,
             };
@@ -103,7 +89,7 @@ export default function DesafioDiario() {
             // - o usuário tiver desabilitado o localStorage
             console.error("Erro ao salvar progresso");
         }
-    }, [historico, passos, seed]);
+    }, [historico, passos, seed, localStorageCarregado]);
 
     return (
         <div className="min-h-screen flex flex-col justify-between">
