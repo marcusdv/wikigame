@@ -91,6 +91,33 @@ export default function DesafioDiario() {
         }
     }, [historico, passos, seed, localStorageCarregado]);
 
+    // Ao carregar o desafio diário, salva a configuração do dia no banco, caso ainda não exista.
+    useEffect(() => {
+        const palavraDoDiaSalvaNoBanco = `palavras-do-dia-salvo-no-banco${seed}`;
+        if (localStorage.getItem(palavraDoDiaSalvaNoBanco)) return; // já foi salvo hoje, pula
+
+        console.log("TENTANDO SALVAR PALAVRA DO DIA NO BANCO...");
+        supabase
+            .from("palavras_do_dia")
+            .select("id")
+            .eq("data", seed)
+            .maybeSingle()
+            .then(async ({ data }) => {
+                if (!data) {
+                    const { error } = await supabase.from("palavras_do_dia").insert({
+                        inicial: historico[0],
+                        objetivo: paginaObjetivo,
+                        data: seed,
+                    });
+                    if (error) {
+                        console.error("Erro ao inserir palavra do dia:", error);
+                        return;
+                    }
+                }
+                localStorage.setItem(palavraDoDiaSalvaNoBanco, "true");
+            });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
     return (
         <div className="min-h-screen flex flex-col justify-between">
             {/* Cortina semitransparente que bloqueia interação enquanto a página carrega */}
@@ -104,7 +131,14 @@ export default function DesafioDiario() {
             )}
 
             {/* Modal de vitória — aparece quando o jogador atinge o objetivo */}
-            {voceVenceu && <VoceVenceu historico={historico} passos={passos} iniciarNovoJogo={iniciarNovoJogo} />}
+            {voceVenceu && (
+                <VoceVenceu
+                    historico={historico}
+                    passos={passos}
+                    modoDeJogo={"diario"}
+                    iniciarNovoJogo={iniciarNovoJogo}
+                />
+            )}
 
             <div>
                 {/* Barra fixa com HUD de pontos, breadcrumb do histórico e objetivo */}
