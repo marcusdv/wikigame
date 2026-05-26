@@ -16,16 +16,17 @@ type Recorde = {
     pontuacao: number;
 };
 
-export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJogo }: VoceVenceuProps) {
+export default function VoceVenceu({ historico, passos, modoDeJogo }: VoceVenceuProps) {
     const router = useRouter();
-    const seed = new Date().toISOString().slice(0, 10);
-    const chaveRecorde = `desafio-diario-${seed}-recorde-enviado`;
-    const [nome, setNome] = useState("");
-    const [recordes, setRecordes] = useState<Recorde[]>([]);
-    const [idPalavraDoDia, setIdPalavraDoDia] = useState<number | null>(null);
-    const [tempoRestante, setTempoRestante] = useState("");
-    const [recordeEnviado, setRecordeEnviado] = useState(() => !!localStorage.getItem(chaveRecorde));
+    const seed = new Date().toISOString().slice(0, 10); // data de hoje, e a seed para gerar as páginas aleatórias
+    const chaveRecorde = `desafio-diario-${seed}-recorde-enviado`; // chave que verifica se o recorde já foi enviado hoje
+    const [nome, setNome] = useState(""); // estado para armazenar o nome do jogador
+    const [recordes, setRecordes] = useState<Recorde[]>([]); // estado para armazenar os recordes do dia buscados do supabase
+    const [idPalavraDoDia, setIdPalavraDoDia] = useState<number | null>(null); // id da palavra do dia, necessário para enviar o recorde pro supabase
+    const [tempoRestante, setTempoRestante] = useState(""); // estado para armazenar o tempo restante para a próxima palavra do dia
+    const [recordeEnviado, setRecordeEnviado] = useState(() => !!localStorage.getItem(chaveRecorde)); // estado para verificar se o recorde já foi enviado hoje, inicializado com base no localStorage
 
+    // Se for modo diário, calcula o tempo restante para a próxima palavra do dia e atualiza a cada segundo.
     useEffect(() => {
         if (modoDeJogo !== "diario") return;
 
@@ -73,10 +74,13 @@ export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJ
         setRecordeEnviado(true);
     };
 
+    // Pega os Recordes de hoje do supabase para montar
+    // a tabela de recordes na tela de vitória.
+    // Atualiza sempre que os recordes mudarem, para mostrar o novo recorde enviado.
     useEffect(() => {
         const dataDeHoje = new Date().toISOString().slice(0, 10);
-        console.log(dataDeHoje);
 
+        // primeiro pega o id da palavra de hoje
         supabase
             .from("palavras_do_dia")
             .select("id")
@@ -89,6 +93,7 @@ export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJ
                 if (data && data.id) {
                     setIdPalavraDoDia(data.id);
 
+                    // depois pega os recordes com o id da palavra do dia
                     supabase
                         .from("recordes")
                         .select("id, jogador_nome, pontuacao")
@@ -108,9 +113,9 @@ export default function VoceVenceu({ historico, passos, iniciarNovoJogo, modoDeJ
     }, [recordes]);
 
     return (
-        <div className="fixed pixel-font inset-0 z-1000 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed pixel-font inset-0 z-1000 bg-slate-950/90 backdrop-blur-md overflow-x-hidden overflow-y-auto flex justify-center p-4">
             <div
-                className="nes-container is-dark is-rounded w-full max-w-lg text-center"
+                className="nes-container is-dark is-rounded w-full max-w-lg text-center self-start"
                 style={{ padding: "2rem", borderColor: "#3b82f6" }}
             >
                 <div className="text-5xl mb-4">🏆</div>
