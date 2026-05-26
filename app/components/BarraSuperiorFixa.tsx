@@ -175,8 +175,9 @@ export default function BarraSuperiorFixa({
                         {/* ── LINK OUTRO MODO — mobile col2 row1 | desktop col3 row1 ── */}
                         <Link
                             href={tema === "jogoNormal" ? "/diario" : "/jogar"}
+                            replace
                             className={`
-                                col-start-2 row-start-1 flex flex-col items-center justify-center transition-colors 
+                                col-start-2 row-start-1 flex flex-col items-center justify-center transition-colors
                                 md:col-start-3 md:row-start-1 md:border-r-2 ${t.secaoBorderInterno}
                             `}
                             style={{ fontSize: "8px" }}

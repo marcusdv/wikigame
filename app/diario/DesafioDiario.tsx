@@ -3,11 +3,18 @@ import { useGameLogic } from "../lib/useGameLogic";
 import BarraSuperiorFixa from "../components/BarraSuperiorFixa";
 import Footer from "../components/Footer";
 import VoceVenceu from "../components/VoceVenceuTela";
+import { useEffect } from "react";
+
+type DadosLocalStorage = {
+    historico: string[];
+    passos: number;
+};
 
 export default function DesafioDiario() {
     // Gera a seed com a data de hoje no formato "2026-05-24".
     // Isso garante que todos os jogadores recebem o mesmo par
     // de páginas no mesmo dia, como o Wordle.
+
     const seed = new Date().toISOString().slice(0, 10);
 
     // Passa a seed pro hook — com seed, sortearJogo() é
@@ -17,6 +24,8 @@ export default function DesafioDiario() {
         voceVenceu,
         historico,
         passos,
+        setHistorico,
+        setPassos,
         paginaObjetivo,
         pontoFlutuante,
         wikiHtml,
@@ -25,6 +34,51 @@ export default function DesafioDiario() {
         handleNavegarPeloHistorico,
         handleLinkClicado,
     } = useGameLogic(seed);
+
+    useEffect(() => {
+        function carregarLocalStorage() {
+            try {
+                const dadosSalvosJSON = localStorage.getItem(`desafio-diario-${seed}`);
+
+                if (!dadosSalvosJSON) {
+                    console.log("Nenhum progresso salvo para hoje.");
+                    return;
+                }
+
+                const dados: DadosLocalStorage = JSON.parse(dadosSalvosJSON);
+
+                console.log("OS DADOS PARSEADOS", dados);
+                setHistorico(dados.historico);
+                setPassos(dados.passos);
+            } catch (error) {
+                // JSON.parse falha se a string estiver corrompida/inválida
+                // localStorage.getItem falha se o storage estiver bloqueado
+                console.error("Erro ao carregar progresso do localStorage:", error);
+            }
+        }
+        carregarLocalStorage();
+    }, [setHistorico, setPassos, seed]);
+
+    // Salva o progresso no localStorage a cada mudança no histórico ou passos.
+    // Quero salvar sempre que o jogador fizer um movimento.
+    useEffect(() => {
+        if (historico.length <= 1) return;
+
+        try {
+            const dados: DadosLocalStorage = {
+                historico: [...historico],
+                passos,
+            };
+            // seed é a data de hoje, então a chave é única por dia. Formato: "desafio-diario-2026-05-24"
+            localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
+        } catch {
+            // localStorage pode falhar se:
+            // - o storage estiver cheio (quota exceeded)
+            // - o browser estiver em modo privado com storage bloqueado
+            // - o usuário tiver desabilitado o localStorage
+            console.error("Erro ao salvar progresso");
+        }
+    }, [historico, passos, seed]);
 
     return (
         <div className="min-h-screen flex flex-col justify-between">

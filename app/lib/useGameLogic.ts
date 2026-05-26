@@ -63,6 +63,17 @@ export function useGameLogic(seed?: string) {
 
     const animacaoIdRef = useRef(0); // Ref para gerar IDs únicos para animações de passos flutuantes.
 
+    useEffect(() => {
+        if (voceVenceu) return; // não bloqueia depois de vencer
+
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            e.preventDefault();
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [voceVenceu]);
+
     const iniciarNovoJogo = () => {
         const { start, target } = sortearJogo(seed);
         setPaginaAtual(start);
@@ -216,6 +227,8 @@ export function useGameLogic(seed?: string) {
         paginaAtual,
         paginaObjetivo,
         historico,
+        setHistorico,
+        setPassos,
         passos,
         pontoFlutuante,
         voceVenceu,
