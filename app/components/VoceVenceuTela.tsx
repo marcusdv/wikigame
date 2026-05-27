@@ -16,7 +16,7 @@ type Recorde = {
     pontuacao: number;
 };
 
-export default function VoceVenceu({ historico, passos, modoDeJogo }: VoceVenceuProps) {
+export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJogo }: VoceVenceuProps) {
     const router = useRouter();
     const _d = new Date();
     const seed = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, "0")}-${String(_d.getDate()).padStart(2, "0")}`; // data local de hoje
@@ -119,10 +119,8 @@ export default function VoceVenceu({ historico, passos, modoDeJogo }: VoceVenceu
                 className="nes-container is-dark is-rounded w-full max-w-lg text-center self-start"
                 style={{ padding: "2rem", borderColor: "#3b82f6" }}
             >
-                <div className="text-5xl mb-4">🏆</div>
-
                 <h2 className=" text-white mb-2" style={{ fontSize: "22px" }}>
-                    VITÓRIA!
+                    ⭐ VITÓRIA! ⭐
                 </h2>
                 <p className=" text-blue-400 mb-6 leading-7" style={{ fontSize: "9px" }}>
                     {modoDeJogo === "diario" ? "DESAFIO DIÁRIO CONCLUÍDO" : "VOCÊ CHEGOU AO DESTINO!"}
@@ -207,7 +205,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo }: VoceVenceu
                         />
                         <button
                             onClick={handleEnviar}
-                            className="nes-btn is-success w-full"
+                            className={`nes-btn w-full ${recordeEnviado ? "is-disabled" : "is-success"}`}
                             disabled={recordeEnviado}
                             style={{ fontSize: "11px" }}
                         >
@@ -255,7 +253,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo }: VoceVenceu
                 )}
 
                 <button
-                    onClick={() => router.push("/jogar")}
+                    onClick={() => (modoDeJogo === "aleatorio" ? iniciarNovoJogo() : router.push("/jogar"))}
                     className="nes-btn is-primary w-full "
                     style={{ fontSize: "11px" }}
                 >

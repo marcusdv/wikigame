@@ -32,7 +32,14 @@ export default function DesafioNormal() {
             )}
 
             {/* Modal de vitória — aparece quando o jogador atinge o objetivo */}
-            {voceVenceu && <VoceVenceu historico={historico} passos={passos} iniciarNovoJogo={iniciarNovoJogo} modoDeJogo="aleatorio" />}
+            {voceVenceu && (
+                <VoceVenceu
+                    historico={historico}
+                    passos={passos}
+                    iniciarNovoJogo={iniciarNovoJogo}
+                    modoDeJogo={"aleatorio"}
+                />
+            )}
 
             <div>
                 {/* Barra fixa com HUD de pontos, breadcrumb do histórico e objetivo */}

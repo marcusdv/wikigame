@@ -342,7 +342,10 @@
 
     /* NES.css define font-family diretamente em code/pre/kbd/samp — sem isso,
        esses elementos herdam o pixel font mesmo dentro do #wikicontent */
-    code, pre, kbd, samp {
+    code,
+    pre,
+    kbd,
+    samp {
         font-family: var(--primary-font) !important;
     }
     line-height: 1.85;
