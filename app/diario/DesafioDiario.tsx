@@ -18,7 +18,8 @@ export default function DesafioDiario() {
     // Gera a seed com a data de hoje no formato "2026-05-24".
     // Isso garante que todos os jogadores recebem o mesmo par
     // de páginas no mesmo dia, como o Wordle.
-    const seed = new Date().toISOString().slice(0, 10);
+    const d = new Date();
+    const seed = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
     //
     // Passa a seed pro hook — com seed, sortearJogo() é

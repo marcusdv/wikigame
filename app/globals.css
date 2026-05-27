@@ -72,6 +72,20 @@ body {
     outline: none !important;
 }
 
+.scrollbar-dark::-webkit-scrollbar {
+    width: 6px;
+}
+.scrollbar-dark::-webkit-scrollbar-track {
+    background: transparent;
+}
+.scrollbar-dark::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 10px;
+}
+.scrollbar-dark::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
 .no-scrollbar {
     scrollbar-width: none;
     -ms-overflow-style: none;

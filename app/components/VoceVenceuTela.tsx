@@ -18,7 +18,8 @@ type Recorde = {
 
 export default function VoceVenceu({ historico, passos, modoDeJogo }: VoceVenceuProps) {
     const router = useRouter();
-    const seed = new Date().toISOString().slice(0, 10); // data de hoje, e a seed para gerar as páginas aleatórias
+    const _d = new Date();
+    const seed = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, "0")}-${String(_d.getDate()).padStart(2, "0")}`; // data local de hoje
     const chaveRecorde = `desafio-diario-${seed}-recorde-enviado`; // chave que verifica se o recorde já foi enviado hoje
     const [nome, setNome] = useState(""); // estado para armazenar o nome do jogador
     const [recordes, setRecordes] = useState<Recorde[]>([]); // estado para armazenar os recordes do dia buscados do supabase
@@ -78,7 +79,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo }: VoceVenceu
     // a tabela de recordes na tela de vitória.
     // Atualiza sempre que os recordes mudarem, para mostrar o novo recorde enviado.
     useEffect(() => {
-        const dataDeHoje = new Date().toISOString().slice(0, 10);
+        const dataDeHoje = seed;
 
         // primeiro pega o id da palavra de hoje
         supabase
@@ -110,10 +111,10 @@ export default function VoceVenceu({ historico, passos, modoDeJogo }: VoceVenceu
                     console.log("Palavra do dia não encontrada para a data:", dataDeHoje);
                 }
             });
-    }, [recordes]);
+    }, [recordes, seed]);
 
     return (
-        <div className="fixed pixel-font inset-0 z-1000 bg-slate-950/90 backdrop-blur-md overflow-x-hidden overflow-y-auto flex justify-center p-4">
+        <div className="fixed pixel-font inset-0 z-1000 bg-slate-950/90 backdrop-blur-md overflow-x-hidden overflow-y-auto flex justify-center p-4 scrollbar-dark">
             <div
                 className="nes-container is-dark is-rounded w-full max-w-lg text-center self-start"
                 style={{ padding: "2rem", borderColor: "#3b82f6" }}
