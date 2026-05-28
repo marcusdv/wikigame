@@ -20,7 +20,7 @@ const pressStart2P = Press_Start_2P({
 });
 
 export const metadata: Metadata = {
-    title: "Wikiw",
+    title: "Wikirun",
     description: "Pule pelas páginas da wikipédia",
 };
 

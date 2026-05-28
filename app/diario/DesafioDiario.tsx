@@ -131,7 +131,7 @@ export default function DesafioDiario() {
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <div className="min-h-screen flex flex-col justify-between">
+        <div className="min-h-screen ">
             {/* Cortina semitransparente que bloqueia interação enquanto a página carrega */}
             {carregando && (
                 <div className="fixed inset-0 z-999 bg-slate-950/20 backdrop-blur-2xs flex items-center justify-center">
@@ -165,6 +165,16 @@ export default function DesafioDiario() {
                     titulo={"Desafio Diário"}
                 />
 
+                {/* Balão de ajuda */}
+                {/* <div className="z-200 absolute md:top-40 top-55 left-1/2 -translate-x-1/2 min-w-max  animate-bounce ">
+                    <div className="relative inline-block">
+                        <p className="nes-balloon from-left nes-pointer text-sm md:text-lg   ">
+                            Desafio Diário: um novo par de páginas todo dia! <br /> Vença para ver o ranking dos
+                            melhores tempos.
+                        </p>
+                        <i className="nes-icon close is-small absolute -top-9  right-8"></i>
+                    </div>
+                </div> */}
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}
                 <div
                     onClick={handleLinkClicado}

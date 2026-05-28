@@ -119,8 +119,8 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                 className="nes-container is-dark is-rounded w-full max-w-lg text-center self-start"
                 style={{ padding: "2rem", borderColor: "#3b82f6" }}
             >
-                <h2 className=" text-white mb-2" style={{ fontSize: "22px" }}>
-                    ⭐ VITÓRIA! ⭐
+                <h2 className=" text-white flex items-center justify-evenly  text-3xl">
+                    <i className="nes-icon trophy is-medium"></i> VITÓRIA! <i className="nes-icon trophy is-medium"></i>
                 </h2>
                 <p className=" text-blue-400 mb-6 leading-7" style={{ fontSize: "9px" }}>
                     {modoDeJogo === "diario" ? "DESAFIO DIÁRIO CONCLUÍDO" : "VOCÊ CHEGOU AO DESTINO!"}
@@ -253,7 +253,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                 )}
 
                 <button
-                    onClick={() => (modoDeJogo === "aleatorio" ? iniciarNovoJogo() : router.push("/jogar"))}
+                    onClick={() => (modoDeJogo === "aleatorio" ? iniciarNovoJogo : router.push("/jogar"))}
                     className="nes-btn is-primary w-full "
                     style={{ fontSize: "11px" }}
                 >
