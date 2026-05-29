@@ -14,7 +14,7 @@ export default function DesafioNormal() {
         pontoFlutuante,
         wikiHtml,
         iniciarNovoJogo,
-        handleVoltar,
+        handleBotaoVoltar,
         handleNavegarPeloHistorico,
         handleLinkClicado,
     } = useGameLogic();
@@ -47,7 +47,7 @@ export default function DesafioNormal() {
                     historico={historico}
                     passos={passos}
                     titulo={"Encontrar Página"}
-                    handleVoltar={handleVoltar}
+                    handleBotaoVoltar={handleBotaoVoltar}
                     pontoFlutuante={pontoFlutuante}
                     paginaObjetivo={paginaObjetivo}
                     handleNavegarParaHistorico={handleNavegarPeloHistorico}

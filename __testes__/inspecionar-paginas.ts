@@ -4,7 +4,7 @@
 //
 // Uso: npm run inspecionar
 
-import { paginas as paginasUtilizadas } from "../data/paginas";
+import { paginas as paginasUtilizadas } from "../data/paginasObjetivo";
 
 import { paginasNovas } from "./novosDados";
 

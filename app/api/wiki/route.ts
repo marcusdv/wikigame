@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
         // e faz a requisição
         const response = await fetch(url, { headers });
 
+        // captura os dados da resposta asíncrona e desempacota o JSON devolvido pela wikipedia.
         const dados = await response.json();
 
         // Se dados.parse não existir, a Wikipedia retornou um erro (ex: página inexistente).

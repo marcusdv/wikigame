@@ -37,7 +37,7 @@ export default function DesafioDiario() {
         pontoFlutuante,
         wikiHtml,
         iniciarNovoJogo,
-        handleVoltar,
+        handleBotaoVoltar,
         handleNavegarPeloHistorico,
         handleLinkClicado,
     } = useGameLogic(seed, localStorageCarregado);
@@ -157,7 +157,7 @@ export default function DesafioDiario() {
                 <BarraSuperiorFixa
                     historico={historico}
                     passos={passos}
-                    handleVoltar={handleVoltar}
+                    handleBotaoVoltar={handleBotaoVoltar}
                     pontoFlutuante={pontoFlutuante}
                     paginaObjetivo={paginaObjetivo}
                     handleNavegarParaHistorico={handleNavegarPeloHistorico}

@@ -6,7 +6,7 @@ import Link from "next/link";
 type BarraSuperiorFixaProps = {
     historico: string[];
     passos: number;
-    handleVoltar: () => void;
+    handleBotaoVoltar: () => void;
     pontoFlutuante: { id: number; valor: number } | null;
     paginaObjetivo: string;
     handleNavegarParaHistorico: (index: number) => void;
@@ -55,7 +55,7 @@ const BTN_STYLE = { padding: "8px 20px", margin: "5px 10px" } as const;
 export default function BarraSuperiorFixa({
     historico,
     passos,
-    handleVoltar,
+    handleBotaoVoltar,
     pontoFlutuante,
     paginaObjetivo,
     handleNavegarParaHistorico,
@@ -63,10 +63,13 @@ export default function BarraSuperiorFixa({
     titulo,
     tema = "jogoNormal",
 }: BarraSuperiorFixaProps) {
+    //
     const breadcrumbRef = useRef<HTMLDivElement>(null);
     const [hudOculto, setHudOculto] = useState(false);
     const t = temas[tema];
 
+    // Toda vez que o histórico muda (ou seja, o jogador avança ou volta), rola o breadcrumb para a direita para mostrar a última página visitada.
+    // Isso é feito porque o breadcrumb tem overflow-x: auto, e queremos garantir que o item mais recente (o atual) esteja sempre visível.
     useEffect(() => {
         if (breadcrumbRef.current) {
             breadcrumbRef.current.scrollLeft = breadcrumbRef.current.scrollWidth;
@@ -116,7 +119,7 @@ export default function BarraSuperiorFixa({
                                     +2
                                 </div>
                                 <button
-                                    onClick={handleVoltar}
+                                    onClick={handleBotaoVoltar}
                                     disabled={historico.length <= 1}
                                     className={`nes-btn ${historico.length <= 1 ? "is-disabled" : "is-primary"} `}
                                     style={BTN_STYLE}

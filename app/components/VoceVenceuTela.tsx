@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
 
@@ -23,7 +23,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
     const chaveRecorde = `desafio-diario-${seed}-recorde-enviado`; // chave que verifica se o recorde já foi enviado hoje
     const [nome, setNome] = useState(""); // estado para armazenar o nome do jogador
     const [recordes, setRecordes] = useState<Recorde[]>([]); // estado para armazenar os recordes do dia buscados do supabase
-    const [idPalavraDoDia, setIdPalavraDoDia] = useState<number | null>(null); // id da palavra do dia, necessário para enviar o recorde pro supabase
+    const idPalavraDoDia = useRef<number | null>(null); // id da palavra do dia, necessário para enviar o recorde pro supabase
     const [tempoRestante, setTempoRestante] = useState(""); // estado para armazenar o tempo restante para a próxima palavra do dia
     const [recordeEnviado, setRecordeEnviado] = useState(() => !!localStorage.getItem(chaveRecorde)); // estado para verificar se o recorde já foi enviado hoje, inicializado com base no localStorage
 
@@ -92,7 +92,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                     console.error("Erro ao buscar palavra do dia:", error);
                 }
                 if (data && data.id) {
-                    setIdPalavraDoDia(data.id);
+                    idPalavraDoDia.current = data.id;
 
                     // depois pega os recordes com o id da palavra do dia
                     supabase
@@ -119,7 +119,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                 className="nes-container is-dark is-rounded w-full max-w-lg text-center self-start"
                 style={{ padding: "2rem", borderColor: "#3b82f6" }}
             >
-                <h2 className=" text-white flex items-center justify-evenly  text-3xl">
+                <h2 className=" text-white flex items-center justify-evenly text-xl md:text-3xl">
                     <i className="nes-icon trophy is-medium"></i> VITÓRIA! <i className="nes-icon trophy is-medium"></i>
                 </h2>
                 <p className=" text-blue-400 mb-6 leading-7" style={{ fontSize: "9px" }}>
