@@ -8,7 +8,7 @@
 // Dica: se a Wikipedia devolve um título diferente, copie o título correto do terminal
 // e cole no array de páginas.
 
-import { paginasNovas } from "./novosDados";
+import { paginasNovas } from "./novas";
 const DELAY_MS = 600;
 const USER_AGENT = "WikiRun/1.0 (verificacao de titulos; marcus.vinicius.bittencourt.c@gmail.com)";
 

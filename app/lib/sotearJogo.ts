@@ -10,12 +10,9 @@ export function sortearJogo(arr1: string[], arr2: string[], seed?: string): { st
         return { start: arr1[startIndex]!, target: arr2[targetIndex]! };
     }
 
-    const start = arr1[Math.floor(Math.random() * arr1.length)] || "América do Sul";
-    let target = arr2[Math.floor(Math.random() * arr2.length)] || "Egito";
-    while (target.toLowerCase() === start.toLowerCase()) {
-        target = arr2[Math.floor(Math.random() * arr2.length)] || "Egito";
-    }
-    console.log("ACESSOU", start, target);
+    // Sem seed, sorteio aleatório normal.
+    const start = arr1[Math.floor(Math.random() * arr1.length)];
+    const target = arr2[Math.floor(Math.random() * arr2.length)];
 
     return { start, target };
 }

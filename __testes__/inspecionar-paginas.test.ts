@@ -4,7 +4,7 @@
 //
 // Uso: npm run inspecionar
 
-import { paginasNovas } from "./novosDados";
+import { paginasNovas } from "./novas";
 
 const DELAY_MS = 700;
 const LIMITE_PALAVRAS = 300;
