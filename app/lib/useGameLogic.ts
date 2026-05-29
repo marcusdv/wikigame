@@ -1,5 +1,5 @@
-import { arrPaginasIniciais } from "@/data/paginasIniciais";
-import { arrPaginasObjetivo } from "@/data/paginasObjetivo";
+import { arrPaginasIniciais } from "@/app/data/paginasIniciais";
+import { arrPaginasObjetivo } from "@/app/data/paginasObjetivo";
 import { useEffect, useRef, useState } from "react";
 import { sortearJogo } from "./sotearJogo";
 

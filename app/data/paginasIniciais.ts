@@ -1,3 +1,5 @@
+import { temporaria } from "./temporaria";
+
 export const arrPaginasIniciais = [
     /// PROVAVELMENTE INICIAIS
     // Animais
@@ -39,7 +41,6 @@ export const arrPaginasIniciais = [
     "Emissoras de números",
     "Hexacosioi-hexeconta-hexafobia",
     "Número de Graham",
-    "Número feliz",
     "Número primo ilegal",
     "Problema do ano 2038",
 
@@ -204,4 +205,4 @@ export const arrPaginasIniciais = [
 
     // Publicidade
     "Pantone 448 C",
-];
+].concat(temporaria);

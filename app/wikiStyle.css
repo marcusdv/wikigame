@@ -393,6 +393,7 @@
         margin-bottom: 1.4rem;
     }
 
+    /* ==== LINKS ==== */
     /* Estilo base super premium dos links (Clickable game items) */
     a {
         color: #4f46e5; /* Indigo moderno e charmoso */
@@ -435,6 +436,14 @@
         box-shadow: none !important;
         padding: 0 !important;
         margin: 0 !important;
+    }
+
+    /* Links quebrados da Wikipedia (páginas que não existem) */
+    a.new {
+        color: #94a3b8 !important;
+        background-color: transparent !important;
+        pointer-events: none !important;
+        cursor: default !important;
     }
 
     /* Tabela da Wiki - Limpando e polindo tabelas */
