@@ -63,7 +63,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
         const { error } = await supabase.from("recordes").insert({
             jogador_nome: nome,
             pontuacao: passos,
-            id_palavras_do_dia: idPalavraDoDia, // Substitua pelo ID correto do desafio diário
+            id_palavras_do_dia: idPalavraDoDia.current, // Substitua pelo ID correto do desafio diário
         });
 
         if (error) {
