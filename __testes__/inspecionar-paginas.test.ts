@@ -4,7 +4,9 @@
 //
 // Uso: npm run inspecionar
 
-import { paginasNovas } from "./novas";
+import { arrNovas } from "./novas";
+import fs from "fs";
+import path from "path";
 
 const DELAY_MS = 700;
 const LIMITE_PALAVRAS = 300;
@@ -32,31 +34,39 @@ function primeirasNPalavras(texto: string, n: number): string {
     return palavras.length > n ? cortado + "..." : cortado;
 }
 
-const paginas = paginasNovas;
+const paginas = arrNovas;
 
 // Itera sobre o array, busca o resumo de cada página e imprime no console.
 async function main() {
-    console.log(`Inspecionando ${paginas.length} páginas (${DELAY_MS}ms entre cada)...\n`);
-    console.log("=".repeat(60));
+    let saida = "";
+
+    saida += `Inspecionando ${paginas.length} páginas (${DELAY_MS}ms entre cada)...\n\n`;
+    saida += "=".repeat(60) + "\n";
 
     for (let i = 0; i < paginas.length; i++) {
         const titulo = paginas[i];
         const resumo = await buscarResumo(titulo);
 
-        console.log(`\n[${i + 1}/${paginas.length}] ${titulo}`);
-        console.log("─".repeat(60));
+        saida += `\n[${i + 1}/${paginas.length}] ${titulo}\n`;
+        saida += "─".repeat(60) + "\n";
 
         if (resumo) {
-            console.log(primeirasNPalavras(resumo, LIMITE_PALAVRAS));
+            saida += primeirasNPalavras(resumo, LIMITE_PALAVRAS) + "\n";
         } else {
-            console.log("  ✗  Falha ao buscar conteúdo.");
+            saida += "  ✗  Falha ao buscar conteúdo.\n";
         }
+
+        console.log(`[${i + 1}/${paginas.length}] ${titulo}`);
 
         if (i < paginas.length - 1) await sleep(DELAY_MS);
     }
 
-    console.log("\n" + "=".repeat(60));
-    console.log(`Concluído. ${paginas.length} páginas inspecionadas.`);
+    saida += "\n" + "=".repeat(60) + "\n";
+    saida += `Concluído. ${paginas.length} páginas inspecionadas.\n`;
+
+    const destino = path.join(__dirname, "resultado.txt");
+    fs.writeFileSync(destino, saida, "utf-8");
+    console.log(`\nArquivo gerado: ${destino}`);
 }
 
 main().catch(console.error);
