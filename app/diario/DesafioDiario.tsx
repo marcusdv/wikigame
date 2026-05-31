@@ -18,22 +18,9 @@ type DadosLocalStorage = {
 
 export default function DesafioDiario() {
     //data de hoje no formato "2026-05-24".
-    const [seed, setSeed] = useState("");
 
-    // palavra criada pelo servidor para tratar dos fusos horários diferentes.
-    useEffect(() => {
-        fetch("/api/dataDoDiaDoServidor")
-            .then((response) => response.json())
-            .then((data) => {
-                // Use the seed from the API response
-                console.log("Seed recebida da API: ", data.seed);
-                setSeed(data.seed);
-                // Continue with your logic using the seed
-            })
-            .catch((error) => {
-                console.error("Erro ao buscar data do dia do servidor:", error);
-            });
-    }, []);
+    const d = new Date(new Date().getTime() - 3 * 60 * 60 * 1000); // subtrai 3h → hora de Brasília em UTC
+    const seed = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 
     const [jogoInicial, setJogoInicial] = useState<{ start: string; target: string }>({ start: "", target: "" }); // valor inicial vazio, vai ser atualizado depois com o valor do banco ou sorteado
 

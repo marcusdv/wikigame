@@ -20,51 +20,25 @@ type Recorde = {
 export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJogo, seedProp }: VoceVenceuProps) {
     const router = useRouter();
 
-    const [dataCompleta, setDataCompleta] = useState<Date | null>(null); // começa com o horário local para o timer iniciar imediatamente
-    const chaveRecorde = `desafio-diario-${seedProp}-recorde-enviado`; // chave que verifica se o recorde já foi enviado hoje
-    const [nome, setNome] = useState(""); // estado para armazenar o nome do jogador
-    const [recordes, setRecordes] = useState<Recorde[]>([]); // estado para armazenar os recordes do dia buscados do supabase
-    const idPalavraDoDia = useRef<number | null>(null); // id da palavra do dia, necessário para enviar o recorde pro supabase
-    const [tempoRestante, setTempoRestante] = useState(""); // estado para armazenar o tempo restante para a próxima palavra do dia
-    const [recordeEnviado, setRecordeEnviado] = useState(() => !!localStorage.getItem(chaveRecorde)); // estado para verificar se o recorde já foi enviado hoje, inicializado com base no localStorage
-
-    // ==== BUSCA O HÓRARIO E DATA DO SERVIDOR ====
-    // Busca o horário exato do servidor UMA vez na montagem.
-    // Usamos o servidor para evitar que fusos horários diferentes causem inconsistências
-    // (ex: usuário no Japão já está no dia seguinte enquanto o Brasil ainda está no dia anterior).
-    useEffect(() => {
-        async function pegarDataEHoraDoServidor() {
-            try {
-                await fetch("/api/dataDoDiaDoServidor")
-                    .then((response) => response.json())
-                    .then((data) => {
-                        setDataCompleta(new Date(data.dataCompleta));
-                    })
-                    .catch((error) => {
-                        console.error("Erro ao buscar data do dia do servidor:", error);
-                    });
-            } catch (error) {
-                console.error("Erro ao buscar data do dia do servidor:", error);
-            }
-        }
-
-        pegarDataEHoraDoServidor();
-    }, []); // [] → roda só uma vez na montagem, não a cada render
+    const chaveRecorde = `desafio-diario-${seedProp}-recorde-enviado`;
+    const [nome, setNome] = useState("");
+    const [recordes, setRecordes] = useState<Recorde[]>([]);
+    const idPalavraDoDia = useRef<number | null>(null);
+    const [tempoRestante, setTempoRestante] = useState("");
+    const [recordeEnviado, setRecordeEnviado] = useState(() => !!localStorage.getItem(chaveRecorde));
 
     // ==== CALCULA O TEMPO RESTANTE P PRÓXIMA PALAVRA DO DIA ====
-    // Calcula o tempo restante até a meia-noite do servidor (UTC) e atualiza a cada segundo.
     useEffect(() => {
-        // Só roda no modo diário e depois que o horário do servidor chegou.
-        if (modoDeJogo !== "diario" || !dataCompleta) return;
+        if (modoDeJogo !== "diario") return;
 
-        // Cria uma cópia do horário do servidor e avança para a próxima meia-noite UTC.
-        // setUTCHours(24, ...) = meia-noite UTC do dia seguinte.
-        const meianoiteUTC = new Date(dataCompleta);
-        meianoiteUTC.setUTCHours(24, 0, 0, 0);
+        const calcular = () => {
+            // Brasília é UTC-3. Meia-noite de Brasília = 03:00 UTC.
+            // setUTCHours(27) = 24 + 3 = próxima meia-noite de Brasília em UTC.
+            const agora = new Date();
+            const meianoite = new Date(agora);
+            meianoite.setUTCHours(27, 0, 0, 0);
 
-        let diff = meianoiteUTC.getTime() - dataCompleta.getTime();
-
-        const formatar = () => {
+            const diff = meianoite.getTime() - agora.getTime();
             const h = Math.floor(diff / 3600000)
                 .toString()
                 .padStart(2, "0");
@@ -77,15 +51,10 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
             setTempoRestante(`${h}:${m}:${s}`);
         };
 
-        formatar(); // seta o valor imediatamente, sem esperar 1 segundo
-        const intervalo = setInterval(() => {
-            diff -= 1000;
-            formatar();
-        }, 1000);
-
-        // Limpa o intervalo quando o componente desmonta para não vazar memória.
+        calcular();
+        const intervalo = setInterval(calcular, 1000);
         return () => clearInterval(intervalo);
-    }, [modoDeJogo, dataCompleta]); // roda quando dataCompleta chegar (inicialmente null)
+    }, [modoDeJogo]);
 
     // ==== ENVIA O RECORDE PARA O SERVIDOR ====
     const handleEnviar = async () => {
@@ -110,7 +79,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
         setRecordeEnviado(true);
     };
 
-    // ==== PEGA OS RECORDES DEPOIS DE HOJE ====
+    // ==== PEGA OS RECORDES DE HOJE ====
     // Pega os Recordes de hoje do supabase para montar
     // a tabela de recordes na tela de vitória.
     // Atualiza sempre que os recordes mudarem, para mostrar o novo recorde enviado.
