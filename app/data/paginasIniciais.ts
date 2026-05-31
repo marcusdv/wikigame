@@ -1,5 +1,3 @@
-import { temporaria } from "./temporaria";
-
 export const arrPaginasIniciais = [
     /// PROVAVELMENTE INICIAIS
     // Animais
@@ -66,7 +64,6 @@ export const arrPaginasIniciais = [
     "Café com leite cósmico",
     "Charles Domery",
     "Escala de Bristol",
-    "Escândalo da talidomida",
     "Caso Sokal",
     "Espiral de Ulam",
     "Galle (cratera marciana)",

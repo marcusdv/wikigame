@@ -219,4 +219,4 @@ export const arrPaginasObjetivo = [
     // TESTES DE VERIFICAR E INSPECIONAR FORAM FEITOS ATÉ AQUI. 24 DE MAIO 10:56
     // NOVOS ITENS ADICIONADOS EM 24 DE MAIO — RODAR VERIFICAR E INSPECIONAR
     // ==============================================================================//
-].concat(temporaria);
+];

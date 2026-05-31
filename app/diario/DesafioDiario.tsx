@@ -5,130 +5,152 @@ import Footer from "../components/Footer";
 import VoceVenceu from "../components/VoceVenceuTela";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { sortearJogo } from "../lib/sotearJogo";
+import { arrPaginasIniciais } from "../data/paginasIniciais";
+import { arrPaginasObjetivo } from "../data/paginasObjetivo";
 
 type DadosLocalStorage = {
-    pagina: string;
     historico: string[];
+    objetivo: string;
     passos: number;
+    jaVenceu: boolean;
 };
 
 export default function DesafioDiario() {
-    const [localStorageCarregado, setLocalStorageCarregado] = useState(false);
+    //data de hoje no formato "2026-05-24".
+    const [seed, setSeed] = useState("");
 
-    // Gera a seed com a data de hoje no formato "2026-05-24".
-    // Isso garante que todos os jogadores recebem o mesmo par
-    // de páginas no mesmo dia, como o Wordle.
-    const d = new Date();
-    const seed = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    // palavra criada pelo servidor para tratar dos fusos horários diferentes.
+    useEffect(() => {
+        fetch("/api/dataDoDiaDoServidor")
+            .then((response) => response.json())
+            .then((data) => {
+                // Use the seed from the API response
+                console.log("Seed recebida da API: ", data.seed);
+                setSeed(data.seed);
+                // Continue with your logic using the seed
+            })
+            .catch((error) => {
+                console.error("Erro ao buscar data do dia do servidor:", error);
+            });
+    }, []);
 
-    //
-    // Passa a seed pro hook — com seed, sortearJogo() é
-    // determinístico em vez de aleatório.
+    const [jogoInicial, setJogoInicial] = useState<{ start: string; target: string }>({ start: "", target: "" }); // valor inicial vazio, vai ser atualizado depois com o valor do banco ou sorteado
+
     const {
         carregando,
         voceVenceu,
         setVoceVenceu,
         historico,
         passos,
+        paginaObjetivo,
         setHistorico,
         setPassos,
         setPaginaAtual,
-        paginaObjetivo,
         pontoFlutuante,
         wikiHtml,
         iniciarNovoJogo,
+        setPaginaObjetivo,
         handleBotaoVoltar,
         handleNavegarPeloHistorico,
         handleLinkClicado,
-    } = useGameLogic(seed, localStorageCarregado);
+    } = useGameLogic(jogoInicial.start, jogoInicial.target, seed);
 
-    // Ao carregar a página, tenta recuperar o progresso salvo no localStorage.
-    // O useGameLogic, se enviado como false no 2 parametro, ele bloqueia a requisição a API do wiki.
-    // Isso é importante para evitar que a página inicial seja carregada antes de o localStorage ser carregado,
-    // E protege para que não carregue a página inicial sorteada.
-
-    // 1. paginaAtual = "Canguru", podeChamarAPI = false
-    // 2. fetch tenta rodar → !podeChamarAPI → bloqueia ← nenhuma requisição
-    // 3. localStorage carrega → setPaginaAtual("Artiodátilos") + podeChamarAPI = true
-    // 4. fetch roda → busca "Artiodátilos" ← única requisição, certa
-
+    // ==== SALVA PALAVRA DO DIA NO BANCO ==== //
     useEffect(() => {
-        try {
-            const dadosSalvosJSON = localStorage.getItem(`desafio-diario-${seed}`);
-            if (dadosSalvosJSON) {
-                const dados = JSON.parse(dadosSalvosJSON);
-                if (dados.historico && dados.passos) {
-                    setHistorico(dados.historico);
-                    setPassos(dados.passos);
-                    setPaginaAtual(dados.historico[dados.historico.length - 1]);
+        if (!seed) return;
+
+        async function salvarPalavraDoDiaNoBanco() {
+            // TODA ESSA PARTE É IGNORADA SE JÁ EXISTEM DADOS NO LOCALSTORAGE
+            // E SE
+
+            const { data, error } = await supabase
+                .from("palavras_do_dia")
+                .select("id, inicial, objetivo, data")
+                .eq("data", seed)
+                .maybeSingle(); // Se não achar nada, retorna null.
+
+            if (error) {
+                console.error("Erro ao verificar palavra do dia no banco:", error);
+                console.log("código: ", error.code);
+                console.log("mensagem: ", error.message);
+                console.log("detalhes: ", error.details);
+                return;
+            }
+
+            if (!data) {
+                const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo, seed);
+                setJogoInicial({ start, target });
+
+                const { error } = await supabase.from("palavras_do_dia").insert({
+                    inicial: start,
+                    objetivo: target,
+                    data: seed,
+                });
+
+                if (error) {
+                    console.error("Erro ao salvar palavra do dia recém criada no banco:", error);
+                } else {
+                    setPaginaAtual(start);
+                    setHistorico([start]);
+                    setPassos(0);
+                    setPaginaObjetivo(target);
+                    setVoceVenceu(false);
+                    console.log("Palavra do dia recém criada salva no banco com sucesso!!!");
                 }
             }
 
-            if (localStorage.getItem(`desafio-diario-${seed}-vitoria`)) {
-                setVoceVenceu(true);
+            // se existem dados, e é o primeiro acesso do usuário (jogoDeHojeSalvoNoStorage.current === false)
+            // carrega a palavra do dia do banco para o estado do jogo.
+            // Se o usuário já acessou hoje, carrega do localStorage
+            // e ignora os dados do banco
+            if (data) {
+                setPaginaAtual(data.inicial);
+                setHistorico([data.inicial]);
+                setPassos(0);
+                setPaginaObjetivo(data.objetivo);
+                setVoceVenceu(false);
+                console.log("Segundo acesso em diante");
             }
-        } catch (error) {
-            console.error("Erro ao carregar progresso do localStorage:", error);
-        } finally {
-            setLocalStorageCarregado(true);
         }
-    }, [seed, setHistorico, setPassos, setPaginaAtual, setVoceVenceu]);
 
-    // Salva o progresso no localStorage a cada mudança no histórico ou passos.
-    // Quero salvar sempre que o jogador fizer um movimento.
-    useEffect(() => {
-        if (!localStorageCarregado) return;
-        if (historico.length < 1) return;
+        // Não precisamos acessar o banco se o usuário já acessou e
+        // já armazenou os dados do jogo no local storage,
+        // porque nesse caso o progresso é carregado do storage (efeito abaixo) e
+        // não queremos sobrescrever o progresso do usuário com os dados do banco.
 
-        try {
-            const dados: DadosLocalStorage = {
-                pagina: historico[historico.length - 1],
-                historico: [...historico],
-                passos,
-            };
-            // seed é a data de hoje, então a chave é única por dia. Formato: "desafio-diario-2026-05-24"
-            localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
-        } catch {
-            // localStorage pode falhar se:
-            // - o storage estiver cheio (quota exceeded)
-            // - o browser estiver em modo privado com storage bloqueado
-            // - o usuário tiver desabilitado o localStorage
-            console.error("Erro ao salvar progresso");
+        //já salvou a palavra do dia no banco e no localStorage
+        const json = localStorage.getItem(`desafio-diario-${seed}`);
+        if (json) {
+            const dados = JSON.parse(json);
+
+            if (dados.historico && dados.historico.length > 0) {
+                setPaginaAtual(dados.historico[dados.historico.length - 1]);
+                setHistorico(dados.historico);
+                setPassos(dados.passos);
+                setPaginaObjetivo(dados.objetivo);
+                setVoceVenceu(dados.jaVenceu);
+            }
+        } else {
+            salvarPalavraDoDiaNoBanco();
         }
-    }, [historico, passos, seed, localStorageCarregado]);
 
-    // Salva a vitória no localStorage para mostrar o modal mesmo se o jogador recarregar a página após vencer.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [seed]);
+
+    // ==== SALVA PROGRESSO A CADA MUDANÇA E PRIMEIRO ACESSO ====
     useEffect(() => {
-        if (!voceVenceu) return;
-        localStorage.setItem(`desafio-diario-${seed}-vitoria`, "true");
-    }, [voceVenceu, seed]);
-
-    // Ao carregar o desafio diário, salva a configuração do dia no banco, caso ainda não exista.
-    useEffect(() => {
-        const palavraDoDiaSalvaNoBanco = `palavras-do-dia-salvo-no-banco${seed}`;
-        if (localStorage.getItem(palavraDoDiaSalvaNoBanco)) return; // já foi salvo hoje, pula
-
-        console.log("TENTANDO SALVAR PALAVRA DO DIA NO BANCO...");
-        supabase
-            .from("palavras_do_dia")
-            .select("id")
-            .eq("data", seed)
-            .maybeSingle()
-            .then(async ({ data }) => {
-                if (!data) {
-                    const { error } = await supabase.from("palavras_do_dia").insert({
-                        inicial: historico[0],
-                        objetivo: paginaObjetivo,
-                        data: seed,
-                    });
-                    if (error) {
-                        console.error("Erro ao inserir palavra do dia:", error);
-                        return;
-                    }
-                }
-                localStorage.setItem(palavraDoDiaSalvaNoBanco, "true");
-            });
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        if (passos === 0) return; // não salva progresso se o jogo acabou de começar, para evitar sobrescrever a palavra do dia do banco com um progresso zerado.
+        const dados: DadosLocalStorage = {
+            historico: historico,
+            objetivo: paginaObjetivo,
+            passos,
+            jaVenceu: voceVenceu,
+        };
+        console.log("Salvando progresso no localStorage render 2: ", dados);
+        // seed é a data de hoje, então a chave é única por dia. Formato: "desafio-diario-2026-05-24"
+        localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
+    }, [historico, paginaObjetivo, passos, voceVenceu, seed]);
 
     return (
         <div className="min-h-screen ">
@@ -149,6 +171,7 @@ export default function DesafioDiario() {
                     passos={passos}
                     modoDeJogo={"diario"}
                     iniciarNovoJogo={iniciarNovoJogo}
+                    seedProp={seed}
                 />
             )}
 

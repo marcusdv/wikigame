@@ -438,8 +438,20 @@
         margin: 0 !important;
     }
 
-    /* Links quebrados da Wikipedia (páginas que não existem) */
+    /* Links quebrados (páginas que não existem na Wikipedia) — parecem texto comum */
     a.new {
+        color: inherit !important;
+        background-color: transparent !important;
+        font-weight: inherit !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        pointer-events: none !important;
+        cursor: default !important;
+    }
+
+    /* Links externos (saem da Wikipedia) — estilo desabilitado */
+    a.external {
         color: #94a3b8 !important;
         background-color: transparent !important;
         pointer-events: none !important;

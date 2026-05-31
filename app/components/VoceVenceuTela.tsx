@@ -8,6 +8,7 @@ type VoceVenceuProps = {
     passos: number;
     iniciarNovoJogo: () => void;
     modoDeJogo: "diario" | "aleatorio";
+    seedProp?: string;
 };
 
 type Recorde = {
@@ -16,26 +17,54 @@ type Recorde = {
     pontuacao: number;
 };
 
-export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJogo }: VoceVenceuProps) {
+export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJogo, seedProp }: VoceVenceuProps) {
     const router = useRouter();
-    const _d = new Date();
-    const seed = `${_d.getFullYear()}-${String(_d.getMonth() + 1).padStart(2, "0")}-${String(_d.getDate()).padStart(2, "0")}`; // data local de hoje
-    const chaveRecorde = `desafio-diario-${seed}-recorde-enviado`; // chave que verifica se o recorde já foi enviado hoje
+
+    const [dataCompleta, setDataCompleta] = useState<Date | null>(null); // começa com o horário local para o timer iniciar imediatamente
+    const chaveRecorde = `desafio-diario-${seedProp}-recorde-enviado`; // chave que verifica se o recorde já foi enviado hoje
     const [nome, setNome] = useState(""); // estado para armazenar o nome do jogador
     const [recordes, setRecordes] = useState<Recorde[]>([]); // estado para armazenar os recordes do dia buscados do supabase
     const idPalavraDoDia = useRef<number | null>(null); // id da palavra do dia, necessário para enviar o recorde pro supabase
     const [tempoRestante, setTempoRestante] = useState(""); // estado para armazenar o tempo restante para a próxima palavra do dia
     const [recordeEnviado, setRecordeEnviado] = useState(() => !!localStorage.getItem(chaveRecorde)); // estado para verificar se o recorde já foi enviado hoje, inicializado com base no localStorage
 
-    // Se for modo diário, calcula o tempo restante para a próxima palavra do dia e atualiza a cada segundo.
+    // ==== BUSCA O HÓRARIO E DATA DO SERVIDOR ====
+    // Busca o horário exato do servidor UMA vez na montagem.
+    // Usamos o servidor para evitar que fusos horários diferentes causem inconsistências
+    // (ex: usuário no Japão já está no dia seguinte enquanto o Brasil ainda está no dia anterior).
     useEffect(() => {
-        if (modoDeJogo !== "diario") return;
+        async function pegarDataEHoraDoServidor() {
+            try {
+                await fetch("/api/dataDoDiaDoServidor")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        setDataCompleta(new Date(data.dataCompleta));
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao buscar data do dia do servidor:", error);
+                    });
+            } catch (error) {
+                console.error("Erro ao buscar data do dia do servidor:", error);
+            }
+        }
 
-        const calcular = () => {
-            const agora = new Date();
-            const meianoite = new Date();
-            meianoite.setHours(24, 0, 0, 0);
-            const diff = meianoite.getTime() - agora.getTime();
+        pegarDataEHoraDoServidor();
+    }, []); // [] → roda só uma vez na montagem, não a cada render
+
+    // ==== CALCULA O TEMPO RESTANTE P PRÓXIMA PALAVRA DO DIA ====
+    // Calcula o tempo restante até a meia-noite do servidor (UTC) e atualiza a cada segundo.
+    useEffect(() => {
+        // Só roda no modo diário e depois que o horário do servidor chegou.
+        if (modoDeJogo !== "diario" || !dataCompleta) return;
+
+        // Cria uma cópia do horário do servidor e avança para a próxima meia-noite UTC.
+        // setUTCHours(24, ...) = meia-noite UTC do dia seguinte.
+        const meianoiteUTC = new Date(dataCompleta);
+        meianoiteUTC.setUTCHours(24, 0, 0, 0);
+
+        let diff = meianoiteUTC.getTime() - dataCompleta.getTime();
+
+        const formatar = () => {
             const h = Math.floor(diff / 3600000)
                 .toString()
                 .padStart(2, "0");
@@ -48,11 +77,17 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
             setTempoRestante(`${h}:${m}:${s}`);
         };
 
-        calcular();
-        const intervalo = setInterval(calcular, 1000);
-        return () => clearInterval(intervalo);
-    }, [modoDeJogo]);
+        formatar(); // seta o valor imediatamente, sem esperar 1 segundo
+        const intervalo = setInterval(() => {
+            diff -= 1000;
+            formatar();
+        }, 1000);
 
+        // Limpa o intervalo quando o componente desmonta para não vazar memória.
+        return () => clearInterval(intervalo);
+    }, [modoDeJogo, dataCompleta]); // roda quando dataCompleta chegar (inicialmente null)
+
+    // ==== ENVIA O RECORDE PARA O SERVIDOR ====
     const handleEnviar = async () => {
         if (nome.length < 1 || nome.length > 20) {
             console.error("Nome inválido. Deve ter entre 1 e 20 caracteres.");
@@ -63,7 +98,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
         const { error } = await supabase.from("recordes").insert({
             jogador_nome: nome,
             pontuacao: passos,
-            id_palavras_do_dia: idPalavraDoDia.current, // Substitua pelo ID correto do desafio diário
+            id_palavras_do_dia: idPalavraDoDia.current,
         });
 
         if (error) {
@@ -75,18 +110,20 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
         setRecordeEnviado(true);
     };
 
+    // ==== PEGA OS RECORDES DEPOIS DE HOJE ====
     // Pega os Recordes de hoje do supabase para montar
     // a tabela de recordes na tela de vitória.
     // Atualiza sempre que os recordes mudarem, para mostrar o novo recorde enviado.
     useEffect(() => {
-        const dataDeHoje = seed;
+        if (!seedProp) return;
+        const dataDeHoje = seedProp;
 
         // primeiro pega o id da palavra de hoje
         supabase
             .from("palavras_do_dia")
             .select("id")
             .eq("data", dataDeHoje)
-            .single()
+            .maybeSingle()
             .then(({ data, error }) => {
                 if (error) {
                     console.error("Erro ao buscar palavra do dia:", error);
@@ -111,7 +148,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                     console.log("Palavra do dia não encontrada para a data:", dataDeHoje);
                 }
             });
-    }, [recordes, seed]);
+    }, [recordes, seedProp]);
 
     return (
         <div className="fixed pixel-font inset-0 z-1000 bg-slate-950/90 backdrop-blur-md overflow-x-hidden overflow-y-auto flex justify-center p-4 scrollbar-dark">
@@ -253,7 +290,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                 )}
 
                 <button
-                    onClick={() => (modoDeJogo === "aleatorio" ? iniciarNovoJogo : router.push("/jogar"))}
+                    onClick={() => (modoDeJogo === "aleatorio" ? iniciarNovoJogo() : router.push("/jogar"))}
                     className="nes-btn is-primary w-full "
                     style={{ fontSize: "11px" }}
                 >

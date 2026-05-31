@@ -4,62 +4,35 @@ import { useEffect, useRef, useState } from "react";
 import { sortearJogo } from "./sotearJogo";
 
 // Se passado uma seed, o jogo sorteado será o mesmo para todos os jogadores.
-export function useGameLogic(seed?: string, podeChamarAPI: boolean = true) {
+/**
+ *
+ * @param seed > string que determina qual será o joog
+ * @param palavraInicialSorteada
+ * @param palavraObjetivoSorteada
+ * @returns
+ */
+export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: string, seed?: string) {
     // HTML cru retornado pela Wikipedia via nossa API. Injetado no DOM via dangerouslySetInnerHTML.
     const [wikiHtml, setWikiHtml] = useState<string>("");
 
-    // Lazy initializer. Quando passa uma callback, o react não chama a função em todo o re-render. Somente na primeira vez.
-    // Diferente se fosse um valor.
-    const [jogoInicial] = useState<{ start: string; target: string }>(() =>
-        sortearJogo(arrPaginasIniciais, arrPaginasObjetivo, seed),
-    );
-
-    // Histórico de páginas visitadas pelo jogador, usado para mostrar o breadcrumb e navegação.
-    const [historico, setHistorico] = useState<string[]>([jogoInicial.start]);
-
-    const [paginaAtual, setPaginaAtual] = useState<string>(historico[historico.length - 1]); // começo
-    const [paginaObjetivo, setPaginaObjetivo] = useState<string>(jogoInicial.target); // fim
+    const [historico, setHistorico] = useState<string[]>([paginaInicialParam]); // histórico de páginas visitadas, usado para breadcrumb e navegação
+    const [paginaAtual, setPaginaAtual] = useState<string>(paginaInicialParam); // começo
+    const [paginaObjetivo, setPaginaObjetivo] = useState<string>(paginaObjetivoParam); // fim
     const [passos, setPassos] = useState(0); // pontuação
     const [voceVenceu, setVoceVenceu] = useState(false); // venceu?
 
-    // Cortina de carregamento que aparece enquanto o HTML da Wikipedia está sendo buscado.
-    const [carregando, setCarregando] = useState(false);
+    const [carregando, setCarregando] = useState(false); // Cortina de carregamento que aparece enquanto o HTML da Wikipedia está sendo buscado.
+
     // Controla a animação de +1 / +2 que flutua sobre o placar.
     // O campo `id` muda a cada disparo para forçar o React a remontar a animação,
     // mesmo que o valor (+1 ou +2) seja igual ao da vez anterior.
     const [pontoFlutuante, setPontoFlutuante] = useState<{ id: number; valor: number } | null>(null);
     const animacaoIdRef = useRef(0); // Ref para gerar IDs únicos para animações de passos flutuantes.
 
-    const iniciarNovoJogo = () => {
-        const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo, seed);
-        setHistorico([start]);
-        setPaginaAtual(start);
-        setPaginaObjetivo(target);
-        setPassos(0);
-        setVoceVenceu(false);
-    };
-
-    // ==== IMPEDE O FECHAMENTO ACIDENTAL DA PÁGINA ====
-    // Evita que o jogador feche ou recarregue a página acidentalmente, o que faria ele perder o progresso.
-    // Então mostra um alerta de confirmação antes de fechar ou recarregar a página.
-    useEffect(() => {
-        if (voceVenceu) return; // não bloqueia depois de vencer
-
-        //  Impede o comportamento padrão de fechar ou recarregar a página.
-        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-            e.preventDefault();
-        };
-
-        window.addEventListener("beforeunload", handleBeforeUnload);
-        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-    }, [voceVenceu]);
-
     // ==== BUSCA ITEM CLICADO NA API DA WIKIPEDIA ====
     // O HTML é renderizado no DOM via dangerouslySetInnerHTML, e handleLinkClicado() captura cliques em links para atualizar paginaAtual sem recarregar a página.
     useEffect(() => {
-        // o pronto é necessário para evitar que a página inicial seja carregada antes de o localStorage ser carregado.
-        // quando pegamos a pagian do localStorage, nós fazemos a requisição com ela, depois marcamos o pronto como true.
-        if (!paginaAtual || !podeChamarAPI) return;
+        if (!paginaAtual) return;
         async function buscarNaApiDaWiki() {
             setCarregando(true);
 
@@ -95,11 +68,22 @@ export function useGameLogic(seed?: string, podeChamarAPI: boolean = true) {
         }
 
         buscarNaApiDaWiki();
-    }, [paginaAtual, podeChamarAPI]);
+    }, [paginaAtual]);
+
+    // ==== INCIA NOVO JOGO ====
+    const iniciarNovoJogo = () => {
+        const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo, seed);
+        setHistorico([start]);
+        setPaginaAtual(start);
+        setPaginaObjetivo(target);
+        setPassos(0);
+        setVoceVenceu(false);
+    };
 
     // ==== MANIPULA CLIQUES NOS LINKS DO ARTIGO ====
-    // Captura cliques em links dentro do artigo para atualizar o estado do jogo sem recarregar a página.
     const handleLinkClicado = (e: React.MouseEvent<HTMLDivElement>) => {
+        // Captura cliques em links dentro do artigo para atualizar o estado do jogo sem recarregar a página.
+
         e.preventDefault();
 
         const elementoClicado = e.target;
@@ -156,6 +140,21 @@ export function useGameLogic(seed?: string, podeChamarAPI: boolean = true) {
         setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 2 });
     };
 
+    // ==== IMPEDE O FECHAMENTO ACIDENTAL DA PÁGINA ====
+    // Evita que o jogador feche ou recarregue a página acidentalmente, o que faria ele perder o progresso.
+    // Então mostra um alerta de confirmação antes de fechar ou recarregar a página.
+    useEffect(() => {
+        if (voceVenceu) return; // não bloqueia depois de vencer
+
+        //  Impede o comportamento padrão de fechar ou recarregar a página.
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            e.preventDefault();
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [voceVenceu]);
+
     // ==== BLOQUEIA CTRL+F ====
     // Mas não tem como bloquar no menu do navegador, aparentemente
     useEffect(() => {
@@ -195,6 +194,7 @@ export function useGameLogic(seed?: string, podeChamarAPI: boolean = true) {
         setHistorico,
         setPassos,
         setPaginaAtual,
+        setPaginaObjetivo,
         passos,
         pontoFlutuante,
         voceVenceu,

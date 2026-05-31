@@ -3,8 +3,17 @@ import { useGameLogic } from "../lib/useGameLogic";
 import BarraSuperiorFixa from "../components/BarraSuperiorFixa";
 import Footer from "../components/Footer";
 import VoceVenceu from "../components/VoceVenceuTela";
+import { sortearJogo } from "../lib/sotearJogo";
+import { arrPaginasIniciais } from "../data/paginasIniciais";
+import { arrPaginasObjetivo } from "../data/paginasObjetivo";
+import { useState } from "react";
 
 export default function DesafioNormal() {
+    // Lazy initializer. Quando passa uma callback, o react não chama a função em todo o re-render. Somente na primeira vez.
+    const [jogo] = useState<{ start: string; target: string }>(() =>
+        sortearJogo(arrPaginasIniciais, arrPaginasObjetivo),
+    );
+
     const {
         carregando,
         voceVenceu,
@@ -17,7 +26,7 @@ export default function DesafioNormal() {
         handleBotaoVoltar,
         handleNavegarPeloHistorico,
         handleLinkClicado,
-    } = useGameLogic();
+    } = useGameLogic(jogo.start, jogo.target);
 
     return (
         <div className="min-h-screen flex flex-col justify-between">
