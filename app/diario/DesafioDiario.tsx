@@ -189,12 +189,12 @@ export default function DesafioDiario() {
                 {wikiHtml && passos < 2 && (
                     <div
                         // z da barra superior é 30
-                        className="z-20 absolute animate-bounce [animation-duration:2.5s] pixel-font top-70 md:top-55 left-1/2 -translate-x-1/2 w-9/10 md:w-4/12"
+                        className="z-20 absolute animate-bounce [animation-duration:2.5s] pixel-font top-70 md:top-55 left-1/2 -translate-x-1/2 w-9/10 md:w-5/12"
                     >
                         {balanEncontreAberto && (
                             <div
                                 onClick={handleBalaoEncontreClick}
-                                className="nes-balloon from-left nes-pointer w-10/10 "
+                                className="nes-balloon from-left nes-pointer md:w-9/10 right-4 md:right-10"
                             >
                                 <span className="absolute right-0 top-0 text-gray-600"> X</span>
                                 <p className="" style={{ fontSize: 10 }}>
@@ -214,7 +214,7 @@ export default function DesafioDiario() {
                         {balaoHistorico && (
                             <div
                                 onClick={handleBalaoHistoricoClick}
-                                className="nes-balloon from-right nes-pointer w-10/10 "
+                                className="nes-balloon from-right nes-pointer md:w-9/10 left-3 md:left-10"
                             >
                                 <span className="absolute right-0 top-0 text-gray-600"> X</span>
                                 <p className="" style={{ fontSize: 10 }}>
