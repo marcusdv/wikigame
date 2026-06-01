@@ -160,7 +160,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
 
                 <div
                     className="nes-container is-dark is-rounded text-left overflow-y-auto "
-                    style={{ padding: "0.75rem", maxHeight: "150px", borderColor: "#1e293b" }}
+                    style={{ padding: "0.75rem", maxHeight: "200px", borderColor: "#1e293b" }}
                 >
                     <span className=" text-blue-400 block mb-3" style={{ fontSize: "8px" }}>
                         CAMINHO PERCORRIDO
@@ -202,14 +202,15 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                         </div>
                         <input
                             type="text"
-                            className="nes-input is-dark w-full"
+                            className="nes-input is-dark "
                             placeholder={recordeEnviado ? "RECORDE JÁ ENVIADO" : "SEU NOME"}
                             maxLength={20}
                             value={nome}
                             onChange={(e) => setNome(e.target.value)}
                             disabled={recordeEnviado}
-                            style={{ fontSize: "11px" }}
+                            style={{ fontSize: "11px", padding: "0.75rem" }}
                         />
+                        {!recordeEnviado && <p className="text-xs">Envie seu recorde para ver os outros</p>}
                         <button
                             onClick={handleEnviar}
                             className={`nes-btn w-full ${recordeEnviado ? "is-disabled" : "is-success"}`}
@@ -251,7 +252,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                                             {recorde.jogador_nome}
                                         </span>
                                         <span className="text-slate-200 shrink-0" style={{ fontSize: "14px" }}>
-                                            - {recorde.pontuacao}
+                                            - {recordeEnviado ? recorde.pontuacao : "???"}
                                         </span>
                                     </div>
                                 ))}
