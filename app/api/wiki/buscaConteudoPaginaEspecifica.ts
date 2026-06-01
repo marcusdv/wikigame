@@ -3,7 +3,7 @@ async function buscar(palavra: string) {
         const resposta = await fetch(`http://localhost:3000/api/wiki?pagina=${encodeURIComponent(palavra)}`);
 
         // a route.ts empacota como json, e precisa desempacotar de novo para acessar o HTML.
-        const dados = await resposta.json(); // isso é um objeto normal marcus!!!!!
+        const dados = await resposta.json(); // isso é um objeto normal !!!
 
         // verifica se a rota retornou erro
         if (!resposta.ok) {
@@ -23,8 +23,7 @@ async function buscar(palavra: string) {
     }
 }
 
-// o pronto é necessário para evitar que a página inicial seja carregada antes de o localStorage ser carregado.
-
+// teste rápido
 buscar("Prostituição em animais").then((dados) => {
     console.log(dados);
 });

@@ -44,11 +44,10 @@ export async function GET(request: NextRequest) {
 
         // PASSO 2 — Buscar o HTML completo via API de Parse
         //
-        // A PRÓRIA WIKIPEDIA tem uma API para devolver o HTML renderizado de uma página.
+        // A WIKIPEDIA tem uma API para devolver o HTML renderizado de uma página.
         // Retorna o HTML renderizado da página dentro de dados.parse.text["*"],
         // que o frontend injeta no DOM via dangerouslySetInnerHTML.
 
-        // prepar a url
         const url = `https://pt.wikipedia.org/w/api.php?action=parse&page=${encodeURI(tituloOficial)}&format=json&prop=text`;
 
         // e faz a requisição

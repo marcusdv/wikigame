@@ -1,4 +1,4 @@
-export const arrPaginasIniciais = [
+const palavrasArr = [
     "Esposas de Henrique VIII",
     "Cometa de César",
     "Defenestrações de Praga",
@@ -18,6 +18,7 @@ export const arrPaginasIniciais = [
     "Joias da Coroa Francesa",
     "Lista de papas sexualmente ativos",
     "Orientação do papel higiênico",
+    "Lista de guerras por número de mortos",
     "Velha Tjikko",
     "Jaya Sri Maha Bodhi",
     "Adansonia digitata",
@@ -278,3 +279,20 @@ export const arrPaginasIniciais = [
     "Mike, o frango sem cabeça",
     "Jimmy Carter e o incidente do coelho",
 ];
+// verificar se há repetida
+// faz pop
+// usa esse para rodar
+// repete
+
+function verSeRepete(arr: string[]) {
+    while (arr.length > 0) {
+        const item = arr.pop();
+
+        if (!item) return arr.length; // estranho erro
+
+        if (arr.includes(item)) return "TEM " + item; // achou
+    }
+    return "tudo ok";
+}
+
+console.log(verSeRepete(palavrasArr));

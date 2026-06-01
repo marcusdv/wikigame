@@ -78,7 +78,7 @@ export default function BarraSuperiorFixa({
 
     return (
         <div
-            className={`sticky pixel-font top-0 z-50 select-none ${t.divPaiBg} border-b-4 ${t.divPaiBorder} shadow-lg`}
+            className={`sticky pixel-font top-0 z-30 select-none ${t.divPaiBg} border-b-4 ${t.divPaiBorder} shadow-lg`}
         >
             {/*
               GRID — mobile 3 cols / desktop 5 cols (md:)

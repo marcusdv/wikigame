@@ -110,6 +110,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                                 console.error("Erro ao buscar recordes:", error);
                             }
                             if (data) {
+                                console.log("loop");
                                 setRecordes(data);
                             }
                         });
@@ -117,7 +118,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                     console.log("Palavra do dia não encontrada para a data:", dataDeHoje);
                 }
             });
-    }, [recordes, seedProp]);
+    }, [seedProp, recordeEnviado]);
 
     return (
         <div className="fixed pixel-font inset-0 z-1000 bg-slate-950/90 backdrop-blur-md overflow-x-hidden overflow-y-auto flex justify-center p-4 scrollbar-dark">

@@ -1,9 +1,3 @@
-// ============================================================================= //
-// TESTAR OS DADOS ANTES DE ADICIONAR AO JOGO:
-// RODAR `npm run verificar` PARA VER SE A WIKIPEDIA DEVOLVE O TÍTULO ESPERADO.
-// RODAR `npm run inspecionar` PARA VERIFICAR O CONTEUDO
-// ==============================================================================//
-
 export const arrPaginasObjetivo = [
     // História
     "Vikings",
@@ -61,8 +55,6 @@ export const arrPaginasObjetivo = [
     "Clonagem",
     "Robótica",
 
-    // Mitologia e Religião
-
     // Cultura Geral e Invenções
     "Panqueca",
     "Frango",
@@ -116,9 +108,4 @@ export const arrPaginasObjetivo = [
     "Fígado",
     "Sono",
     "Memória",
-
-    // ============================================================================= //
-    // TESTES DE VERIFICAR E INSPECIONAR FORAM FEITOS ATÉ AQUI. 24 DE MAIO 10:56
-    // NOVOS ITENS ADICIONADOS EM 24 DE MAIO — RODAR VERIFICAR E INSPECIONAR
-    // ==============================================================================//
 ];

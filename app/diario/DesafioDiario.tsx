@@ -19,10 +19,12 @@ type DadosLocalStorage = {
 export default function DesafioDiario() {
     //data de hoje no formato "2026-05-24".
 
+    // pega
     const d = new Date(new Date().getTime() - 3 * 60 * 60 * 1000); // subtrai 3h → hora de Brasília em UTC
     const seed = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 
     const [jogoInicial, setJogoInicial] = useState<{ start: string; target: string }>({ start: "", target: "" }); // valor inicial vazio, vai ser atualizado depois com o valor do banco ou sorteado
+    const [balaoAberto, setBalaoAberto] = useState<boolean>(true);
 
     const {
         carregando,
@@ -139,8 +141,12 @@ export default function DesafioDiario() {
         localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
     }, [historico, paginaObjetivo, passos, voceVenceu, seed]);
 
+    function handleBalaoClick() {
+        setBalaoAberto(false);
+    }
+
     return (
-        <div className="min-h-screen ">
+        <div className="min-h-screen relative">
             {/* Cortina semitransparente que bloqueia interação enquanto a página carrega */}
             {carregando && (
                 <div className="fixed inset-0 z-999 bg-slate-950/20 backdrop-blur-2xs flex items-center justify-center">
@@ -176,15 +182,29 @@ export default function DesafioDiario() {
                 />
 
                 {/* Balão de ajuda */}
-                {/* <div className="z-200 absolute md:top-40 top-55 left-1/2 -translate-x-1/2 min-w-max  animate-bounce ">
-                    <div className="relative inline-block">
-                        <p className="nes-balloon from-left nes-pointer text-sm md:text-lg   ">
-                            Desafio Diário: um novo par de páginas todo dia! <br /> Vença para ver o ranking dos
-                            melhores tempos.
-                        </p>
-                        <i className="nes-icon close is-small absolute -top-9  right-8"></i>
+                {wikiHtml && balaoAberto && passos < 3 && (
+                    <div
+                        onClick={handleBalaoClick}
+                        // z da barra superior é 30
+                        className="z-20 absolute animate-bounce [animation-duration:1.5s] pixel-font top-70 md:top-50 left-1/2 -translate-x-1/2 w-9/10 md:w-5/10"
+                    >
+                        <div className="nes-balloon from-left nes-pointer w-10/10 ">
+                            <span className="absolute right-0 top-0 text-gray-600"> X</span>
+                            <p className="" style={{ fontSize: 10 }}>
+                                Encontre a página{" "}
+                                <span className="text-md uppercase text-orange-800 font-extrabold  bg-amber-300 px-2 py-1 rounded">
+                                    {paginaObjetivo}
+                                </span>{" "}
+                                <br />
+                                Mas só clicando pelos links da página! <br /> BOA SORTE!!!{" "}
+                                <i className="nes-icon heart is-small"></i>
+                            </p>
+                            <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
+                                - clique para fechar -
+                            </p>
+                        </div>
                     </div>
-                </div> */}
+                )}
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}
                 <div
                     onClick={handleLinkClicado}

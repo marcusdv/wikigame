@@ -1,22 +1,15 @@
 // Verifica se cada página do array existe na Wikipedia PT com o título exato.
-// Um título diferente significa que o jogo pode não detectar a vitória corretamente.
+// Um título diferente faz o jogo não detectar a vitória corretamente.
+// Uso: npx tsx __testes__/seTituloEIgualNaWiki.ts
 
-// Uso: npx tsx scripts/verificar-paginas.ts
-// OU
-// npm run verificar
+import { novasPaginas } from "./dados/novasIniciais";
 
-// Dica: se a Wikipedia devolve um título diferente, copie o título correto do terminal
-// e cole no array de páginas.
-
-import { arrNovas } from "./novas";
 const DELAY_MS = 600;
+// User-Agent obrigatório — sem ele a Wikipedia pode bloquear as requisições.
 const USER_AGENT = "WikiRun/1.0 (verificacao de titulos; marcus.vinicius.bittencourt.c@gmail.com)";
 
-// Pausa a execução por `ms` milissegundos para não sobrecarregar a API da Wikipedia.
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-// Consulta a API de sumário da Wikipedia para um título e compara com o título esperado.
-// Retorna se bateram, o título que a Wikipedia devolveu, e o erro caso a requisição falhe.
 async function verificar(titulo: string) {
     const url = `https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURI(titulo)}`;
     try {
@@ -32,9 +25,8 @@ async function verificar(titulo: string) {
     }
 }
 
-const paginas = arrNovas;
+const paginas = novasPaginas;
 
-// Itera sobre todas as páginas do array, verifica cada uma e imprime o resultado no terminal.
 async function main() {
     console.log(`Verificando ${paginas.length} páginas (${DELAY_MS}ms entre cada)...\n`);
 
