@@ -189,7 +189,7 @@ export default function DesafioDiario() {
                 {wikiHtml && passos < 2 && (
                     <div
                         // z da barra superior é 30
-                        className="z-20 absolute animate-bounce [animation-duration:2.5s] pixel-font top-70 md:top-55 left-1/2 -translate-x-1/2 w-9/10 md:w-5/12"
+                        className="z-20 absolute animate-bounce [animation-duration:5s] pixel-font top-70 md:top-55 left-1/2 -translate-x-1/2 w-9/10 md:w-5/12"
                     >
                         {balanEncontreAberto && (
                             <div
@@ -204,7 +204,7 @@ export default function DesafioDiario() {
                                     </span>{" "}
                                     <br />
                                     Mas só navegando pelos links da página! <br /> BOA SORTE!!!{" "}
-                                    <i className="nes-icon heart is-small"></i>
+                                    <i className="nes-icon heart is-small"></i>""
                                 </p>
                                 <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
                                     - clique para fechar -
