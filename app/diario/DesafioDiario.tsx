@@ -186,10 +186,10 @@ export default function DesafioDiario() {
                 />
 
                 {/* Balão de ajuda */}
-                {wikiHtml && passos < 3 && (
+                {wikiHtml && passos < 2 && (
                     <div
                         // z da barra superior é 30
-                        className="z-20 absolute animate-bounce [animation-duration:2.5s] pixel-font top-70 md:top-55 left-1/2 -translate-x-1/2 w-9/10 md:w-3/10"
+                        className="z-20 absolute animate-bounce [animation-duration:2.5s] pixel-font top-70 md:top-55 left-1/2 -translate-x-1/2 w-9/10 md:w-4/12"
                     >
                         {balanEncontreAberto && (
                             <div
