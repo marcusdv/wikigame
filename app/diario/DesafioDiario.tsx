@@ -203,7 +203,7 @@ export default function DesafioDiario() {
                                         {paginaObjetivo}
                                     </span>{" "}
                                     <br />
-                                    Mas só clicando pelos links da página! <br /> BOA SORTE!!!{" "}
+                                    Mas só navegando pelos links da página! <br /> BOA SORTE!!!{" "}
                                     <i className="nes-icon heart is-small"></i>
                                 </p>
                                 <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
