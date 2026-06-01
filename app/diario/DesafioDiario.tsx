@@ -142,8 +142,11 @@ export default function DesafioDiario() {
         localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
     }, [historico, paginaObjetivo, passos, voceVenceu, seed]);
 
-    function handleBalaoClick() {
+    function handleBalaoEncontreClick() {
         setBalaoEncontreAberto(false);
+    }
+    function handleBalaoHistoricoClick() {
+        setBalaoHistoricoAberto(false);
     }
 
     return (
@@ -185,27 +188,48 @@ export default function DesafioDiario() {
                 {/* Balão de ajuda */}
                 {wikiHtml && passos < 3 && (
                     <div
-                        onClick={handleBalaoClick}
                         // z da barra superior é 30
-                        className="z-20 absolute animate-bounce [animation-duration:1.5s] pixel-font top-70 md:top-50 left-1/2 -translate-x-1/2 w-9/10 md:w-3/10"
+                        className="z-20 absolute animate-bounce [animation-duration:2.5s] pixel-font top-70 md:top-55 left-1/2 -translate-x-1/2 w-9/10 md:w-3/10"
                     >
-                        <div className="nes-balloon from-left nes-pointer w-10/10 ">
-                            <span className="absolute right-0 top-0 text-gray-600"> X</span>
-                            <p className="" style={{ fontSize: 10 }}>
-                                Encontre a página{" "}
-                                <span className="text-md uppercase text-orange-800 font-extrabold  bg-amber-300 px-2 py-1 rounded">
-                                    {paginaObjetivo}
-                                </span>{" "}
-                                <br />
-                                Mas só clicando pelos links da página! <br /> BOA SORTE!!!{" "}
-                                <i className="nes-icon heart is-small"></i>
-                            </p>
-                            <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
-                                - clique para fechar -
-                            </p>
-                        </div>
+                        {balanEncontreAberto && (
+                            <div
+                                onClick={handleBalaoEncontreClick}
+                                className="nes-balloon from-left nes-pointer w-10/10 "
+                            >
+                                <span className="absolute right-0 top-0 text-gray-600"> X</span>
+                                <p className="" style={{ fontSize: 10 }}>
+                                    Encontre a página{" "}
+                                    <span className="text-md uppercase text-orange-800 font-extrabold  bg-amber-300 px-2 py-1 rounded">
+                                        {paginaObjetivo}
+                                    </span>{" "}
+                                    <br />
+                                    Mas só clicando pelos links da página! <br /> BOA SORTE!!!{" "}
+                                    <i className="nes-icon heart is-small"></i>
+                                </p>
+                                <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
+                                    - clique para fechar -
+                                </p>
+                            </div>
+                        )}
+                        {balaoHistorico && (
+                            <div
+                                onClick={handleBalaoHistoricoClick}
+                                className="nes-balloon from-right nes-pointer w-10/10 "
+                            >
+                                <span className="absolute right-0 top-0 text-gray-600"> X</span>
+                                <p className="" style={{ fontSize: 10 }}>
+                                    Use o histórico e o botão de retornar! <br /> Cuidado, custa{" "}
+                                    <span className="text-red-500">+2</span> passos!
+                                </p>
+                                <p className="text-xs text-center">Poste seu recorde no final!</p>
+                                <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
+                                    - clique para fechar -
+                                </p>
+                            </div>
+                        )}
                     </div>
                 )}
+
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}
                 <div
                     onClick={handleLinkClicado}
