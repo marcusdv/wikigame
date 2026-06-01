@@ -24,7 +24,8 @@ export default function DesafioDiario() {
     const seed = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 
     const [jogoInicial, setJogoInicial] = useState<{ start: string; target: string }>({ start: "", target: "" }); // valor inicial vazio, vai ser atualizado depois com o valor do banco ou sorteado
-    const [balaoAberto, setBalaoAberto] = useState<boolean>(true);
+    const [balanEncontreAberto, setBalaoEncontreAberto] = useState<boolean>(true);
+    const [balaoHistorico, setBalaoHistoricoAberto] = useState<boolean>(true);
 
     const {
         carregando,
@@ -142,7 +143,7 @@ export default function DesafioDiario() {
     }, [historico, paginaObjetivo, passos, voceVenceu, seed]);
 
     function handleBalaoClick() {
-        setBalaoAberto(false);
+        setBalaoEncontreAberto(false);
     }
 
     return (
@@ -182,11 +183,11 @@ export default function DesafioDiario() {
                 />
 
                 {/* Balão de ajuda */}
-                {wikiHtml && balaoAberto && passos < 3 && (
+                {wikiHtml && passos < 3 && (
                     <div
                         onClick={handleBalaoClick}
                         // z da barra superior é 30
-                        className="z-20 absolute animate-bounce [animation-duration:1.5s] pixel-font top-70 md:top-50 left-1/2 -translate-x-1/2 w-9/10 md:w-5/10"
+                        className="z-20 absolute animate-bounce [animation-duration:1.5s] pixel-font top-70 md:top-50 left-1/2 -translate-x-1/2 w-9/10 md:w-3/10"
                     >
                         <div className="nes-balloon from-left nes-pointer w-10/10 ">
                             <span className="absolute right-0 top-0 text-gray-600"> X</span>
