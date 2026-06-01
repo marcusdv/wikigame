@@ -73,7 +73,7 @@ export default function DesafioNormal() {
                 />
             </div>
 
-            <Footer historico={historico} />
+            <Footer historico={historico} passos={passos} />
         </div>
     );
 }

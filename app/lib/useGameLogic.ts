@@ -72,6 +72,7 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
 
     // ==== INCIA NOVO JOGO ====
     const iniciarNovoJogo = () => {
+        console.log("A seed", seed);
         const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo, seed);
         setHistorico([start]);
         setPaginaAtual(start);

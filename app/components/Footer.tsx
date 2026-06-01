@@ -1,8 +1,9 @@
 type FooterProps = {
     historico: string[];
+    passos: number;
 };
 
-export default function Footer({ historico }: FooterProps) {
+export default function Footer({ historico, passos }: FooterProps) {
     const ultimoNo = historico[historico.length - 1] || "Início";
 
     return (
@@ -33,7 +34,7 @@ export default function Footer({ historico }: FooterProps) {
                                 PASSOS:
                             </span>
                             <span className="pixel-font text-white" style={{ fontSize: "13px" }}>
-                                {historico.length - 1}
+                                {passos}
                             </span>
                         </div>
                         <span className="pixel-font text-slate-600" style={{ fontSize: "10px" }}>

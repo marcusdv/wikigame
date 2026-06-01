@@ -132,8 +132,8 @@ export default function BarraSuperiorFixa({
                         {/* ── TÍTULO/OBJETIVO — mobile col2-3 row2 | desktop col2 row1 ── */}
                         <div
                             className={`
-                                col-start-2 col-span-2 row-start-2 flex flex-col items-center justify-center text-center py-2 overflow-hidden border-t-2 ${t.secaoBorderObjetivo} 
-
+                                col-start-2 col-span-2 row-start-2 flex flex-col items-center justify-center 
+                                text-center py-2 overflow-hidden border-t-2 ${t.secaoBorderObjetivo} 
                                 md:col-start-2 md:col-span-1 md:row-start-1 md:border-r-2 md:border-t-0
                                 `}
                         >
@@ -154,7 +154,7 @@ export default function BarraSuperiorFixa({
                         <div
                             className={`
                                 col-start-1 row-start-2 flex flex-col items-center justify-center py-2 px-3 border-r-2 border-t-2 
-                                md:col-start-4 md:row-start-1 md:border-t-0 ${t.secaoBorderInterno}  md:border-t-0
+                                md:col-start-4 md:row-start-1 md:border-t-0 ${t.secaoBorderInterno} 
                                 `}
                         >
                             <div className={` ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}>
