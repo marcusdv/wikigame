@@ -23,10 +23,13 @@ export default function DesafioDiario() {
     const d = new Date(new Date().getTime() - 3 * 60 * 60 * 1000); // subtrai 3h → hora de Brasília em UTC
     const seed = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 
+    // para saber se renderiza balões na tela, só precisa uma vez para o jogador aprender e nunca mais
+    const precisaDeBaloes = !localStorage.getItem("ja-viu-os-baloes");
+
     const [jogoInicial, setJogoInicial] = useState<{ start: string; target: string }>({ start: "", target: "" }); // valor inicial vazio, vai ser atualizado depois com o valor do banco ou sorteado
     const [balanEncontreAberto, setBalaoEncontreAberto] = useState<boolean>(true);
     const [saindoBalaoEncontrado, setSaindoBalaoEncontrado] = useState(false);
-    const [balaoHistorico, setBalaoHistoricoAberto] = useState<boolean>(true);
+    const [balaoHistoricoAberto, setBalaoHistoricoAberto] = useState<boolean>(true);
     const [saindoBalaoHistorico, setSaindoBalaoHistorico] = useState(false);
 
     const {
@@ -144,10 +147,20 @@ export default function DesafioDiario() {
         localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
     }, [historico, paginaObjetivo, passos, voceVenceu, seed]);
 
+    // ==== REGISTRA QUE JÁ VIU OS BALÕES SE FECHAR OS DOIS  ====
+    useEffect(() => {
+        if (!balanEncontreAberto && !balaoHistoricoAberto) {
+            localStorage.setItem("ja-viu-os-baloes", "true");
+        }
+    }, [balanEncontreAberto, balaoHistoricoAberto]);
+
+    // ==== HANDLE PARA REMOVER BALÃO DA TELA ====
     function handleBalaoEncontreClick() {
         setSaindoBalaoEncontrado(true);
         setTimeout(() => setBalaoEncontreAberto(false), 1000); // espera a animação terminar
     }
+
+    // ==== HANDLE PARA REMOVER BALÃO 2 DA TELA ====
     function handleBalaoHistoricoClick() {
         setSaindoBalaoHistorico(true);
         setTimeout(() => setBalaoHistoricoAberto(false), 1000); // espera a animação terminar
@@ -190,7 +203,7 @@ export default function DesafioDiario() {
                 />
 
                 {/* Balão de ajuda */}
-                {wikiHtml && passos < 2 && balanEncontreAberto && (
+                {wikiHtml && precisaDeBaloes && balanEncontreAberto && (
                     <div
                         // z da barra superior é 30
                         className="z-20 absolute pixel-font top-70 md:top-55 left-1/2 -translate-x-1/2 w-9/10 md:w-5/12"
@@ -220,7 +233,7 @@ export default function DesafioDiario() {
                     </div>
                 )}
                 {/* Balão de ajuda */}
-                {wikiHtml && passos < 2 && balaoHistorico && (
+                {wikiHtml && precisaDeBaloes && balaoHistoricoAberto && (
                     <div
                         // z da barra superior é 30
                         className="z-20 absolute pixel-font top-115 md:top-95 left-1/2 -translate-x-1/2 w-9/10 md:w-5/12"

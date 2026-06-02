@@ -3,6 +3,7 @@
 // Uso: npx tsx __testes__/seTituloEIgualNaWiki.ts
 
 import { novasPaginas } from "./dados/novasIniciais";
+import { arr as novosObjetivos } from "./dados/novosObjetivo";
 
 const DELAY_MS = 600;
 // User-Agent obrigatório — sem ele a Wikipedia pode bloquear as requisições.
@@ -25,7 +26,7 @@ async function verificar(titulo: string) {
     }
 }
 
-const paginas = novasPaginas;
+const paginas = novosObjetivos;
 
 async function main() {
     console.log(`Verificando ${paginas.length} páginas (${DELAY_MS}ms entre cada)...\n`);

@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { novasPaginas } from "./dados/novasIniciais";
+import { arr as novosObjetivos } from "./dados/novosObjetivo";
 
 const DELAY_MS = 700;
 const LIMITE_PALAVRAS = 300;
@@ -32,7 +33,7 @@ function primeirasNPalavras(texto: string, n: number): string {
     return palavras.length > n ? cortado + "..." : cortado;
 }
 
-const paginas = novasPaginas;
+const paginas = novosObjetivos;
 
 async function main() {
     // Acumula tudo na memória e escreve de uma vez — evita I/O a cada iteração.
