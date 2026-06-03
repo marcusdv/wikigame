@@ -53,6 +53,11 @@ export async function GET(request: NextRequest) {
         // e faz a requisição
         const response = await fetch(url, { headers });
 
+        if (!response.ok) {
+            console.error("Problema com a resposta", response.status, response);
+            return;
+        }
+
         // captura os dados da resposta asíncrona e desempacota o JSON devolvido pela wikipedia.
         const dados = await response.json();
 

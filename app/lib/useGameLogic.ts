@@ -39,17 +39,17 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
             try {
                 const resposta = await fetch(`/api/wiki?pagina=${encodeURIComponent(paginaAtual)}`);
 
-                // a route.ts empacota como json, e precisa desempacotar de novo para acessar o HTML.
-                const dados = await resposta.json(); // isso é um objeto normal marcus!!!!!
-
                 // verifica se a rota retornou erro
                 if (!resposta.ok) {
                     // dados.message vem do NextResponse.json({ message: "..." }) da tua rota
                     setWikiHtml(
-                        `<p class="text-center text-red-500">${dados.message ?? "Erro ao carregar página"} <br> Status: ${resposta.status}</p>`,
+                        `<p class="text-center text-red-500">${resposta ?? "Erro ao carregar página"} <br> Status: ${resposta.status}</p>`,
                     );
                     return;
                 }
+
+                // a route.ts empacota como json, e precisa desempacotar de novo para acessar o HTML.
+                const dados = await resposta.json(); // isso é um objeto normal marcus!!!!!
 
                 // HTML parseado da API da wikipedia
                 const html = dados.parse.text["*"];

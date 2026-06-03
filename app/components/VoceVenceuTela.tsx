@@ -36,7 +36,10 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
             // setUTCHours(27) = 24 + 3 = próxima meia-noite de Brasília em UTC.
             const agora = new Date();
             const meianoite = new Date(agora);
-            meianoite.setUTCHours(27, 0, 0, 0);
+            meianoite.setUTCHours(3, 0, 0, 0); // 03:00 UTC = meia-noite de Brasília
+            if (agora >= meianoite) {
+                meianoite.setUTCDate(meianoite.getUTCDate() + 1); // já passou, próxima é amanhã
+            }
 
             const diff = meianoite.getTime() - agora.getTime();
             const h = Math.floor(diff / 3600000)
