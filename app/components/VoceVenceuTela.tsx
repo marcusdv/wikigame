@@ -126,7 +126,12 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, iniciarNovoJ
 
     // ==== COPIA O HISTORICO FORMATADO PARA O CLIPBOARD ====
     function handleClickCopiarHistorico() {
-        const caminho = historico.join(" →\n");
+        const copiaHistorico = [...historico];
+        // deixando o objetivo bonito (ultimo elemento )
+        copiaHistorico[copiaHistorico.length - 1] = `${copiaHistorico[copiaHistorico.length - 1]} 🏁 `;
+        copiaHistorico[0] = `🏃 ${copiaHistorico[0]}`;
+
+        const caminho = copiaHistorico.join("\n→");
         const texto = `🏆 WikiRun\n${modoDeJogo === "diario" ? "Desafio Diário" : "Aleatório"}\nPontos: ${pontos} | Saltos: ${historico.length - 1}\n\n${caminho}`;
 
         navigator.clipboard.writeText(texto).then(() => {
