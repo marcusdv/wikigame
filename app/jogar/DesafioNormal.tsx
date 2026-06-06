@@ -7,6 +7,8 @@ import { sortearJogo } from "../lib/sotearJogo";
 import { arrPaginasIniciais } from "../data/paginasIniciais";
 import { arrPaginasObjetivo } from "../data/paginasObjetivo";
 import { useState } from "react";
+import { useSecoes } from "../lib/useSecoes";
+import Secoes from "../components/Secoes";
 
 export default function DesafioNormal() {
     // Lazy initializer. Quando passa uma callback, o react não chama a função em todo o re-render. Somente na primeira vez.
@@ -27,6 +29,10 @@ export default function DesafioNormal() {
         handleNavegarPeloHistorico,
         handleLinkClicado,
     } = useGameLogic(jogo.start, jogo.target);
+
+    // ==== HOOK QUE PEGA AS SEÇÕES DA PAGINA ====
+    // ==== E MONTA NUMA LISTA ====
+    const { secoesDaPagina, irParaSecao } = useSecoes(wikiHtml);
 
     return (
         <div className="min-h-screen flex flex-col justify-between">
@@ -72,6 +78,8 @@ export default function DesafioNormal() {
                     dangerouslySetInnerHTML={{ __html: wikiHtml }}
                 />
             </div>
+
+            <Secoes secoesDaPagina={secoesDaPagina} irParaSecao={irParaSecao} />
 
             <Footer historico={historico} pontos={pontos} />
         </div>
