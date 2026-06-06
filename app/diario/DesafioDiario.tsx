@@ -3,11 +3,12 @@ import { useGameLogic } from "../lib/useGameLogic";
 import BarraSuperiorFixa from "../components/BarraSuperiorFixa";
 import Footer from "../components/Footer";
 import VoceVenceu from "../components/VoceVenceuTela";
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { sortearJogo } from "../lib/sotearJogo";
 import { arrPaginasIniciais } from "../data/paginasIniciais";
 import { arrPaginasObjetivo } from "../data/paginasObjetivo";
+import Secoes from "../components/Secoes";
 
 type DadosLocalStorage = {
     historico: string[];
@@ -17,11 +18,8 @@ type DadosLocalStorage = {
 };
 
 export default function DesafioDiario() {
-    //data de hoje no formato "2026-05-24".
-
-    // pega
-    const d = new Date(new Date().getTime() - 3 * 60 * 60 * 1000); // subtrai 3h → hora de Brasília em UTC
-    const seed = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+    const d = new Date(new Date().getTime() - 3 * 60 * 60 * 1000); // pega a data de uma maneira que seja igual para todos, e subtrai 3h → hora de Brasília em UTC
+    const seed = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`; //data de hoje no formato "2026-05-24".
 
     // para saber se renderiza balões na tela, só precisa uma vez para o jogador aprender e nunca mais
     const precisaDeBaloes = !localStorage.getItem("ja-viu-os-baloes");
@@ -31,6 +29,8 @@ export default function DesafioDiario() {
     const [saindoBalaoEncontrado, setSaindoBalaoEncontrado] = useState(false);
     const [balaoHistoricoAberto, setBalaoHistoricoAberto] = useState<boolean>(true);
     const [saindoBalaoHistorico, setSaindoBalaoHistorico] = useState(false);
+
+    const [secoesDaPagina, setSecoesDaPagina] = useState<{ text: string; index: number }[]>([]);
 
     const {
         carregando,
@@ -154,6 +154,43 @@ export default function DesafioDiario() {
         }
     }, [balanEncontreAberto, balaoHistoricoAberto]);
 
+    // ==== MONTA A LISTA DE SEÇÕES DO ARTIGO ====
+    // Roda toda vez que o wikiHtml muda (ou seja, o jogador navegou para um novo artigo).
+    // O useEffect garante que o DOM já foi atualizado antes de ler os h2s —
+    // se lêssemos fora do efeito, o HTML novo ainda não estaria na página.
+    useEffect(() => {
+        if (!wikiHtml) return;
+
+        // querySelectorAll pega todos os h2 dentro do container do artigo.
+        // O filter remove os que estão ocultos pelo CSS (ex: "Ver também", "Referências").
+        // getComputedStyle lê o estilo real calculado pelo navegador — diferente de
+        // element.style, que só lê estilos inline. Aqui o display:none está no pai (.mw-heading),
+        // por isso subimos com closest() antes de verificar.
+        const h2s = Array.from(document.querySelectorAll("#wikicontent h2")).filter((h2) => {
+            const pai = h2.closest(".mw-heading");
+            return !pai || getComputedStyle(pai).display !== "none";
+        });
+
+        // Transforma cada h2 em { text, index } para saber o texto a exibir
+        // e qual posição ele ocupa na lista (usado depois para rolar até ele).
+        const lista = h2s.map((h2, index) => ({ text: h2.textContent ?? "", index }));
+
+        // startTransition marca essa atualização como não-urgente.
+        // Sem ele, o linter reclama que setState dentro de useEffect pode causar renders em cascata.
+        // Com ele, o React sabe que pode adiar essa renderização se necessário.
+        startTransition(() => {
+            setSecoesDaPagina(lista);
+        });
+    }, [wikiHtml]);
+
+    // ==== ROLA ATÉ A SEÇÃO CLICADA ====
+    // Busca os h2s no momento do clique (não em cache) para garantir que
+    // está lendo o DOM atual. Usa o index para encontrar o h2 certo.
+    const irParaSecao = (index: number) => {
+        const h2s = document.querySelectorAll("#wikicontent h2");
+        h2s[index]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+
     // ==== HANDLE PARA REMOVER BALÃO DA TELA ====
     function handleBalaoEncontreClick() {
         setSaindoBalaoEncontrado(true);
@@ -259,6 +296,8 @@ export default function DesafioDiario() {
                     </div>
                 )}
 
+                <Secoes secoesDaPagina={secoesDaPagina} irParaSecao={irParaSecao} />
+
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}
                 <div
                     onClick={handleLinkClicado}
@@ -266,9 +305,9 @@ export default function DesafioDiario() {
                     className="my-3 px-4 sm:px-8 py-6 max-w-7xl mx-auto bg-white shadow-xl min-h-screen"
                     dangerouslySetInnerHTML={{ __html: wikiHtml }}
                 />
-            </div>
 
-            <Footer historico={historico} pontos={pontos} />
+                <Footer historico={historico} pontos={pontos} />
+            </div>
         </div>
     );
 }
