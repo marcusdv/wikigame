@@ -126,7 +126,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, iniciarNovoJ
 
     // ==== COPIA O HISTORICO FORMATADO PARA O CLIPBOARD ====
     function handleClickCopiarHistorico() {
-        const caminho = historico.join(" → ");
+        const caminho = historico.join(" →\n");
         const texto = `🏆 WikiRun\n${modoDeJogo === "diario" ? "Desafio Diário" : "Aleatório"}\nPontos: ${pontos} | Saltos: ${historico.length - 1}\n\n${caminho}`;
 
         navigator.clipboard.writeText(texto).then(() => {
