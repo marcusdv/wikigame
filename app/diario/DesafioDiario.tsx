@@ -3,7 +3,7 @@ import { useGameLogic } from "../lib/useGameLogic";
 import BarraSuperiorFixa from "../components/BarraSuperiorFixa";
 import Footer from "../components/Footer";
 import VoceVenceu from "../components/VoceVenceuTela";
-import { startTransition, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { sortearJogo } from "../lib/sotearJogo";
 import { arrPaginasIniciais } from "../data/paginasIniciais";
@@ -215,7 +215,7 @@ export default function DesafioDiario() {
                             onClick={handleBalaoEncontreClick}
                             className={`
                                             nes-balloon 
-                                            from-left nes-pointer md:w-9/10 right-4 md:right-10
+                                            from-left nes-pointer 
                                             animate__animated ${saindoBalaoEncontrado ? "animate__zoomOutLeft " : "animate__pulse animate__infinite animate__slow "} 
                                     `}
                         >
@@ -229,32 +229,6 @@ export default function DesafioDiario() {
                                 Mas só navegando pelos links da página! <br /> BOA SORTE!!!{" "}
                                 <i className="nes-icon heart is-small"></i>
                             </p>
-                            <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
-                                - clique para fechar -
-                            </p>
-                        </div>
-                    </div>
-                )}
-                {/* Balão de ajuda historico */}
-                {wikiHtml && precisaDeBaloes && balaoHistoricoAberto && (
-                    <div
-                        // z da barra superior é 30
-                        className="z-20 absolute pixel-font top-115 md:top-95 left-1/2 -translate-x-1/2 w-9/10 md:w-5/12"
-                    >
-                        <div
-                            onClick={handleBalaoHistoricoClick}
-                            className={`
-                                    nes-balloon 
-                                    from-right nes-pointer md:w-9/10 left-3 md:left-10
-                                    animate__animated ${saindoBalaoHistorico ? "animate__zoomOutRight" : "animate__pulse animate__infinite animate__slow "} 
-                                    `}
-                        >
-                            <span className="absolute right-0 top-0 text-gray-600"> X</span>
-                            <p className="" style={{ fontSize: 10 }}>
-                                Use o histórico e o botão de retornar! <br /> Cuidado, custa{" "}
-                                <span className="text-red-500">+2</span> pontos!
-                            </p>
-                            <p className="text-[9.5px] md:text-sm text-center">Poste seu recorde no final!</p>
                             <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
                                 - clique para fechar -
                             </p>
