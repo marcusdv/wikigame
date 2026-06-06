@@ -18,7 +18,7 @@ export default function DesafioNormal() {
         carregando,
         voceVenceu,
         historico,
-        passos,
+        pontos,
         paginaObjetivo,
         pontoFlutuante,
         wikiHtml,
@@ -44,7 +44,7 @@ export default function DesafioNormal() {
             {voceVenceu && (
                 <VoceVenceu
                     historico={historico}
-                    passos={passos}
+                    pontos={pontos}
                     iniciarNovoJogo={iniciarNovoJogo}
                     modoDeJogo={"aleatorio"}
                 />
@@ -54,7 +54,7 @@ export default function DesafioNormal() {
                 {/* Barra fixa com HUD de pontos, breadcrumb do histórico e objetivo */}
                 <BarraSuperiorFixa
                     historico={historico}
-                    passos={passos}
+                    pontos={pontos}
                     titulo={"Encontrar Página"}
                     handleBotaoVoltar={handleBotaoVoltar}
                     pontoFlutuante={pontoFlutuante}
@@ -73,7 +73,7 @@ export default function DesafioNormal() {
                 />
             </div>
 
-            <Footer historico={historico} passos={passos} />
+            <Footer historico={historico} pontos={pontos} />
         </div>
     );
 }

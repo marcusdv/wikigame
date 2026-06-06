@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabase";
 
 type VoceVenceuProps = {
     historico: string[];
-    passos: number;
+    pontos: number;
     iniciarNovoJogo: () => void;
     modoDeJogo: "diario" | "aleatorio";
     seedProp?: string;
@@ -14,10 +14,10 @@ type VoceVenceuProps = {
 type Recorde = {
     id: number;
     jogador_nome: string;
-    pontuacao: number;
+    pontos: number;
 };
 
-export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJogo, seedProp }: VoceVenceuProps) {
+export default function VoceVenceu({ historico, pontos, modoDeJogo, iniciarNovoJogo, seedProp }: VoceVenceuProps) {
     const router = useRouter();
 
     const chaveRecorde = `desafio-diario-${seedProp}-recorde-enviado`;
@@ -26,6 +26,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
     const idPalavraDoDia = useRef<number | null>(null);
     const [tempoRestante, setTempoRestante] = useState("");
     const [recordeEnviado, setRecordeEnviado] = useState(() => !!localStorage.getItem(chaveRecorde));
+    const [historicoCopiado, setHistoricoCopiado] = useState(false);
 
     // ==== CALCULA O TEMPO RESTANTE P PRÓXIMA PALAVRA DO DIA ====
     useEffect(() => {
@@ -69,7 +70,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
 
         const { error } = await supabase.from("recordes").insert({
             jogador_nome: nome,
-            pontuacao: passos,
+            pontos: pontos,
             id_palavras_do_dia: idPalavraDoDia.current,
         });
 
@@ -106,7 +107,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                     // depois pega os recordes com o id da palavra do dia
                     supabase
                         .from("recordes")
-                        .select("id, jogador_nome, pontuacao")
+                        .select("id, jogador_nome, pontos")
                         .eq("id_palavras_do_dia", data.id)
                         .then(({ data, error }) => {
                             if (error) {
@@ -123,6 +124,16 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
             });
     }, [seedProp, recordeEnviado]);
 
+    // ==== COPIA O HISTORICO FORMATADO PARA O CLIPBOARD ====
+    function handleClickCopiarHistorico() {
+        const caminho = historico.join(" → ");
+        const texto = `🏆 WikiRun\n${modoDeJogo === "diario" ? "Desafio Diário" : "Aleatório"}\nPontos: ${pontos} | Saltos: ${historico.length - 1}\n\n${caminho}`;
+
+        navigator.clipboard.writeText(texto).then(() => {
+            setHistoricoCopiado(true);
+            setTimeout(() => setHistoricoCopiado(false), 2000);
+        });
+    }
     return (
         <div className="fixed pixel-font inset-0 z-1000 bg-slate-950/90 backdrop-blur-md overflow-x-hidden overflow-y-auto flex justify-center p-4 scrollbar-dark">
             <div
@@ -153,10 +164,10 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                         style={{ padding: "0.75rem", borderColor: "#334155" }}
                     >
                         <span className=" text-blue-400 block mb-2" style={{ fontSize: "8px" }}>
-                            PASSOS
+                            PONTOS
                         </span>
                         <span className=" text-white" style={{ fontSize: "24px" }}>
-                            {passos}
+                            {pontos}
                         </span>
                     </div>
                 </div>
@@ -168,7 +179,33 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                     <span className=" text-blue-400 block mb-3" style={{ fontSize: "8px" }}>
                         CAMINHO PERCORRIDO
                     </span>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 relative">
+                        {/* botão de copiar */}
+                        <span
+                            onClick={handleClickCopiarHistorico}
+                            className={`absolute -right-1 -top-7 w-7 h-7 flex text-xl items-center justify-center cursor-pointer select-none transition-colors active:scale-95
+                                ${
+                                    historicoCopiado
+                                        ? "text-green-300 border-green-300"
+                                        : "text-blue-400 border-blue-400 hover:text-blue-300 hover:border-blue-300"
+                                }`}
+                        >
+                            {historicoCopiado ? (
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                >
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            ) : (
+                                "⧉"
+                            )}
+                        </span>
+
                         {historico.map((item, idx) => (
                             <div key={idx} className="flex items-center gap-2">
                                 <span className=" text-slate-600 shrink-0 w-5" style={{ fontSize: "8px" }}>
@@ -227,10 +264,10 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                             <div className="flex justify-evenly">
                                 <h3>Jogadores</h3>
                                 <span>|</span>
-                                <h3 className=" ">Passos</h3>
+                                <h3 className=" ">Pontos</h3>
                             </div>
                             {recordes
-                                ?.sort((a, b) => a.pontuacao - b.pontuacao)
+                                ?.sort((a, b) => a.pontos - b.pontos)
                                 .map((recorde, idx) => (
                                     <div key={recorde.id} className="flex items-center gap-3 ">
                                         <span
@@ -255,7 +292,7 @@ export default function VoceVenceu({ historico, passos, modoDeJogo, iniciarNovoJ
                                             {recorde.jogador_nome}
                                         </span>
                                         <span className="text-slate-200 shrink-0" style={{ fontSize: "14px" }}>
-                                            - {recordeEnviado ? recorde.pontuacao : "???"}
+                                            - {recordeEnviado ? recorde.pontos : "???"}
                                         </span>
                                     </div>
                                 ))}

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 type BarraSuperiorFixaProps = {
     historico: string[];
-    passos: number;
+    pontos: number;
     handleBotaoVoltar: () => void;
     pontoFlutuante: { id: number; valor: number } | null;
     paginaObjetivo: string;
@@ -54,7 +54,7 @@ const BTN_STYLE = { padding: "8px 20px", margin: "5px 10px" } as const;
 
 export default function BarraSuperiorFixa({
     historico,
-    passos,
+    pontos,
     handleBotaoVoltar,
     pontoFlutuante,
     paginaObjetivo,
@@ -85,11 +85,11 @@ export default function BarraSuperiorFixa({
               ┌──────────────────────────────────────────────────────────────┐
               │ Mobile  (< md)   grid-cols-[1fr 3fr 1fr]                     │
               │  Row 1: [Voltar col1] [Link outro modo col2]  [Reiniciar col3]│
-              │  Row 2: [Passos col1] [Título/Objetivo        col2–3]         │
+              │  Row 2: [ col1] [Título/Objetivo        col2–3]         │
               ├──────────────────────────────────────────────────────────────┤
               │ Desktop (≥ md)   grid-cols-[1fr 3fr 1fr 1fr 1fr]             │
               │  Row 1: [Voltar col1] [Título/Objetivo col2] [Outro modo col3]│
-              │         [Passos col4] [Reiniciar col5]                        │
+              │         [ col4] [Reiniciar col5]                        │
               └──────────────────────────────────────────────────────────────┘
             */}
             <div
@@ -150,21 +150,19 @@ export default function BarraSuperiorFixa({
                             </span>
                         </div>
 
-                        {/* ── PASSOS — mobile col1 row2 | desktop col4 row1 ── */}
+                        {/* ──  — mobile col1 row2 | desktop col4 row1 ── */}
                         <div
                             className={`
                                 col-start-1 row-start-2 flex flex-col items-center justify-center py-2 px-3 border-r-2 border-t-2 
                                 md:col-start-4 md:row-start-1 md:border-t-0 ${t.secaoBorderInterno} 
                                 `}
                         >
-                            <div className={` ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}>
-                                PASSOS
-                            </div>
+                            <div className={` ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}></div>
                             <div
                                 className={` ${t.valorTexto} relative inline-block`}
                                 style={{ fontSize: "28px", lineHeight: 1 }}
                             >
-                                {passos}
+                                {}
                                 {pontoFlutuante && (
                                     <div
                                         key={pontoFlutuante.id}

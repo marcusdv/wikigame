@@ -2,6 +2,7 @@ import { arrPaginasIniciais } from "@/app/data/paginasIniciais";
 import { arrPaginasObjetivo } from "@/app/data/paginasObjetivo";
 import { useEffect, useRef, useState } from "react";
 import { sortearJogo } from "./sotearJogo";
+import { useToast } from "../components/Toast";
 
 // Se passado uma seed, o jogo sorteado será o mesmo para todos os jogadores.
 /**
@@ -18,16 +19,20 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
     const [historico, setHistorico] = useState<string[]>([paginaInicialParam]); // histórico de páginas visitadas, usado para breadcrumb e navegação
     const [paginaAtual, setPaginaAtual] = useState<string>(paginaInicialParam); // começo
     const [paginaObjetivo, setPaginaObjetivo] = useState<string>(paginaObjetivoParam); // fim
-    const [passos, setPassos] = useState(0); // pontuação
+    const [pontos, setPontos] = useState(0); // pontuação
     const [voceVenceu, setVoceVenceu] = useState(false); // venceu?
+    const estaRetornando = useRef(false);
 
     const [carregando, setCarregando] = useState(false); // Cortina de carregamento que aparece enquanto o HTML da Wikipedia está sendo buscado.
+
+    const { mostrarErro } = useToast();
+    const cargaInicialRef = useRef(true);
 
     // Controla a animação de +1 / +2 que flutua sobre o placar.
     // O campo `id` muda a cada disparo para forçar o React a remontar a animação,
     // mesmo que o valor (+1 ou +2) seja igual ao da vez anterior.
     const [pontoFlutuante, setPontoFlutuante] = useState<{ id: number; valor: number } | null>(null);
-    const animacaoIdRef = useRef(0); // Ref para gerar IDs únicos para animações de passos flutuantes.
+    const animacaoIdRef = useRef(0); // Ref para gerar IDs únicos para animações de pontos flutuantes.
 
     // ==== BUSCA ITEM CLICADO NA API DA WIKIPEDIA ====
     // O HTML é renderizado no DOM via dangerouslySetInnerHTML, e handleLinkClicado() captura cliques em links para atualizar paginaAtual sem recarregar a página.
@@ -41,10 +46,7 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
 
                 // verifica se a rota retornou erro
                 if (!resposta.ok) {
-                    // dados.message vem do NextResponse.json({ message: "..." }) da tua rota
-                    setWikiHtml(
-                        `<p class="text-center text-red-500">${resposta ?? "Erro ao carregar página"} <br> Status: ${resposta.status}</p>`,
-                    );
+                    mostrarErro(`Erro ao buscar na API.\nStatus: ${resposta.status} ${resposta.statusText}`);
                     return;
                 }
 
@@ -54,21 +56,29 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
                 // HTML parseado da API da wikipedia
                 const html = dados.parse.text["*"];
                 setWikiHtml(html);
+
+                // se não é o primeiro loading e não está navengando pelo historico ou retornando
+                if (!cargaInicialRef.current && !estaRetornando.current) {
+                    setHistorico((historicoAnterior) => [...historicoAnterior, paginaAtual]);
+                    setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 1 });
+                    setPontos((pontos) => pontos + 1);
+                    if (paginaAtual.toLowerCase() === paginaObjetivo.toLowerCase()) {
+                        setVoceVenceu(true);
+                    }
+                }
+
+                estaRetornando.current = false;
+                cargaInicialRef.current = false;
+                window.scrollTo({ top: 0, behavior: "instant" });
             } catch (err) {
-                setWikiHtml(
-                    `<p class="text-center text-red-500">Erro ao carregar página: ${err instanceof Error ? err.message : "Erro desconhecido"}</p>`,
-                );
+                mostrarErro(err instanceof Error ? err.message : "Erro ao carregar página");
             } finally {
                 setCarregando(false);
-                window.scrollTo({ top: 0, behavior: "instant" });
             }
-
-            setCarregando(false);
-            window.scrollTo({ top: 0, behavior: "instant" });
         }
 
         buscarNaApiDaWiki();
-    }, [paginaAtual]);
+    }, [paginaAtual, mostrarErro, paginaObjetivo]);
 
     // ==== INCIA NOVO JOGO ====
     const iniciarNovoJogo = () => {
@@ -77,8 +87,9 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
         setHistorico([start]);
         setPaginaAtual(start);
         setPaginaObjetivo(target);
-        setPassos(0);
+        setPontos(0);
         setVoceVenceu(false);
+        cargaInicialRef.current = true;
     };
 
     // ==== MANIPULA CLIQUES NOS LINKS DO ARTIGO ====
@@ -119,15 +130,13 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
             const paginaClicada = decodeURIComponent(href.replace("/wiki/", "").replace(/_/g, " "));
 
             setPaginaAtual(paginaClicada);
-            setHistorico((historicoAnterior) => [...historicoAnterior, paginaClicada]);
-            setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 1 });
-            setPassos((passos) => passos + 1);
-            checarVitoria(paginaClicada);
         }
     };
 
     // ==== BOTÃO DE VOLTAR ====
     const handleBotaoVoltar = () => {
+        estaRetornando.current = true;
+
         if (historico.length <= 1) return; // Não volta se não houver histórico
 
         const historicoCopia = [...historico];
@@ -137,7 +146,7 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
 
         setHistorico(historicoCopia);
         setPaginaAtual(paginaAtual);
-        setPassos((passos) => passos + 2);
+        setPontos((pontos) => pontos + 2);
         setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 2 });
     };
 
@@ -169,6 +178,8 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
     // ==== NAVEGAÇÃO PELO HISTÓRICO ====
     // Permite navegar pelo histórico clicando diretamente nas páginas na barra superior.
     const handleNavegarPeloHistorico = (index: number) => {
+        estaRetornando.current = true;
+
         if (index === historico.length - 1) return; // Não navega para a página atual
 
         const novoHistorico = historico.slice(0, index + 1); // Inclui a página do índice selecionado
@@ -176,15 +187,8 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
 
         setHistorico(novoHistorico);
         setPaginaAtual(paginaAtual);
-        setPassos((passos) => passos + 2);
+        setPontos((pontos) => pontos + 2);
         setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 2 });
-    };
-
-    // ==== CHECA VITÓRIA ====
-    const checarVitoria = (pagina: string) => {
-        if (pagina.toLowerCase() === paginaObjetivo.toLowerCase()) {
-            setVoceVenceu(true);
-        }
     };
 
     return {
@@ -193,10 +197,10 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
         paginaObjetivo,
         historico,
         setHistorico,
-        setPassos,
+        setPontos,
         setPaginaAtual,
         setPaginaObjetivo,
-        passos,
+        pontos,
         pontoFlutuante,
         voceVenceu,
         setVoceVenceu,
@@ -206,6 +210,5 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
         handleLinkClicado,
         handleBotaoVoltar,
         handleNavegarPeloHistorico,
-        checarVitoria,
     };
 }

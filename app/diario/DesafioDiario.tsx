@@ -12,7 +12,7 @@ import { arrPaginasObjetivo } from "../data/paginasObjetivo";
 type DadosLocalStorage = {
     historico: string[];
     objetivo: string;
-    passos: number;
+    pontos: number;
     jaVenceu: boolean;
 };
 
@@ -37,10 +37,10 @@ export default function DesafioDiario() {
         voceVenceu,
         setVoceVenceu,
         historico,
-        passos,
+        pontos,
         paginaObjetivo,
         setHistorico,
-        setPassos,
+        setPontos,
         setPaginaAtual,
         pontoFlutuante,
         wikiHtml,
@@ -88,7 +88,7 @@ export default function DesafioDiario() {
                 } else {
                     setPaginaAtual(start);
                     setHistorico([start]);
-                    setPassos(0);
+                    setPontos(0);
                     setPaginaObjetivo(target);
                     setVoceVenceu(false);
                     console.log("Palavra do dia recém criada salva no banco com sucesso!!!");
@@ -102,7 +102,7 @@ export default function DesafioDiario() {
             if (data) {
                 setPaginaAtual(data.inicial);
                 setHistorico([data.inicial]);
-                setPassos(0);
+                setPontos(0);
                 setPaginaObjetivo(data.objetivo);
                 setVoceVenceu(false);
                 console.log("Segundo acesso em diante");
@@ -122,7 +122,7 @@ export default function DesafioDiario() {
             if (dados.historico && dados.historico.length > 0) {
                 setPaginaAtual(dados.historico[dados.historico.length - 1]);
                 setHistorico(dados.historico);
-                setPassos(dados.passos);
+                setPontos(dados.pontos);
                 setPaginaObjetivo(dados.objetivo);
                 setVoceVenceu(dados.jaVenceu);
             }
@@ -135,17 +135,17 @@ export default function DesafioDiario() {
 
     // ==== SALVA PROGRESSO A CADA MUDANÇA E PRIMEIRO ACESSO ====
     useEffect(() => {
-        if (passos === 0) return; // não salva progresso se o jogo acabou de começar, para evitar sobrescrever a palavra do dia do banco com um progresso zerado.
+        if (pontos === 0) return; // não salva progresso se o jogo acabou de começar, para evitar sobrescrever a palavra do dia do banco com um progresso zerado.
         const dados: DadosLocalStorage = {
             historico: historico,
             objetivo: paginaObjetivo,
-            passos,
+            pontos,
             jaVenceu: voceVenceu,
         };
         console.log("Salvando progresso no localStorage render 2: ", dados);
         // seed é a data de hoje, então a chave é única por dia. Formato: "desafio-diario-2026-05-24"
         localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
-    }, [historico, paginaObjetivo, passos, voceVenceu, seed]);
+    }, [historico, paginaObjetivo, pontos, voceVenceu, seed]);
 
     // ==== REGISTRA QUE JÁ VIU OS BALÕES SE FECHAR OS DOIS  ====
     useEffect(() => {
@@ -182,7 +182,7 @@ export default function DesafioDiario() {
             {voceVenceu && (
                 <VoceVenceu
                     historico={historico}
-                    passos={passos}
+                    pontos={pontos}
                     modoDeJogo={"diario"}
                     iniciarNovoJogo={iniciarNovoJogo}
                     seedProp={seed}
@@ -193,7 +193,7 @@ export default function DesafioDiario() {
                 {/* Barra fixa com HUD de pontos, breadcrumb do histórico e objetivo */}
                 <BarraSuperiorFixa
                     historico={historico}
-                    passos={passos}
+                    pontos={pontos}
                     handleBotaoVoltar={handleBotaoVoltar}
                     pontoFlutuante={pontoFlutuante}
                     paginaObjetivo={paginaObjetivo}
@@ -202,7 +202,7 @@ export default function DesafioDiario() {
                     titulo={"Desafio Diário"}
                 />
 
-                {/* Balão de ajuda */}
+                {/* Balão de ajuda com o objetivo */}
                 {wikiHtml && precisaDeBaloes && balanEncontreAberto && (
                     <div
                         // z da barra superior é 30
@@ -232,7 +232,7 @@ export default function DesafioDiario() {
                         </div>
                     </div>
                 )}
-                {/* Balão de ajuda */}
+                {/* Balão de ajuda historico */}
                 {wikiHtml && precisaDeBaloes && balaoHistoricoAberto && (
                     <div
                         // z da barra superior é 30
@@ -249,7 +249,7 @@ export default function DesafioDiario() {
                             <span className="absolute right-0 top-0 text-gray-600"> X</span>
                             <p className="" style={{ fontSize: 10 }}>
                                 Use o histórico e o botão de retornar! <br /> Cuidado, custa{" "}
-                                <span className="text-red-500">+2</span> passos!
+                                <span className="text-red-500">+2</span> pontos!
                             </p>
                             <p className="text-[9.5px] md:text-sm text-center">Poste seu recorde no final!</p>
                             <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
@@ -268,7 +268,7 @@ export default function DesafioDiario() {
                 />
             </div>
 
-            <Footer historico={historico} passos={passos} />
+            <Footer historico={historico} pontos={pontos} />
         </div>
     );
 }

@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
         return [
             {
                 source: "/(.*)",
-                headers: [{ key: "Cache-Control", value: "no-cache" }],
+                headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }],
             },
         ];
     },

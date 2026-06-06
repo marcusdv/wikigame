@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
 import "./globals.css";
 import "./wikiStyle.css";
+import { ToastProvider } from "@/app/components/Toast";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -34,7 +35,9 @@ export default function RootLayout({
             lang="pt-br"
             className={`${geistSans.variable} ${geistMono.variable} ${pressStart2P.variable} h-full antialiased`}
         >
-            <body className="min-h-full flex flex-col">{children}</body>
+            <body className="min-h-full flex flex-col">
+                <ToastProvider>{children}</ToastProvider>
+            </body>
         </html>
     );
 }
