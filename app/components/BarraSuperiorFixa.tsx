@@ -157,12 +157,14 @@ export default function BarraSuperiorFixa({
                                 md:col-start-4 md:row-start-1 md:border-t-0 ${t.secaoBorderInterno} 
                                 `}
                         >
-                            <div className={` ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}></div>
+                            <div className={` ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}>
+                                PONTOS
+                            </div>
                             <div
                                 className={` ${t.valorTexto} relative inline-block`}
                                 style={{ fontSize: "28px", lineHeight: 1 }}
                             >
-                                {}
+                                {pontos}
                                 {pontoFlutuante && (
                                     <div
                                         key={pontoFlutuante.id}
