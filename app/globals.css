@@ -73,6 +73,13 @@ body {
     outline: none !important;
 }
 
+/* Remove focus ring after mouse click, keeps it for keyboard navigation */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 .scrollbar-dark::-webkit-scrollbar {
     width: 6px;
 }
