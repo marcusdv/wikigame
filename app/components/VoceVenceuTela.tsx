@@ -132,7 +132,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, iniciarNovoJ
         copiaHistorico[0] = `${copiaHistorico[0]}`;
 
         const caminho = copiaHistorico.join("\n→");
-        const texto = `🏆 WikiRun\n${modoDeJogo === "diario" ? "Desafio Diário" : "Aleatório"}\nPontos: ${pontos} | Saltos: ${historico.length - 1}\n🏃\n${caminho}`;
+        const texto = `🏆 WikiRun\n${modoDeJogo === "diario" ? "Desafio Diário" : "Aleatório"}\nPontos: ${pontos} | Saltos: ${historico.length - 1}\n\n${caminho}\n\nAcha que consegue me vencer 🫵, trouxa?\nhttps://wikigame-five.vercel.app/diario`;
 
         navigator.clipboard.writeText(texto).then(() => {
             setHistoricoCopiado(true);
