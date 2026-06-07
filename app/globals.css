@@ -74,8 +74,7 @@ body {
 }
 
 /* Remove focus ring after mouse click, keeps it for keyboard navigation */
-button:focus:not(:focus-visible),
-a:focus:not(:focus-visible) {
+*:focus:not(:focus-visible) {
     outline: none !important;
     box-shadow: none !important;
 }
@@ -100,4 +99,119 @@ a:focus:not(:focus-visible) {
 }
 .no-scrollbar::-webkit-scrollbar {
     display: none;
+}
+
+/* ── DARK MODE ── */
+.dark body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+    background-image:
+        radial-gradient(at 50% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(20, 184, 166, 0.08) 0px, transparent 50%),
+        linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+}
+
+/* wikicontent base */
+.dark #wikicontent {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+    border-color: #334155 !important;
+}
+
+/* títulos */
+.dark #wikicontent h1,
+.dark #wikicontent h2,
+.dark #wikicontent h3,
+.dark #wikicontent h4,
+.dark #wikicontent h5,
+.dark #wikicontent h6 {
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+
+/* links */
+.dark #wikicontent a {
+    color: #a5b4fc !important;
+    background-color: rgba(165, 180, 252, 0.15) !important;
+}
+.dark #wikicontent a:visited {
+    color: #c4b5fd !important;
+    background-color: rgba(196, 181, 253, 0.12) !important;
+}
+.dark #wikicontent a:hover {
+    color: #ffffff !important;
+    background-color: #6366f1 !important;
+}
+.dark #wikicontent a.new,
+.dark #wikicontent a.external {
+    color: #64748b !important;
+    background-color: transparent !important;
+}
+
+/* tabelas */
+.dark #wikicontent table {
+    border-color: #334155 !important;
+}
+.dark #wikicontent th {
+    background-color: #1e3a5f !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+}
+.dark #wikicontent td {
+    border-color: #334155 !important;
+}
+
+/* infobox e sidebar — tabela container */
+.dark #wikicontent .infobox,
+.dark #wikicontent .infobox_v2,
+.dark #wikicontent table.infobox,
+.dark #wikicontent .sidebar,
+.dark #wikicontent table.sidebar {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+/* células com inline style (background: light-dark(...)) */
+.dark #wikicontent td.sidebar-content,
+.dark #wikicontent td.sidebar-above,
+.dark #wikicontent td.sidebar-below,
+.dark #wikicontent td.sidebar-pretitle,
+.dark #wikicontent th.sidebar-title-with-pretitle,
+.dark #wikicontent td[style*="background"] {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+}
+
+/* títulos das seções da sidebar (fundo verde) */
+.dark #wikicontent .sidebar-list-title {
+    background-color: #1e3a5f !important;
+    color: #e2e8f0 !important;
+}
+
+.dark #wikicontent .infobox th,
+.dark #wikicontent .sidebar th {
+    color: #94a3b8 !important;
+    background-color: transparent !important;
+}
+.dark #wikicontent .infobox .infobox-title,
+.dark #wikicontent .sidebar .sidebar-title,
+.dark #wikicontent .infobox th[colspan],
+.dark #wikicontent .sidebar th[colspan],
+.dark #wikicontent .infobox caption,
+.dark #wikicontent .sidebar caption {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+}
+
+/* scrollbar */
+.dark ::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+.dark ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-color: #0f172a;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
 }

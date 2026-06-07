@@ -10,7 +10,7 @@ type BarraSuperiorFixaProps = {
     pontoFlutuante: { id: number; valor: number } | null;
     paginaObjetivo: string;
     handleNavegarParaHistorico: (index: number) => void;
-    reiniciarJogo?: () => void;
+    novoJogo?: () => void;
     titulo: "Desafio Diário" | "Encontrar Página";
     tema?: "desafio" | "jogoNormal";
 };
@@ -59,7 +59,7 @@ export default function BarraSuperiorFixa({
     pontoFlutuante,
     paginaObjetivo,
     handleNavegarParaHistorico,
-    reiniciarJogo,
+    novoJogo,
     titulo,
     tema = "jogoNormal",
 }: BarraSuperiorFixaProps) {
@@ -212,10 +212,10 @@ export default function BarraSuperiorFixa({
                                 `}
                         >
                             <button
-                                onClick={reiniciarJogo}
+                                onClick={novoJogo}
                                 title="Reiniciar Corrida"
-                                disabled={!reiniciarJogo}
-                                className={`nes-btn  ${!reiniciarJogo ? "is-disabled" : "is-error"}`}
+                                disabled={!novoJogo}
+                                className={`nes-btn  ${!novoJogo ? "is-disabled" : "is-error"}`}
                                 style={BTN_STYLE}
                             >
                                 X

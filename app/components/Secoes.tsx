@@ -38,7 +38,7 @@ export default function Secoes({ secoesDaPagina, irParaSecao }: SecoesType) {
                     {/* botão de toggle */}
                     <button
                         onClick={() => setMenuSecoesAberto((v) => !v)}
-                        className={`nes-btn ${menuSecoesAberto ? "" : "is-primary "}`}
+                        className={`nes-btn ${menuSecoesAberto ? "" : "is-primary"}`}
                         style={{ fontSize: 8, padding: "6px 12px" }}
                         title={menuSecoesAberto ? "Ocultar seções" : "Mostrar seções"}
                     >

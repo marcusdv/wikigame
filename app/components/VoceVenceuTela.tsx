@@ -6,8 +6,8 @@ import { supabase } from "../lib/supabase";
 type VoceVenceuProps = {
     historico: string[];
     pontos: number;
-    iniciarNovoJogo: () => void;
     modoDeJogo: "diario" | "aleatorio";
+    novoJogo?: () => void;
     seedProp?: string;
 };
 
@@ -17,7 +17,7 @@ type Recorde = {
     pontos: number;
 };
 
-export default function VoceVenceu({ historico, pontos, modoDeJogo, iniciarNovoJogo, seedProp }: VoceVenceuProps) {
+export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, seedProp }: VoceVenceuProps) {
     const router = useRouter();
 
     const chaveRecorde = `desafio-diario-${seedProp}-recorde-enviado`;
@@ -132,7 +132,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, iniciarNovoJ
         copiaHistorico[0] = `→${copiaHistorico[0]}`;
 
         const caminho = copiaHistorico.join("\n→");
-        const texto = `🏆 WikiRun\n${modoDeJogo === "diario" ? "Desafio Diário" : "Aleatório"}\nPontos: ${pontos} | Saltos: ${historico.length - 1}\n\n${caminho}\n\nAcha que consegue me vencer 🫵, trouxa?\nhttps://wikigame-five.vercel.app/diario`;
+        const texto = `🏆 WikiRun\n${modoDeJogo === "diario" ? "Desafio Diário" : "Aleatório"}\nPontos: ${pontos} | Saltos: ${historico.length - 1}\n\n${caminho}\n\nConsegue fazer melhor? 🫵\nhttps://wikigame-five.vercel.app/diario`;
 
         navigator.clipboard.writeText(texto).then(() => {
             setHistoricoCopiado(true);
@@ -188,7 +188,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, iniciarNovoJ
                         {/* botão de copiar */}
                         <span
                             onClick={handleClickCopiarHistorico}
-                            className={`absolute -right-1 -top-7 w-7 h-7 flex text-xl items-center justify-center cursor-pointer select-none transition-colors active:scale-95
+                            className={`absolute -right-1 -top-7 w-7 h-7 flex text-lg items-center justify-center cursor-pointer select-none transition-colors active:scale-95
                                 ${
                                     historicoCopiado
                                         ? "text-green-300 border-green-300"
@@ -306,7 +306,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, iniciarNovoJ
                 )}
 
                 <button
-                    onClick={() => (modoDeJogo === "aleatorio" ? iniciarNovoJogo() : router.push("/jogar"))}
+                    onClick={() => (modoDeJogo === "aleatorio" ? novoJogo && novoJogo() : router.push("/jogar"))}
                     className="nes-btn is-primary w-full "
                     style={{ fontSize: "11px" }}
                 >

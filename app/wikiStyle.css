@@ -73,6 +73,31 @@
         box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04) !important;
     }
 
+    /* Célula de imagem do infobox: centraliza e remove padding lateral */
+    .infobox-image,
+    .infobox .infobox-image {
+        text-align: center !important;
+        padding: 8px 4px !important;
+    }
+
+    /* Faz o span e o link virarem bloco para a imagem poder ocupar 100% */
+    .infobox-image span,
+    .infobox-image a {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    /* Imagem principal do infobox ocupa 95% da largura da caixa e centraliza */
+    .infobox-image img {
+        width: 95% !important;
+        max-width: 95% !important;
+        height: auto !important;
+        border-radius: 8px !important;
+        display: block !important;
+        margin: 0 auto !important;
+        margin: 0 auto !important;
+    }
+
     .infobox img,
     .sidebar img {
         max-width: 100% !important;
@@ -145,7 +170,7 @@
     }
 
     /* =========================================================================
-       4. INFOBOX/SIDEBAR EM MOBILE (< 640px) — ocupa 100% e para de flutuar
+       4. MOBILE (< 640px) — infobox ocupa tudo, imagens centralizam sem float
        ========================================================================= */
     @media (max-width: 640px) {
         .infobox,
@@ -154,11 +179,23 @@
         .sidebar,
         table.sidebar {
             float: none !important;
+            display: block !important;
             width: 100% !important;
             max-width: 100% !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
+            margin: 0 0 1.5rem 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        figure:not(.gallerybox *),
+        div.thumb:not(.gallerybox *) {
+            float: none !important;
             clear: both !important;
+            display: block !important;
+            width: fit-content !important;
+            max-width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-bottom: 1rem !important;
         }
     }
 
@@ -222,41 +259,43 @@
     }
 
     /* =========================================================================
-       6. ALINHAMENTO DE IMAGENS ISOLADAS (Força o texto a passar pelo lado)
+       6. ALINHAMENTO DE IMAGENS ISOLADAS — só em desktop (>= 641px)
        ========================================================================= */
-    /* Imagens explicitamente na direita */
-    figure.mw-halign-right:not(.gallerybox *),
-    div.thumb.tright:not(.gallerybox *):not(.tmulti) {
-        float: right !important;
-        margin-left: 1.5rem !important;
-        margin-bottom: 1rem !important;
-        clear: right !important;
-    }
+    @media (min-width: 641px) {
+        /* Imagens explicitamente na direita */
+        figure.mw-halign-right:not(.gallerybox *),
+        div.thumb.tright:not(.gallerybox *):not(.tmulti) {
+            float: right !important;
+            margin-left: 1.5rem !important;
+            margin-bottom: 1rem !important;
+            clear: right !important;
+        }
 
-    /* Imagens explicitamente na esquerda */
-    figure.mw-halign-left:not(.gallerybox *),
-    div.thumb.tleft:not(.gallerybox *) {
-        float: left !important;
-        margin-right: 1.5rem !important;
-        margin-bottom: 1rem !important;
-        clear: left !important;
-    }
+        /* Imagens explicitamente na esquerda */
+        figure.mw-halign-left:not(.gallerybox *),
+        div.thumb.tleft:not(.gallerybox *) {
+            float: left !important;
+            margin-right: 1.5rem !important;
+            margin-bottom: 1rem !important;
+            clear: left !important;
+        }
 
-    /* Captura as tags <figure> padrão sem alinhamento definido e joga para a direita */
-    figure.mw-default-size:not(.mw-halign-left):not(.mw-halign-center):not(.gallerybox *),
-    figure:not([class*="mw-halign-"]):not(.gallerybox *) {
-        float: right !important;
-        margin-left: 1.5rem !important;
-        margin-bottom: 1rem !important;
-        clear: right !important;
-    }
+        /* Captura as tags <figure> padrão sem alinhamento definido e joga para a direita */
+        figure.mw-default-size:not(.mw-halign-left):not(.mw-halign-center):not(.gallerybox *),
+        figure:not([class*="mw-halign-"]):not(.gallerybox *) {
+            float: right !important;
+            margin-left: 1.5rem !important;
+            margin-bottom: 1rem !important;
+            clear: right !important;
+        }
 
-    /* Fallback para qualquer div.thumb sem lado definido */
-    div.thumb:not(.tleft):not(.tnone):not(.tmulti):not(.gallerybox *) {
-        float: right !important;
-        margin-left: 1.5rem !important;
-        margin-bottom: 1rem !important;
-        clear: right !important;
+        /* Fallback para qualquer div.thumb sem lado definido */
+        div.thumb:not(.tleft):not(.tnone):not(.tmulti):not(.gallerybox *) {
+            float: right !important;
+            margin-left: 1.5rem !important;
+            margin-bottom: 1rem !important;
+            clear: right !important;
+        }
     }
 
     /* =========================================================================

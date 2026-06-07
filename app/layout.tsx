@@ -1,24 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
+import { Press_Start_2P } from "next/font/google";
 import "./globals.css";
 import "./wikiStyle.css";
-import { ToastProvider } from "@/app/components/Toast";
-
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
 
 const pressStart2P = Press_Start_2P({
     variable: "--font-press-start",
     subsets: ["latin"],
     weight: "400",
 });
+import { ToastProvider } from "@/app/components/Toast";
+import DarkModeToggle from "@/app/components/DarkModeToggle";
 
 export const metadata: Metadata = {
     title: "Wikirun",
@@ -31,12 +22,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html
-            lang="pt-br"
-            className={`${geistSans.variable} ${geistMono.variable} ${pressStart2P.variable} h-full antialiased`}
-        >
+        <html lang="pt-br" className={`${pressStart2P.variable} h-full antialiased`}>
             <body className="min-h-full flex flex-col">
                 <ToastProvider>{children}</ToastProvider>
+                <DarkModeToggle />
             </body>
         </html>
     );

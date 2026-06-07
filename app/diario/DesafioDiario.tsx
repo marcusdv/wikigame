@@ -20,7 +20,7 @@ type DadosLocalStorage = {
 
 export default function DesafioDiario() {
     const d = new Date(new Date().getTime() - 3 * 60 * 60 * 1000); // pega a data de uma maneira que seja igual para todos, e subtrai 3h → hora de Brasília em UTC
-    const seed = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`; //data de hoje no formato "2026-05-24".
+    const seed = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`; // data de hoje no formato "2026-05-24".
 
     // para saber se renderiza balões na tela, só precisa uma vez para o jogador aprender e nunca mais
     const precisaDeBaloes = !localStorage.getItem("ja-viu-os-baloes");
@@ -28,27 +28,21 @@ export default function DesafioDiario() {
     const [jogoInicial, setJogoInicial] = useState<{ start: string; target: string }>({ start: "", target: "" }); // valor inicial vazio, vai ser atualizado depois com o valor do banco ou sorteado
     const [balanEncontreAberto, setBalaoEncontreAberto] = useState<boolean>(true);
     const [saindoBalaoEncontrado, setSaindoBalaoEncontrado] = useState(false);
-    const [balaoHistoricoAberto, setBalaoHistoricoAberto] = useState<boolean>(true);
-    const [saindoBalaoHistorico, setSaindoBalaoHistorico] = useState(false);
 
     const {
         carregando,
         voceVenceu,
-        setVoceVenceu,
         historico,
         pontos,
         paginaObjetivo,
-        setHistorico,
-        setPontos,
-        setPaginaAtual,
         pontoFlutuante,
         wikiHtml,
         iniciarNovoJogo,
-        setPaginaObjetivo,
         handleBotaoVoltar,
         handleNavegarPeloHistorico,
         handleLinkClicado,
-    } = useGameLogic(jogoInicial.start, jogoInicial.target, seed);
+        carregarJogoExistente,
+    } = useGameLogic(jogoInicial.start, jogoInicial.target);
 
     // ==== SALVA PALAVRA DO DIA NO BANCO ==== //
     useEffect(() => {
@@ -72,6 +66,7 @@ export default function DesafioDiario() {
                 return;
             }
 
+            // NOVO JOGO DO DIA É GERADO CASO NÃO EXISTA
             if (!data) {
                 const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo, seed);
                 setJogoInicial({ start, target });
@@ -85,11 +80,7 @@ export default function DesafioDiario() {
                 if (error) {
                     console.error("Erro ao salvar palavra do dia recém criada no banco:", error);
                 } else {
-                    setPaginaAtual(start);
-                    setHistorico([start]);
-                    setPontos(0);
-                    setPaginaObjetivo(target);
-                    setVoceVenceu(false);
+                    iniciarNovoJogo(start, target);
                     console.log("Palavra do dia recém criada salva no banco com sucesso!!!");
                 }
             }
@@ -99,11 +90,7 @@ export default function DesafioDiario() {
             // Se o usuário já acessou hoje, carrega do localStorage
             // e ignora os dados do banco
             if (data) {
-                setPaginaAtual(data.inicial);
-                setHistorico([data.inicial]);
-                setPontos(0);
-                setPaginaObjetivo(data.objetivo);
-                setVoceVenceu(false);
+                carregarJogoExistente(data.objetivo, [data.inicial], 0, false);
                 console.log("Segundo acesso em diante");
             }
         }
@@ -119,11 +106,7 @@ export default function DesafioDiario() {
             const dados = JSON.parse(json);
 
             if (dados.historico && dados.historico.length > 0) {
-                setPaginaAtual(dados.historico[dados.historico.length - 1]);
-                setHistorico(dados.historico);
-                setPontos(dados.pontos);
-                setPaginaObjetivo(dados.objetivo);
-                setVoceVenceu(dados.jaVenceu);
+                carregarJogoExistente(dados.objetivo, dados.historico, dados.pontos, dados.jaVenceu);
             }
         } else {
             salvarPalavraDoDiaNoBanco();
@@ -146,12 +129,12 @@ export default function DesafioDiario() {
         localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
     }, [historico, paginaObjetivo, pontos, voceVenceu, seed]);
 
-    // ==== REGISTRA QUE JÁ VIU OS BALÕES SE FECHAR OS DOIS  ====
+    // ==== REGISTRA QUE JÁ VIU O BALÃO SE FECHAR  ====
     useEffect(() => {
-        if (!balanEncontreAberto && !balaoHistoricoAberto) {
+        if (!balanEncontreAberto) {
             localStorage.setItem("ja-viu-os-baloes", "true");
         }
-    }, [balanEncontreAberto, balaoHistoricoAberto]);
+    }, [balanEncontreAberto]);
 
     // ==== HOOK QUE PEGA AS SEÇÕES DA PAGINA ====
     // ==== E MONTA NUMA LISTA ====
@@ -161,12 +144,6 @@ export default function DesafioDiario() {
     function handleBalaoEncontreClick() {
         setSaindoBalaoEncontrado(true);
         setTimeout(() => setBalaoEncontreAberto(false), 1000); // espera a animação terminar
-    }
-
-    // ==== HANDLE PARA REMOVER BALÃO 2 DA TELA ====
-    function handleBalaoHistoricoClick() {
-        setSaindoBalaoHistorico(true);
-        setTimeout(() => setBalaoHistoricoAberto(false), 1000); // espera a animação terminar
     }
 
     return (
@@ -182,15 +159,7 @@ export default function DesafioDiario() {
             )}
 
             {/* Modal de vitória — aparece quando o jogador atinge o objetivo */}
-            {voceVenceu && (
-                <VoceVenceu
-                    historico={historico}
-                    pontos={pontos}
-                    modoDeJogo={"diario"}
-                    iniciarNovoJogo={iniciarNovoJogo}
-                    seedProp={seed}
-                />
-            )}
+            {voceVenceu && <VoceVenceu historico={historico} pontos={pontos} modoDeJogo={"diario"} seedProp={seed} />}
 
             <div>
                 {/* Barra fixa com HUD de pontos, breadcrumb do histórico e objetivo */}

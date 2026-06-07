@@ -51,7 +51,10 @@ export default function DesafioNormal() {
                 <VoceVenceu
                     historico={historico}
                     pontos={pontos}
-                    iniciarNovoJogo={iniciarNovoJogo}
+                    novoJogo={() => {
+                        const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo);
+                        iniciarNovoJogo(start, target);
+                    }}
                     modoDeJogo={"aleatorio"}
                 />
             )}
@@ -66,7 +69,10 @@ export default function DesafioNormal() {
                     pontoFlutuante={pontoFlutuante}
                     paginaObjetivo={paginaObjetivo}
                     handleNavegarParaHistorico={handleNavegarPeloHistorico}
-                    reiniciarJogo={iniciarNovoJogo}
+                    novoJogo={() => {
+                        const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo);
+                        iniciarNovoJogo(start, target);
+                    }}
                     tema={"jogoNormal"}
                 />
 
