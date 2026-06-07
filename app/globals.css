@@ -194,6 +194,15 @@ body {
     color: #94a3b8 !important;
     background-color: transparent !important;
 }
+.dark #wikicontent .infobox td,
+.dark #wikicontent .sidebar td {
+    color: #cbd5e1 !important;
+    background-color: transparent !important;
+}
+.dark #wikicontent .infobox *[style*="color"],
+.dark #wikicontent .sidebar *[style*="color"] {
+    color: #cbd5e1 !important;
+}
 .dark #wikicontent .infobox .infobox-title,
 .dark #wikicontent .sidebar .sidebar-title,
 .dark #wikicontent .infobox th[colspan],
