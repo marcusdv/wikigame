@@ -5,9 +5,11 @@ type SecoesType = {
     irParaSecao: (index: number) => void;
 };
 
+// ==== COMPONENTE DE NAVEGAÇÃO ENTRE OS H2s DA WIKIPEDIA ====
 export default function Secoes({ secoesDaPagina, irParaSecao }: SecoesType) {
     const [menuSecoesAberto, setMenuSecoesAberto] = useState(true);
 
+    // coloca um ínicio na frente para levar ao topo da página.
     const secoesCopia = [{ text: "Início", index: -1 }, ...secoesDaPagina];
 
     return (

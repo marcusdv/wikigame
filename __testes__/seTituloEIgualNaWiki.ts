@@ -2,8 +2,8 @@
 // Um título diferente faz o jogo não detectar a vitória corretamente.
 // Uso: npx tsx __testes__/seTituloEIgualNaWiki.ts
 
-import { novasPaginas } from "./dados/novasIniciais";
-import { arr as novosObjetivos } from "./dados/novosObjetivo";
+import { novasPaginasIniciais } from "./dados/novasIniciais";
+import { arrNovosObjetivos } from "./dados/novosObjetivo";
 
 const DELAY_MS = 600;
 // User-Agent obrigatório — sem ele a Wikipedia pode bloquear as requisições.
@@ -26,7 +26,7 @@ async function verificar(titulo: string) {
     }
 }
 
-const paginas = novosObjetivos;
+const paginas = novasPaginasIniciais;
 
 async function main() {
     console.log(`Verificando ${paginas.length} páginas (${DELAY_MS}ms entre cada)...\n`);

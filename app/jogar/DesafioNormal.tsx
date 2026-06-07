@@ -3,7 +3,7 @@ import { useGameLogic } from "../lib/useGameLogic";
 import BarraSuperiorFixa from "../components/BarraSuperiorFixa";
 import Footer from "../components/Footer";
 import VoceVenceu from "../components/VoceVenceuTela";
-import { sortearJogo } from "../lib/sotearJogo";
+import { sortearJogo } from "../lib/sortearJogo";
 import { arrPaginasIniciais } from "../data/paginasIniciais";
 import { arrPaginasObjetivo } from "../data/paginasObjetivo";
 import { useState } from "react";

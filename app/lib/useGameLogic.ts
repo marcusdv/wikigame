@@ -1,32 +1,29 @@
 import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { useToast } from "../components/Toast";
-import { gameReducer, GameState } from "./gameReducer";
+import { gameReducer } from "./gameReducer";
 
 export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: string) {
-    const estadoInicial: GameState = {
+    const [state, dispatch] = useReducer(gameReducer, paginaInicialParam, () => ({
         historico: [paginaInicialParam],
         paginaAtual: paginaInicialParam,
         pontos: 0,
         paginaObjetivo: paginaObjetivoParam,
         voceVenceu: false,
         carregando: false,
-    };
+    }));
 
-    const [state, dispatch] = useReducer(gameReducer, estadoInicial);
-    const [wikiHtml, setWikiHtml] = useState("");
+    const [wikiHtml, setWikiHtml] = useState(""); // conteudo wiki passado pela api
+
     const [pontoFlutuante, setPontoFlutuante] = useState<{ id: number; valor: number } | null>(null);
     const animacaoIdRef = useRef(0);
 
     // ativa o uso do toast no componente
     const { mostrarErro } = useToast();
 
-    // Espelha o historico em uma ref para que o useEffect possa ler o valor
-    // atualizado sem precisar colocá-lo nas dependências (o que causaria loop infinito).
-    // Refs não causam re-render — são só uma caixinha que guarda um valor mutável.
-    const historicoRef = useRef(state.historico);
-    // useLayoutEffect sem deps roda de forma síncrona após cada render,
-    // ANTES do useEffect principal — garante que a ref esteja sempre atualizada
-    // quando o efeito da busca rodar, sem infringir a regra de não modificar refs durante o render.
+    // Espelha o historico em uma ref para que o useEffect possa ler o valor sem ter que passar o historico nas dependências e re-renderizar (o que causaria loop infinito)
+    const historicoRef = useRef(state.historico); // Refs não causam re-render
+
+    // esse hook roda antes dos useEffects, então garante que o historicoRef sempre estará atualizado
     useLayoutEffect(() => {
         historicoRef.current = state.historico;
     });
@@ -51,18 +48,11 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
                 const html = dados.parse.text["*"];
                 setWikiHtml(html);
 
-                // Verifica se paginaAtual já é a última do histórico.
-                // Se for igual, significa que é: uma carga inicial, retorno pelo botão voltar,
-                // ou navegação pelo breadcrumb — nenhum desses casos deve adicionar ao histórico ou somar ponto.
-                //
-                // Essa verificação também resolve o bug do React StrictMode, que em desenvolvimento
-                // executa os efeitos duas vezes. Com cargaInicialRef (abordagem anterior), na segunda
-                // execução a ref já era false e o histórico era duplicado. Com essa comparação,
-                // o resultado é sempre o mesmo independente de quantas vezes o efeito rodar.
-                const ultimaNoHistorico = historicoRef.current[historicoRef.current.length - 1];
-                const eNavegacaoNova = state.paginaAtual.toLowerCase() !== ultimaNoHistorico?.toLowerCase();
-
-                //
+                // Usamos o historicoRef aqui, verificamos se a última página é a mesma que a página atual.
+                // Porque quando carregamos dados do LocalStorage, Banco ou é o primeiro acesso da página, ele não deve adicionar ao estado, pois já foi carregado.
+                const ultimaPaginaNoHistorico = historicoRef.current[historicoRef.current.length - 1];
+                const eNavegacaoNova = state.paginaAtual.toLowerCase() !== ultimaPaginaNoHistorico?.toLowerCase();
+                // Assim não entramos esse if e não colocamos a mesma página no histórico novamente.
                 if (eNavegacaoNova) {
                     dispatch({ type: "NAVEGOU", pagina: state.paginaAtual });
                     setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 1 });
@@ -90,7 +80,7 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
         dispatch({ type: "CARREGAR_JOGO_EXISTENTE", target, historico, pontos, voceVenceu });
     };
 
-    // ==== MANIPULA CLIQUES NOS LINKS DO ARTIGO ====
+    // ==== MANIPULA CLIQUES NOS LINKS DO ARTIGO E DISPARA O USEEFFECT DE BUSCA NA WIKIPEDIA====
     const handleLinkClicado = (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault();
 

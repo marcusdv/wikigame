@@ -28,8 +28,6 @@ export type GameAction =
       };
 
 export function gameReducer(state: GameState, action: GameAction) {
-    console.log(action.type); // ← troca state por action.type
-
     switch (action.type) {
         case "NAVEGOU": {
             const ganhou =

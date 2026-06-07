@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import VoceVenceu from "../components/VoceVenceuTela";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { sortearJogo } from "../lib/sotearJogo";
+import { sortearJogo } from "../lib/sortearJogo";
 import { arrPaginasIniciais } from "../data/paginasIniciais";
 import { arrPaginasObjetivo } from "../data/paginasObjetivo";
 import Secoes from "../components/Secoes";
@@ -81,7 +81,6 @@ export default function DesafioDiario() {
                     console.error("Erro ao salvar palavra do dia recém criada no banco:", error);
                 } else {
                     iniciarNovoJogo(start, target);
-                    console.log("Palavra do dia recém criada salva no banco com sucesso!!!");
                 }
             }
 
@@ -91,7 +90,6 @@ export default function DesafioDiario() {
             // e ignora os dados do banco
             if (data) {
                 carregarJogoExistente(data.objetivo, [data.inicial], 0, false);
-                console.log("Segundo acesso em diante");
             }
         }
 
@@ -124,7 +122,6 @@ export default function DesafioDiario() {
             pontos,
             jaVenceu: voceVenceu,
         };
-        console.log("Salvando progresso no localStorage render 2: ", dados);
         // seed é a data de hoje, então a chave é única por dia. Formato: "desafio-diario-2026-05-24"
         localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
     }, [historico, paginaObjetivo, pontos, voceVenceu, seed]);

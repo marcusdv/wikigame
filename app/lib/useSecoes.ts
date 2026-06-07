@@ -38,7 +38,7 @@ export function useSecoes(wikiHtml: string) {
     // está lendo o DOM atual. Usa o index para encontrar o h2 certo.
     const irParaSecao = (index: number) => {
         const h2s = document.querySelectorAll("#wikicontent h2");
-        h2s[index]?.scrollIntoView({ behavior: "smooth", block: "center" });
+        h2s[index].scrollIntoView({ behavior: "smooth", block: "center" });
     };
 
     return { secoesDaPagina, irParaSecao };

@@ -6,10 +6,11 @@ import { mkdirSync, writeFileSync } from "fs";
 import path from "path";
 import { arrPaginasIniciais } from "../app/data/paginasIniciais";
 import { arrPaginasObjetivo } from "../app/data/paginasObjetivo";
-import { novasPaginas } from "./dados/novasIniciais";
+import { arrNovosObjetivos } from "./dados/novosObjetivo";
+import { novasPaginasIniciais } from "./dados/novasIniciais";
 // ==== COLOQUE OS ARRAYS AQUI ====
 const arr1: string[] = arrPaginasIniciais;
-const arr2: string[] = novasPaginas;
+const arr2: string[] = novasPaginasIniciais;
 // ================================
 
 const resultado = [...new Set([...arr1, ...arr2])];
