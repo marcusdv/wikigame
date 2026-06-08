@@ -25,11 +25,11 @@ export default function Footer({ historico, pontos }: FooterProps) {
                 </div>
 
                 <div
-                    className="nes-container is-dark is-rounded select-none w-full sm:w-auto"
+                    className="nes-container is-dark is-rounded select-none w-full sm:w-auto min-w-0"
                     style={{ padding: "8px 20px", borderColor: "#1e40af" }}
                 >
-                    <div className="flex items-center justify-center gap-5">
-                        <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-5 min-w-0">
+                        <div className="flex items-center gap-2 shrink-0">
                             <span className="pixel-font text-blue-400" style={{ fontSize: "8px" }}>
                                 PONTOS:
                             </span>
@@ -37,16 +37,16 @@ export default function Footer({ historico, pontos }: FooterProps) {
                                 {pontos}
                             </span>
                         </div>
-                        <span className="pixel-font text-slate-600" style={{ fontSize: "10px" }}>
+                        <span className="pixel-font text-slate-600 shrink-0" style={{ fontSize: "10px" }}>
                             |
                         </span>
-                        <div className="flex items-center gap-2">
-                            <span className="pixel-font text-blue-400" style={{ fontSize: "8px" }}>
+                        <div className="flex items-center gap-2 min-w-0">
+                            <span className="pixel-font text-blue-400 shrink-0" style={{ fontSize: "8px" }}>
                                 PÁGINA:
                             </span>
                             <span
                                 className="pixel-font text-slate-300 truncate"
-                                style={{ fontSize: "9px", maxWidth: "150px" }}
+                                style={{ fontSize: "9px" }}
                                 title={ultimoNo}
                             >
                                 {ultimoNo}

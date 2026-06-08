@@ -5,8 +5,8 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { novasPaginasIniciais } from "./dados/novasIniciais";
-import { arrNovosObjetivos } from "./dados/novosObjetivo";
+import { novasPaginasIniciais } from "./novos-dados/novasIniciais";
+import { arrNovosObjetivos } from "./novos-dados/novosObjetivo";
 
 const DELAY_MS = 700;
 const LIMITE_PALAVRAS = 300;

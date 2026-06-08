@@ -2,8 +2,8 @@
 // Um título diferente faz o jogo não detectar a vitória corretamente.
 // Uso: npx tsx __testes__/seTituloEIgualNaWiki.ts
 
-import { novasPaginasIniciais } from "./dados/novasIniciais";
-import { arrNovosObjetivos } from "./dados/novosObjetivo";
+import { novasPaginasIniciais } from "./novos-dados/novasIniciais";
+import { arrNovosObjetivos } from "./novos-dados/novosObjetivo";
 
 const DELAY_MS = 600;
 // User-Agent obrigatório — sem ele a Wikipedia pode bloquear as requisições.
