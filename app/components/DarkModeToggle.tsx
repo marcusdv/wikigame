@@ -3,15 +3,17 @@ import { useEffect, useState } from "react";
 import { BsMoon, BsSun } from "react-icons/bs";
 
 export default function DarkModeToggle() {
-    const [dark, setDark] = useState(false);
+    const [dark, setDark] = useState(() => {
+        if (typeof window === "undefined") return false;
+        const jaSalvouModo = localStorage.getItem("dark-mode");
+        return jaSalvouModo !== null
+            ? jaSalvouModo === "true" // pega do localStorage, se tiver
+            : window.matchMedia("(prefers-color-scheme: dark)").matches; // pega a preferência do sistema do usuário
+    });
 
     useEffect(() => {
-        const saved = localStorage.getItem("dark-mode");
-        const prefereDark =
-            saved !== null ? saved === "true" : window.matchMedia("(prefers-color-scheme: dark)").matches;
-        setDark(prefereDark);
-        document.documentElement.classList.toggle("dark", prefereDark);
-    }, []);
+        document.documentElement.classList.toggle("dark", dark);
+    }, [dark]);
 
     const toggle = () => {
         const next = !dark;

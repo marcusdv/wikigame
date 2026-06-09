@@ -5,7 +5,7 @@
 import { novasPaginasIniciais } from "./novos-dados/novasIniciais";
 import { arrNovosObjetivos } from "./novos-dados/novosObjetivo";
 
-const DELAY_MS = 600;
+const DELAY_MS = 150;
 // User-Agent obrigatório — sem ele a Wikipedia pode bloquear as requisições.
 const USER_AGENT = "WikiRun/1.0 (verificacao de titulos; marcus.vinicius.bittencourt.c@gmail.com)";
 
@@ -36,13 +36,14 @@ async function main() {
     for (let i = 0; i < paginas.length; i++) {
         const resultado = await verificar(paginas[i]);
 
+        const contador = `[${i + 1}/${paginas.length}]`;
         if (resultado.ok) {
-            console.log(`  ✓  ${resultado.titulo} → "${resultado.tituloWiki}"`);
+            console.log(`${contador}  ✓  ${resultado.titulo} → "${resultado.tituloWiki}"`);
         } else if (resultado.erro) {
-            console.log(`  ✗  "${resultado.titulo}" → ${resultado.erro}`);
+            console.log(`${contador}  ✗  "${resultado.titulo}" → ${resultado.erro}`);
             problemas.push(resultado);
         } else {
-            console.log(`  ≠  "${resultado.titulo}" → Wikipedia: "${resultado.tituloWiki}"`);
+            console.log(`${contador}  ≠  "${resultado.titulo}" → Wikipedia: "${resultado.tituloWiki}"`);
             problemas.push(resultado);
         }
 

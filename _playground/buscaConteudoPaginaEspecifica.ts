@@ -24,6 +24,6 @@ async function buscar(palavra: string) {
 }
 
 // teste rápido
-buscar("Prostituição em animais").then((dados) => {
+buscar("Lista de mortes incomuns na Idade Moderna").then((dados) => {
     console.log(dados);
 });

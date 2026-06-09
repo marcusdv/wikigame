@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 import { novasPaginasIniciais } from "./novos-dados/novasIniciais";
 import { arrNovosObjetivos } from "./novos-dados/novosObjetivo";
 
-const DELAY_MS = 700;
+const DELAY_MS = 200;
 const LIMITE_PALAVRAS = 300;
 // User-Agent obrigatório — sem ele a Wikipedia pode bloquear as requisições.
 const USER_AGENT = "WikiRun/1.0 (inspecao de conteudo; marcus.vinicius.bittencourt.c@gmail.com)";

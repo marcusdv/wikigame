@@ -18,6 +18,8 @@ const resultado = [...new Set([...arr1, ...arr2])];
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pasta = path.join(__dirname, "txts");
 mkdirSync(pasta, { recursive: true });
-writeFileSync(path.join(pasta, "semDuplicadasNaArr.txt"), JSON.stringify(resultado, null, 2), "utf-8");
+const linhas = resultado.map((item) => `  "${item}",`).join("\n");
+const conteudo = `export const arrPaginasIniciais = [\n${linhas}\n];\n`;
+writeFileSync(path.join(pasta, "semDuplicadasNaArr.txt"), conteudo, "utf-8");
 
 console.log(`${resultado.length} itens salvos em txts/semDuplicadasNaArr.txt`);
