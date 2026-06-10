@@ -5,6 +5,7 @@ export type GameState = {
     paginaObjetivo: string;
     voceVenceu: boolean;
     carregando: boolean;
+    custoDeVoltar: number;
 };
 
 export type GameAction =
@@ -25,6 +26,7 @@ export type GameAction =
           historico: string[];
           pontos: number;
           voceVenceu: boolean;
+          custoDeVoltar: number;
       };
 
 export function gameReducer(state: GameState, action: GameAction) {
@@ -57,7 +59,8 @@ export function gameReducer(state: GameState, action: GameAction) {
                 ...state,
                 historico: copiaHistorico,
                 paginaAtual: copiaHistorico[copiaHistorico.length - 1],
-                pontos: state.pontos + 2,
+                pontos: state.pontos + state.custoDeVoltar,
+                custoDeVoltar: Math.min(state.custoDeVoltar + 1, 2),
             };
         }
         case "VOLTOU_PELO_HISTORICO": {
@@ -66,7 +69,8 @@ export function gameReducer(state: GameState, action: GameAction) {
                 ...state,
                 historico: novoHistorico,
                 paginaAtual: novoHistorico[novoHistorico.length - 1],
-                pontos: state.pontos + 2,
+                pontos: state.pontos + state.custoDeVoltar,
+                custoDeVoltar: Math.min(state.custoDeVoltar + 1, 2),
             };
         }
         case "CARREGANDO":
@@ -82,6 +86,7 @@ export function gameReducer(state: GameState, action: GameAction) {
                 pontos: 0,
                 voceVenceu: false,
                 carregando: false,
+                custoDeVoltar: 0,
             };
         case "CARREGAR_JOGO_EXISTENTE":
             return {
@@ -91,6 +96,7 @@ export function gameReducer(state: GameState, action: GameAction) {
                 pontos: action.pontos,
                 voceVenceu: action.voceVenceu,
                 carregando: false,
+                custoDeVoltar: action.custoDeVoltar,
             };
         default:
             return state;

@@ -10,6 +10,7 @@ type BarraSuperiorFixaProps = {
     pontoFlutuante: { id: number; valor: number } | null;
     paginaObjetivo: string;
     handleNavegarParaHistorico: (index: number) => void;
+    custoDeVoltar: number;
     novoJogo?: () => void;
     titulo: "Desafio Diário" | "Encontrar Página";
     tema?: "desafio" | "jogoNormal";
@@ -61,6 +62,7 @@ export default function BarraSuperiorFixa({
     handleNavegarParaHistorico,
     novoJogo,
     titulo,
+    custoDeVoltar,
     tema = "jogoNormal",
 }: BarraSuperiorFixaProps) {
     //
@@ -116,7 +118,7 @@ export default function BarraSuperiorFixa({
                                         `}
                                     style={{ fontSize: "14px", padding: "2px 5px" }}
                                 >
-                                    +2
+                                    +{custoDeVoltar}
                                 </div>
                                 <button
                                     onClick={handleBotaoVoltar}

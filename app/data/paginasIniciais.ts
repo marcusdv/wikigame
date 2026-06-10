@@ -237,7 +237,6 @@ export const arrPaginasIniciais = [
     "Kryptos",
     "Merda de Artista",
     "Apolônio de Carvalho",
-    "Coincidências entre Kennedy e Lincoln",
     "Delírio de cristal",
     "Eduard Bloch",
     "Estudo da sífilis não tratada de Tuskegee",

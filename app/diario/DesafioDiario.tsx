@@ -16,6 +16,7 @@ type DadosLocalStorage = {
     objetivo: string;
     pontos: number;
     jaVenceu: boolean;
+    custoDeVoltar: number;
 };
 
 export default function DesafioDiario() {
@@ -41,6 +42,7 @@ export default function DesafioDiario() {
         handleBotaoVoltar,
         handleNavegarPeloHistorico,
         handleLinkClicado,
+        custoDeVoltar,
         carregarJogoExistente,
     } = useGameLogic(jogoInicial.start, jogoInicial.target);
 
@@ -89,7 +91,7 @@ export default function DesafioDiario() {
             // Se o usuário já acessou hoje, carrega do localStorage
             // e ignora os dados do banco
             if (data) {
-                carregarJogoExistente(data.objetivo, [data.inicial], 0, false);
+                carregarJogoExistente(data.objetivo, [data.inicial], 0, false, 0);
             }
         }
 
@@ -104,7 +106,13 @@ export default function DesafioDiario() {
             const dados = JSON.parse(json);
 
             if (dados.historico && dados.historico.length > 0) {
-                carregarJogoExistente(dados.objetivo, dados.historico, dados.pontos, dados.jaVenceu);
+                carregarJogoExistente(
+                    dados.objetivo,
+                    dados.historico,
+                    dados.pontos,
+                    dados.jaVenceu,
+                    dados.custoDeVoltar,
+                );
             }
         } else {
             salvarPalavraDoDiaNoBanco();
@@ -121,10 +129,11 @@ export default function DesafioDiario() {
             objetivo: paginaObjetivo,
             pontos,
             jaVenceu: voceVenceu,
+            custoDeVoltar,
         };
         // seed é a data de hoje, então a chave é única por dia. Formato: "desafio-diario-2026-05-24"
         localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
-    }, [historico, paginaObjetivo, pontos, voceVenceu, seed]);
+    }, [historico, paginaObjetivo, pontos, custoDeVoltar, voceVenceu, seed]);
 
     // ==== REGISTRA QUE JÁ VIU O BALÃO SE FECHAR  ====
     useEffect(() => {
@@ -168,6 +177,7 @@ export default function DesafioDiario() {
                     paginaObjetivo={paginaObjetivo}
                     handleNavegarParaHistorico={handleNavegarPeloHistorico}
                     tema={"desafio"}
+                    custoDeVoltar={custoDeVoltar}
                     titulo={"Desafio Diário"}
                 />
 
@@ -176,24 +186,24 @@ export default function DesafioDiario() {
                     <div
                         // z da barra superior é 30
                         className="z-20 absolute pixel-font top-70 md:top-55 left-1/2 -translate-x-1/2 w-9/10 md:w-5/12"
+                        style={{ color: "#000" }}
                     >
                         <div
                             onClick={handleBalaoEncontreClick}
                             className={`
-                                            nes-balloon 
-                                            from-left nes-pointer 
-                                            animate__animated ${saindoBalaoEncontrado ? "animate__zoomOutLeft " : "animate__pulse animate__infinite animate__slow "} 
+                                            nes-balloon
+                                            from-left nes-pointer
+                                            animate__animated ${saindoBalaoEncontrado ? "animate__bounceOutUp" : "animate__bounceInDown"}
                                     `}
                         >
                             <span className="absolute right-0 top-0 text-gray-600"> X</span>
                             <p className="" style={{ fontSize: 10 }}>
                                 Encontre a página{" "}
-                                <span className="text-md uppercase text-orange-800 font-extrabold  bg-amber-300 px-2 py-1 rounded">
+                                <span className="text-md uppercase text-orange-800 font-extrabold bg-amber-300 px-2 py-1 rounded">
                                     {paginaObjetivo}
                                 </span>{" "}
                                 <br />
-                                Mas só navegando pelos links da página! <br /> BOA SORTE!!!{" "}
-                                <i className="nes-icon heart is-small"></i>
+                                Mas só navegando pelos links! <br /> BOA SORTE!!!{" "}
                             </p>
                             <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
                                 - clique para fechar -
@@ -205,12 +215,16 @@ export default function DesafioDiario() {
                 <Secoes secoesDaPagina={secoesDaPagina} irParaSecao={irParaSecao} />
 
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}
-                <div
-                    onClick={handleLinkClicado}
-                    id="wikicontent"
-                    className="my-3 px-4 sm:px-8 py-6 max-w-7xl mx-auto bg-white shadow-xl min-h-screen"
-                    dangerouslySetInnerHTML={{ __html: wikiHtml }}
-                />
+                {wikiHtml ? (
+                    <div
+                        onClick={handleLinkClicado}
+                        id="wikicontent"
+                        className="my-3 px-4 sm:px-8 py-6 max-w-7xl mx-auto bg-white shadow-xl min-h-screen"
+                        dangerouslySetInnerHTML={{ __html: wikiHtml }}
+                    />
+                ) : (
+                    <div className="min-h-screen" />
+                )}
 
                 <Footer historico={historico} pontos={pontos} />
             </div>

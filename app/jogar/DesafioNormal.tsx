@@ -22,6 +22,7 @@ export default function DesafioNormal() {
         historico,
         pontos,
         paginaObjetivo,
+        custoDeVoltar,
         pontoFlutuante,
         wikiHtml,
         iniciarNovoJogo,
@@ -67,6 +68,7 @@ export default function DesafioNormal() {
                     titulo={"Encontrar Página"}
                     handleBotaoVoltar={handleBotaoVoltar}
                     pontoFlutuante={pontoFlutuante}
+                    custoDeVoltar={custoDeVoltar}
                     paginaObjetivo={paginaObjetivo}
                     handleNavegarParaHistorico={handleNavegarPeloHistorico}
                     novoJogo={() => {

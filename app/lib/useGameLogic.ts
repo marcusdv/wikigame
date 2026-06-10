@@ -10,6 +10,7 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
         paginaObjetivo: paginaObjetivoParam,
         voceVenceu: false,
         carregando: false,
+        custoDeVoltar: 0,
     }));
 
     const [wikiHtml, setWikiHtml] = useState(""); // conteudo wiki passado pela api
@@ -76,8 +77,14 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
     };
 
     // ==== CARREGA JOGO (LOCALSTORAGE E BANCO) ====
-    const carregarJogoExistente = (target: string, historico: string[], pontos: number, voceVenceu: boolean) => {
-        dispatch({ type: "CARREGAR_JOGO_EXISTENTE", target, historico, pontos, voceVenceu });
+    const carregarJogoExistente = (
+        target: string,
+        historico: string[],
+        pontos: number,
+        voceVenceu: boolean,
+        custoDeVoltar: number,
+    ) => {
+        dispatch({ type: "CARREGAR_JOGO_EXISTENTE", target, historico, pontos, voceVenceu, custoDeVoltar });
     };
 
     // ==== MANIPULA CLIQUES NOS LINKS DO ARTIGO E DISPARA O USEEFFECT DE BUSCA NA WIKIPEDIA====
@@ -117,7 +124,7 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
         if (state.historico.length <= 1) return; // nada para voltar
 
         dispatch({ type: "VOLTOU" });
-        setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 2 });
+        setPontoFlutuante({ id: ++animacaoIdRef.current, valor: state.custoDeVoltar });
     };
 
     // ==== IMPEDE O FECHAMENTO ACIDENTAL DA PÁGINA ====
@@ -146,7 +153,7 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
         if (index === state.historico.length - 1) return; // já está nessa página
 
         dispatch({ type: "VOLTOU_PELO_HISTORICO", index });
-        setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 2 });
+        setPontoFlutuante({ id: ++animacaoIdRef.current, valor: state.custoDeVoltar });
     };
 
     return {
