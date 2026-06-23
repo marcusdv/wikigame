@@ -11,7 +11,6 @@ function hashCode(str: string): number {
 }
 
 export function sortearJogo(arr1: string[], arr2: string[], seed?: string): { start: string; target: string } {
-    console.log("a seed aqui sorteada,", seed);
     if (seed) {
         const hash1 = hashCode(seed);
         const hash2 = hashCode(seed + ":target"); // seed diferente para independência

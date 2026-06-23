@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/app/lib/supabaseAdmin";
 import bcrypt from "bcrypt";
 import * as z from "zod";
+import { SignJWT } from "jose";
+
+const chave = new TextEncoder().encode(process.env.JWT_SECRET);
 
 // 1. Receber { nome, email, senha } do formulário
 // 2. Validar — campos vazios, email válido, etc
@@ -33,7 +36,7 @@ export async function POST(request: NextRequest) {
         const { data, error } = await supabaseAdmin
             .from("usuarios")
             .insert({ nome, email, senha_hash })
-            .select()
+            .select("id, nome, email")
             .single();
 
         if (error) {
@@ -58,7 +61,24 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Erro ao registrar usuário" }, { status: 500 });
         }
 
-        return NextResponse.json({ message: "Usuário criado com sucesso!" }, { status: 201 });
+        // 4. Gerar o token JWT
+        const token = await new SignJWT({ id: data.id, email: data.email, nome: data.nome })
+            .setProtectedHeader({ alg: "HS256" })
+            .setExpirationTime("7d")
+            .sign(chave);
+
+        const resposta = NextResponse.json({ message: "Usuário criado com sucesso" }, { status: 200 });
+
+        // 5. Setar o cookie com o token JWT
+        resposta.cookies.set("token", token, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 24 * 7, // 7 dias
+            path: "/",
+            secure: true,
+            sameSite: "lax",
+        });
+
+        return resposta;
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error("Erro ao registrar usuário:", error.message);

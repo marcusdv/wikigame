@@ -22,7 +22,21 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="pt-br" className={`${pressStart2P.variable} h-full antialiased`}>
+        <html lang="pt-br" className={`${pressStart2P.variable} h-full antialiased`} suppressHydrationWarning>
+            <head>
+                <script
+                    // garantir que o modo escuro seja aplicado antes do conteúdo ser renderizado.
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            const saved = localStorage.getItem("dark-mode");
+                            const prefereDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                            if (saved === "true" || (saved === null && prefereDark)) {
+                                document.documentElement.classList.add("dark");
+                            }
+                        `,
+                    }}
+                />
+            </head>
             <body className="min-h-full flex flex-col">
                 <ToastProvider>{children}</ToastProvider>
                 <DarkModeToggle />

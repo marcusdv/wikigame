@@ -6,8 +6,8 @@ import VoceVenceu from "../components/VoceVenceuTela";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { sortearJogo } from "../lib/sortearJogo";
-import { arrPaginasIniciais } from "../data/paginasIniciais";
-import { arrPaginasObjetivo } from "../data/paginasObjetivo";
+import { arrPaginasIniciais } from "../dados/paginasIniciais";
+import { arrPaginasObjetivo } from "../dados/paginasObjetivo";
 import Secoes from "../components/Secoes";
 import { useSecoes } from "../lib/useSecoes";
 
@@ -52,7 +52,7 @@ export default function DesafioDiario() {
 
         async function salvarPalavraDoDiaNoBanco() {
             // TODA ESSA PARTE É IGNORADA SE JÁ EXISTEM DADOS NO LOCALSTORAGE
-            // E SE
+            // E SE O USUÁRIO JÁ ACESSOU O JOGO HOJE (JOGO DE HOJE SALVO NO STORAGE)
 
             const { data, error } = await supabase
                 .from("palavras_do_dia")
@@ -61,7 +61,7 @@ export default function DesafioDiario() {
                 .maybeSingle(); // Se não achar nada, retorna null.
 
             if (error) {
-                console.error("Erro ao verificar palavra do dia no banco:", error);
+                console.log("Erro ao verificar palavra do dia no banco:", error);
                 console.log("código: ", error.code);
                 console.log("mensagem: ", error.message);
                 console.log("detalhes: ", error.details);
@@ -212,6 +212,7 @@ export default function DesafioDiario() {
                     </div>
                 )}
 
+                {/* NAVEGAR PELA PÁGINA DO CONTEÚDO DA WIKI */}
                 <Secoes secoesDaPagina={secoesDaPagina} irParaSecao={irParaSecao} />
 
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}

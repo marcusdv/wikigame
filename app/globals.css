@@ -69,6 +69,11 @@ body {
     animation: float-up 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+a:not(#wikicontent a),
+a:not(#wikicontent a):hover {
+    text-decoration: none;
+}
+
 .no-outline:focus {
     outline: none !important;
 }
@@ -112,6 +117,7 @@ body {
         linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
 }
 
+
 /* wikicontent base */
 .dark #wikicontent {
     background-color: #1e293b !important;
@@ -142,6 +148,15 @@ body {
 .dark #wikicontent a:hover {
     color: #ffffff !important;
     background-color: #6366f1 !important;
+}
+.dark #wikicontent a:hover img {
+    background-color: transparent !important;
+}
+#wikicontent a:has(img) {
+    background-color: transparent !important;
+}
+#wikicontent a:has(img):hover {
+    background-color: transparent !important;
 }
 .dark #wikicontent a.new,
 .dark #wikicontent a.external {
@@ -179,8 +194,11 @@ body {
 .dark #wikicontent td.sidebar-below,
 .dark #wikicontent td.sidebar-pretitle,
 .dark #wikicontent th.sidebar-title-with-pretitle,
-.dark #wikicontent td[style*="background"] {
+.dark #wikicontent td[style*="background"],
+.dark #wikicontent div[style*="background"] {
     background-color: #1e293b !important;
+    background: #1e293b !important;
+    border-color: #334155 !important;
     color: #cbd5e1 !important;
 }
 
@@ -188,6 +206,13 @@ body {
 .dark #wikicontent .sidebar-list-title {
     background-color: #1e3a5f !important;
     color: #e2e8f0 !important;
+    border-color: #334155 !important;
+}
+
+.dark #wikicontent .sidebar-list-content {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+    border-color: #334155 !important;
 }
 
 .dark #wikicontent .infobox th,
@@ -199,6 +224,16 @@ body {
 .dark #wikicontent .sidebar td {
     color: #cbd5e1 !important;
     background-color: transparent !important;
+}
+.dark #wikicontent .infobox [style*="table-cell"],
+.dark #wikicontent .sidebar [style*="table-cell"] {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+}
+.dark #wikicontent .infobox .topo,
+.dark #wikicontent .sidebar .topo {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
 }
 .dark #wikicontent .infobox *[style*="color"],
 .dark #wikicontent .sidebar *[style*="color"] {

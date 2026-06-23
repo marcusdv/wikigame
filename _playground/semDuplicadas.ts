@@ -4,8 +4,8 @@
 import { fileURLToPath } from "url";
 import { mkdirSync, writeFileSync } from "fs";
 import path from "path";
-import { arrPaginasIniciais } from "../app/data/paginasIniciais";
-import { arrPaginasObjetivo } from "../app/data/paginasObjetivo";
+import { arrPaginasIniciais } from "../app/dados/paginasIniciais";
+import { arrPaginasObjetivo } from "../app/dados/paginasObjetivo";
 import { arrNovosObjetivos } from "./novos-dados/novosObjetivo";
 import { novasPaginasIniciais } from "./novos-dados/novasIniciais";
 // ==== COLOQUE OS ARRAYS AQUI ====
