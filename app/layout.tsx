@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Press_Start_2P } from "next/font/google";
 import "./globals.css";
 import "./wikiStyle.css";
+import { UserProvider } from "./lib/userContext";
 
 const pressStart2P = Press_Start_2P({
     variable: "--font-press-start",
@@ -37,9 +38,12 @@ export default function RootLayout({
                     }}
                 />
             </head>
+
             <body className="min-h-full flex flex-col">
-                <ToastProvider>{children}</ToastProvider>
-                <DarkModeToggle />
+                <UserProvider>
+                    <ToastProvider>{children}</ToastProvider>
+                    <DarkModeToggle />
+                </UserProvider>
             </body>
         </html>
     );
