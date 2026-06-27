@@ -72,17 +72,15 @@ export async function POST(request: NextRequest) {
         // 5. Setar o cookie com o token JWT
         resposta.cookies.set("token", token, {
             httpOnly: true,
-            maxAge: 60 * 60 * 24 * 7, // 7 dias
+            maxAge: 60 * 60 * 24 * 7,
             path: "/",
-            secure: true,
+            secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
         });
 
         return resposta;
     } catch (error: unknown) {
-        if (error instanceof Error) {
-            console.error("Erro ao registrar usuário:", error.message);
-            return NextResponse.json({ error: "Erro ao registrar usuário" }, { status: 500 });
-        }
+        console.error("Erro ao registrar usuário:", error);
+        return NextResponse.json({ error: "Erro ao registrar usuário" }, { status: 500 });
     }
 }

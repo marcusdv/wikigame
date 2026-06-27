@@ -55,9 +55,9 @@ export async function POST(request: NextRequest) {
         // 5. Setar o cookie com o token JWT
         resposta.cookies.set("token", token, {
             httpOnly: true,
-            maxAge: 60 * 60 * 24 * 7, // 7 dias
+            maxAge: 60 * 60 * 24 * 7,
             path: "/",
-            secure: true,
+            secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
         });
 
