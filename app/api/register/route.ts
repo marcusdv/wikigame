@@ -31,8 +31,10 @@ export async function POST(request: NextRequest) {
         }
 
         // 3. Gera o hash da senha
+        console.log("[register] gerando hash...");
         const senha_hash = await bcrypt.hash(senha, 10);
 
+        console.log("[register] inserindo no banco...");
         const { data, error } = await supabaseAdmin
             .from("usuarios")
             .insert({ nome, email, senha_hash })
@@ -62,11 +64,13 @@ export async function POST(request: NextRequest) {
         }
 
         // 4. Gerar o token JWT
+        console.log("[register] gerando JWT... chave length:", chave.length);
         const token = await new SignJWT({ id: data.id, email: data.email, nome: data.nome })
             .setProtectedHeader({ alg: "HS256" })
             .setExpirationTime("7d")
             .sign(chave);
 
+        console.log("[register] JWT gerado, retornando resposta...");
         const resposta = NextResponse.json({ message: "Usuário criado com sucesso" }, { status: 200 });
 
         // 5. Setar o cookie com o token JWT
