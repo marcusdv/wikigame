@@ -25,7 +25,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
     const [idPalavraDoDia, setIdPalavraDoDia] = useState<number | null>(null);
     const [tempoRestante, setTempoRestante] = useState("");
     const [historicoCopiado, setHistoricoCopiado] = useState(false);
-    const { usuario } = useUsuario();
+    const { usuario, carregando } = useUsuario();
 
     // ==== CALCULA O TEMPO RESTANTE P PRÓXIMA PALAVRA DO DIA ====
     useEffect(() => {
@@ -78,13 +78,18 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                     .from("recordes")
                     .insert({ jogador_nome: usuario.nome, pontos, id_palavras_do_dia: idPalavraDoDia })
                     .then(({ error }) => {
-                        if (error) { console.error("Erro ao salvar recorde:", error); return; }
+                        if (error) {
+                            console.error("Erro ao salvar recorde:", error);
+                            return;
+                        }
 
                         supabase
                             .from("recordes")
                             .select("id, jogador_nome, pontos")
                             .eq("id_palavras_do_dia", idPalavraDoDia)
-                            .then(({ data }) => { if (data) setRecordes(data); });
+                            .then(({ data }) => {
+                                if (data) setRecordes(data);
+                            });
                     });
             });
     }, [usuario, idPalavraDoDia, pontos, modoDeJogo]);
@@ -259,7 +264,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                             </span>
                         </div>
 
-                        {!usuario && (
+                        {!usuario && !carregando && (
                             <button
                                 onClick={() => router.push("/registro")}
                                 className={`nes-btn w-full is-success`}

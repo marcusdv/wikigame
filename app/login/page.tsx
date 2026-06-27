@@ -1,15 +1,17 @@
 "use client";
 import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import BarraLogin from "@/app/components/BarraLogin";
+import { useUsuario } from "@/app/lib/userContext";
 
 export default function Login() {
     const router = useRouter();
+    const { refreshUsuario } = useUsuario();
     const [form, setForm] = useState({ email: "", senha: "" });
     const [erro, setErro] = useState("");
     const [isPending, startTransition] = useTransition();
     const [reticencias, setReticencias] = useState(1);
 
+    // animação das reticências
     useEffect(() => {
         if (!isPending) return;
         const id = setInterval(() => setReticencias((p) => (p >= 3 ? 1 : p + 1)), 400);
@@ -20,6 +22,7 @@ export default function Login() {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
 
+    // tenta realizar login
     function handleSubmit(formData: FormData) {
         const email = formData.get("email") as string;
         const senha = formData.get("senha") as string;
@@ -40,13 +43,13 @@ export default function Login() {
                 return;
             }
 
+            await refreshUsuario();
             router.push("/diario");
         });
     }
 
     return (
         <div className="min-h-screen flex flex-col">
-            <BarraLogin />
             <div className="flex-1 flex items-center justify-center px-4">
                 <div className="w-full max-w-sm">
                     <h1 className="pixel-font text-center text-md pb-2">Login</h1>

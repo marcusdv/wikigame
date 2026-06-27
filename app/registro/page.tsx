@@ -1,7 +1,6 @@
 "use client";
 import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import BarraLogin from "@/app/components/BarraLogin";
 import { useUsuario } from "../lib/userContext";
 
 export default function Registro() {
@@ -58,7 +57,6 @@ export default function Registro() {
 
     return (
         <div className="min-h-screen flex flex-col">
-            <BarraLogin />
             <div className="flex-1 flex items-center justify-center px-4">
                 <div className="w-full max-w-sm">
                     <h1 className="pixel-font text-center text-md pb-2">Criar conta</h1>

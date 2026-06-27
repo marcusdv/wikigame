@@ -243,14 +243,6 @@ export default function BarraSuperiorFixa({
                                     className={`fixed ${t.divPaiBg} border-2 ${t.divPaiBorder} shadow-lg z-50 min-w-28`}
                                     style={{ top: menuPos.top, right: menuPos.right }}
                                 >
-                                    {usuario && (
-                                        <div
-                                            className={`px-3 py-2 border-b ${t.secaoBorderInterno} ${t.labelTexto}`}
-                                            style={{ fontSize: 8 }}
-                                        >
-                                            {usuario.nome}
-                                        </div>
-                                    )}
                                     <Link
                                         href={tema === "jogoNormal" ? "/diario" : "/jogar"}
                                         replace
@@ -259,6 +251,24 @@ export default function BarraSuperiorFixa({
                                         style={{ fontSize: 8 }}
                                     >
                                         {tema === "jogoNormal" ? "Desafio Diário" : "Desafio Aleatório"}
+                                    </Link>
+                                    <Link
+                                        href={"/recordes"}
+                                        replace
+                                        onClick={() => setMenuPerfil(false)}
+                                        className={`pixel-font block px-3 py-2 ${t.labelTexto} hover:bg-slate-700`}
+                                        style={{ fontSize: 8 }}
+                                    >
+                                        Recordes
+                                    </Link>
+                                    <Link
+                                        href={"/perfil"}
+                                        replace
+                                        onClick={() => setMenuPerfil(false)}
+                                        className={`pixel-font block px-3 py-2 ${t.labelTexto} hover:bg-slate-700`}
+                                        style={{ fontSize: 8 }}
+                                    >
+                                        Perfil
                                     </Link>
                                     <div className={`border-t ${t.secaoBorderInterno}`} />
                                     {usuario ? (

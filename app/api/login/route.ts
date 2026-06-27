@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
         // 4. Gerar JWT
 
-        // ! pensar mais a respeito do jwt.
+        // Gerar o token JWT com os dados do usuário
         const token = await new SignJWT({ id: data.id, email: data.email, nome: data.nome })
             .setProtectedHeader({ alg: "HS256" })
             .setExpirationTime("7d")
