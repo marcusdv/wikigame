@@ -82,7 +82,6 @@ export const arrPaginasObjetivo = [
     "Bolo",
     "Garfo",
     "Faca",
-    "Mala",
     "Vestido",
     "Lua de mel",
     "Divórcio",
