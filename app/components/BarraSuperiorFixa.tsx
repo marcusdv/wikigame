@@ -2,6 +2,8 @@
 
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
+import { useUsuario } from "@/app/lib/userContext";
+import { useRouter } from "next/navigation";
 
 type BarraSuperiorFixaProps = {
     historico: string[];
@@ -67,11 +69,20 @@ export default function BarraSuperiorFixa({
 }: BarraSuperiorFixaProps) {
     //
     const breadcrumbRef = useRef<HTMLDivElement>(null);
+    const perfilRef = useRef<HTMLDivElement>(null);
     const [hudOculto, setHudOculto] = useState(false);
+    const [menuPerfil, setMenuPerfil] = useState(false);
+    const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
     const t = temas[tema];
+    const { usuario, carregando, refreshUsuario } = useUsuario();
+    const router = useRouter();
 
-    // Toda vez que o histórico muda (ou seja, o jogador avança ou volta), rola o breadcrumb para a direita para mostrar a última página visitada.
-    // Isso é feito porque o breadcrumb tem overflow-x: auto, e queremos garantir que o item mais recente (o atual) esteja sempre visível.
+    async function handleLogout() {
+        await fetch("/api/logout", { method: "POST" });
+        await refreshUsuario();
+        router.push("/login");
+    }
+
     useEffect(() => {
         if (breadcrumbRef.current) {
             breadcrumbRef.current.scrollLeft = breadcrumbRef.current.scrollWidth;
@@ -102,7 +113,7 @@ export default function BarraSuperiorFixa({
                 }}
             >
                 <div style={{ overflow: "hidden", minHeight: 0 }}>
-                    <div className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-stretch">
+                    <div className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_auto] items-stretch">
                         {/* ── VOLTAR — mobile col1 row1 | desktop col1 row1 ── */}
                         <div
                             className={`
@@ -156,7 +167,7 @@ export default function BarraSuperiorFixa({
                         <div
                             className={`
                                 col-start-1 row-start-2 flex flex-col items-center justify-center py-2 px-3 border-r-2 border-t-2 
-                                md:col-start-4 md:row-start-1 md:border-t-0 ${t.secaoBorderInterno} 
+                                md:col-start-3 md:row-start-1 md:border-t-0 ${t.secaoBorderInterno}
                                 `}
                         >
                             <div className={` ${t.labelTexto} mb-1`} style={{ fontSize: "9px" }}>
@@ -179,38 +190,11 @@ export default function BarraSuperiorFixa({
                             </div>
                         </div>
 
-                        {/* ── LINK OUTRO MODO — mobile col2 row1 | desktop col3 row1 ── */}
-                        <Link
-                            href={tema === "jogoNormal" ? "/diario" : "/jogar"}
-                            replace
-                            className={`
-                                col-start-2 row-start-1 flex flex-col items-center justify-center transition-colors
-                                md:col-start-3 md:row-start-1 md:border-r-2 ${t.secaoBorderInterno}
-                            `}
-                            style={{ fontSize: "8px" }}
-                        >
-                            <button type="button" className="nes-btn is-primary " style={BTN_STYLE}>
-                                {tema === "jogoNormal" ? (
-                                    <>
-                                        Desafio
-                                        <br />
-                                        Diário
-                                    </>
-                                ) : (
-                                    <>
-                                        Desafio
-                                        <br />
-                                        Aleatório
-                                    </>
-                                )}
-                            </button>
-                        </Link>
-
-                        {/* ── REINICIAR — mobile col3 row1 | desktop col5 row1 ── */}
+                        {/* ── REINICIAR — mobile col2 row1 | desktop col4 row1 ── */}
                         <div
                             className={`
-                                    col-start-3 row-start-1 flex items-center justify-center border-l-2 ${t.secaoBorderInterno} 
-                                    md:col-start-5 md:row-start-1 md:border-l-0
+                                    col-start-3 row-start-1 flex items-center justify-center border-l-2 ${t.secaoBorderInterno}
+                                    md:col-start-4 md:row-start-1 md:border-l-0
                                 `}
                         >
                             <button
@@ -222,6 +206,81 @@ export default function BarraSuperiorFixa({
                             >
                                 X
                             </button>
+                        </div>
+
+                        {/* ── MENU HAMBURGUER — mobile col2 row1 | desktop col6 row1 ── */}
+                        <div
+                            ref={perfilRef}
+                            className={`flex col-start-2 row-start-1 md:col-start-6 items-center justify-center px-4 md:border-l-2  ${t.secaoBorderInterno}`}
+                        >
+                            <button
+                                onClick={() => {
+                                    const rect = perfilRef.current?.getBoundingClientRect();
+                                    if (rect)
+                                        setMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
+                                    setMenuPerfil((v) => !v);
+                                }}
+                                className="cursor-pointer bg-transparent border-none p-0 flex flex-col items-center gap-1"
+                                title="Menu"
+                            >
+                                <i className="snes-jp-logo"></i>
+                                {usuario ? (
+                                    <span className={t.labelTexto} style={{ fontSize: 6, lineHeight: 1.6 }}>
+                                        PLAYER
+                                        <br />
+                                        {usuario.nome}
+                                    </span>
+                                ) : (
+                                    <span className={t.labelTexto} style={{ fontSize: 6 }}>
+                                        INSERT COIN
+                                    </span>
+                                )}
+                            </button>
+
+                            {/* AREA DO PERFIL */}
+                            {menuPerfil && (
+                                <div
+                                    className={`fixed ${t.divPaiBg} border-2 ${t.divPaiBorder} shadow-lg z-50 min-w-28`}
+                                    style={{ top: menuPos.top, right: menuPos.right }}
+                                >
+                                    {usuario && (
+                                        <div
+                                            className={`px-3 py-2 border-b ${t.secaoBorderInterno} ${t.labelTexto}`}
+                                            style={{ fontSize: 8 }}
+                                        >
+                                            {usuario.nome}
+                                        </div>
+                                    )}
+                                    <Link
+                                        href={tema === "jogoNormal" ? "/diario" : "/jogar"}
+                                        replace
+                                        onClick={() => setMenuPerfil(false)}
+                                        className={`pixel-font block px-3 py-2 ${t.labelTexto} hover:bg-slate-700`}
+                                        style={{ fontSize: 8 }}
+                                    >
+                                        {tema === "jogoNormal" ? "Desafio Diário" : "Desafio Aleatório"}
+                                    </Link>
+                                    <div className={`border-t ${t.secaoBorderInterno}`} />
+                                    {usuario ? (
+                                        <button
+                                            onClick={handleLogout}
+                                            className={`pixel-font w-full text-left px-3 py-2 ${t.labelTexto} hover:bg-slate-700`}
+                                            style={{ fontSize: 8 }}
+                                        >
+                                            Sair
+                                        </button>
+                                    ) : !carregando ? (
+                                        <Link
+                                            href="/login"
+                                            onClick={() => setMenuPerfil(false)}
+                                            className={`pixel-font block px-3 py-2 ${t.labelTexto} hover:bg-slate-700`}
+                                            style={{ fontSize: 8 }}
+                                        >
+                                            Entrar
+                                        </Link>
+                                    ) : null}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

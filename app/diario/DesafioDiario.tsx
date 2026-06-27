@@ -164,7 +164,6 @@ export default function DesafioDiario() {
                 </div>
             )}
 
-            {/* Modal de vitória — aparece quando o jogador atinge o objetivo */}
             {voceVenceu && <VoceVenceu historico={historico} pontos={pontos} modoDeJogo={"diario"} seedProp={seed} />}
 
             <div>

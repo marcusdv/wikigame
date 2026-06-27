@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
+import { useUsuario } from "../lib/userContext";
 
 type VoceVenceuProps = {
     historico: string[];
@@ -20,13 +21,11 @@ type Recorde = {
 export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, seedProp }: VoceVenceuProps) {
     const router = useRouter();
 
-    const chaveRecorde = `desafio-diario-${seedProp}-recorde-enviado`;
-    const [nome, setNome] = useState("");
     const [recordes, setRecordes] = useState<Recorde[]>([]);
-    const idPalavraDoDia = useRef<number | null>(null);
+    const [idPalavraDoDia, setIdPalavraDoDia] = useState<number | null>(null);
     const [tempoRestante, setTempoRestante] = useState("");
-    const [recordeEnviado, setRecordeEnviado] = useState(() => !!localStorage.getItem(chaveRecorde));
     const [historicoCopiado, setHistoricoCopiado] = useState(false);
+    const { usuario } = useUsuario();
 
     // ==== CALCULA O TEMPO RESTANTE P PRÓXIMA PALAVRA DO DIA ====
     useEffect(() => {
@@ -60,28 +59,35 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
         return () => clearInterval(intervalo);
     }, [modoDeJogo]);
 
-    // ==== ENVIA O RECORDE PARA O SERVIDOR ====
-    const handleEnviar = async () => {
-        if (nome.length < 1 || nome.length > 20) {
-            console.error("Nome inválido. Deve ter entre 1 e 20 caracteres.");
-            return;
-        }
-        if (!nome.trim()) return;
+    // auto-envia quando usuario E idPalavraDoDia estiverem disponíveis
+    useEffect(() => {
+        if (modoDeJogo !== "diario") return;
+        if (!usuario || !idPalavraDoDia) return;
 
-        const { error } = await supabase.from("recordes").insert({
-            jogador_nome: nome,
-            pontos: pontos,
-            id_palavras_do_dia: idPalavraDoDia.current,
-        });
+        // verifica no banco se já existe recorde deste usuário para hoje
+        supabase
+            .from("recordes")
+            .select("id")
+            .eq("id_palavras_do_dia", idPalavraDoDia)
+            .eq("jogador_nome", usuario.nome)
+            .maybeSingle()
+            .then(({ data }) => {
+                if (data) return; // já enviou, não duplica
 
-        if (error) {
-            console.error("Erro ao enviar recorde:", error);
-            return;
-        }
+                supabase
+                    .from("recordes")
+                    .insert({ jogador_nome: usuario.nome, pontos, id_palavras_do_dia: idPalavraDoDia })
+                    .then(({ error }) => {
+                        if (error) { console.error("Erro ao salvar recorde:", error); return; }
 
-        localStorage.setItem(chaveRecorde, "true");
-        setRecordeEnviado(true);
-    };
+                        supabase
+                            .from("recordes")
+                            .select("id, jogador_nome, pontos")
+                            .eq("id_palavras_do_dia", idPalavraDoDia)
+                            .then(({ data }) => { if (data) setRecordes(data); });
+                    });
+            });
+    }, [usuario, idPalavraDoDia, pontos, modoDeJogo]);
 
     // ==== PEGA OS RECORDES DE HOJE ====
     // Pega os Recordes de hoje do supabase para montar
@@ -102,7 +108,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                     console.error("Erro ao buscar palavra do dia:", error);
                 }
                 if (data && data.id) {
-                    idPalavraDoDia.current = data.id;
+                    setIdPalavraDoDia(data.id);
 
                     // depois pega os recordes com o id da palavra do dia
                     supabase
@@ -122,7 +128,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                     console.log("Palavra do dia não encontrada para a data:", dataDeHoje);
                 }
             });
-    }, [seedProp, recordeEnviado]);
+    }, [seedProp]);
 
     // ==== COPIA O HISTORICO FORMATADO PARA O CLIPBOARD ====
     function handleClickCopiarHistorico() {
@@ -139,19 +145,24 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
             setTimeout(() => setHistoricoCopiado(false), 2000);
         });
     }
+
     return (
         <div className="fixed pixel-font inset-0 z-1000 bg-slate-950/90 backdrop-blur-md overflow-x-hidden overflow-y-auto flex justify-center p-4 scrollbar-dark">
             <div
                 className="nes-container is-dark is-rounded w-full max-w-lg text-center self-start"
                 style={{ padding: "2rem", borderColor: "#3b82f6" }}
             >
+                {/* MENSAGEM DE VITÓRIA */}
                 <h2 className=" text-white flex items-center justify-evenly text-xl md:text-3xl">
                     <i className="nes-icon trophy is-medium"></i> VITÓRIA! <i className="nes-icon trophy is-medium"></i>
                 </h2>
+
+                {/* MODO DE JOGO */}
                 <p className=" text-blue-400 mb-6 leading-7" style={{ fontSize: "9px" }}>
                     {modoDeJogo === "diario" ? "DESAFIO DIÁRIO CONCLUÍDO" : "VOCÊ CHEGOU AO DESTINO!"}
                 </p>
 
+                {/* STATUS DO JOGO FINALIZADO */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div
                         className="nes-container is-dark is-rounded"
@@ -177,6 +188,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                     </div>
                 </div>
 
+                {/* HISTORICO DO CAMINHO PERCORRIDO */}
                 <div
                     className="nes-container is-dark is-rounded text-left overflow-y-auto "
                     style={{ padding: "0.75rem", maxHeight: "200px", borderColor: "#1e293b" }}
@@ -232,6 +244,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                     </div>
                 </div>
 
+                {/* INFORMAÇÃO EXTRA SE FOR O MODO JOGO DIÁRIO */}
                 {modoDeJogo === "diario" && (
                     <div className="flex flex-col gap-3 mb-4">
                         <div
@@ -245,28 +258,20 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                                 {tempoRestante}
                             </span>
                         </div>
-                        <input
-                            type="text"
-                            className="nes-input is-dark "
-                            placeholder={recordeEnviado ? "RECORDE JÁ ENVIADO" : "SEU NOME"}
-                            maxLength={20}
-                            value={nome}
-                            onChange={(e) => setNome(e.target.value)}
-                            disabled={recordeEnviado}
-                            style={{ fontSize: "11px", padding: "0.75rem" }}
-                        />
-                        {!recordeEnviado && <p className="text-xs">Envie seu recorde para ver os outros</p>}
-                        <button
-                            onClick={handleEnviar}
-                            className={`nes-btn w-full ${recordeEnviado ? "is-disabled" : "is-success"}`}
-                            disabled={recordeEnviado}
-                            style={{ fontSize: "11px" }}
-                        >
-                            {recordeEnviado ? "✓ RECORDE ENVIADO" : "► ENVIAR RECORDE"}
-                        </button>
 
+                        {!usuario && (
+                            <button
+                                onClick={() => router.push("/registro")}
+                                className={`nes-btn w-full is-success`}
+                                style={{ fontSize: "12px" }}
+                            >
+                                ✓ Registre-se para participar!
+                            </button>
+                        )}
+
+                        {/* RECORDISTAS DO DIA */}
                         <div className="flex flex-col gap-2">
-                            <div className="flex justify-evenly">
+                            <div className="flex justify-around">
                                 <h3>Jogadores</h3>
                                 <span>|</span>
                                 <h3 className=" ">Pontos</h3>
@@ -274,11 +279,11 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                             {recordes
                                 ?.sort((a, b) => a.pontos - b.pontos)
                                 .map((recorde, idx) => (
-                                    <div key={recorde.id} className="flex items-center gap-3 ">
+                                    <div key={recorde.id} className="flex items-center gap-4 px-8">
                                         <span
                                             className={` 
                                             
-                                            ${idx === 0 ? "text-yellow-500 text-lg animate-bounce" : "text-sm"} 
+                                            ${idx === 0 ? "text-yellow-500 text-lg" : "text-sm"} 
                                             ${idx === 1 && "text-amber-300"} 
                                             ${idx === 2 && "text-orange-200 "} 
                                         `}
@@ -288,7 +293,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
 
                                         <span
                                             className={` 
-                                            
+                                            ${idx === 0 ? "text-yellow-500 text-lg animate-bounce" : "text-sm"} 
                                             truncate ${idx === 0 ? "text-yellow-400 text-lg animate-bounce" : "text-sm"} 
                                             ${idx === 1 && "text-amber-200"} 
                                             ${idx === 2 && "text-orange-100"} 
@@ -296,22 +301,23 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                                         >
                                             {recorde.jogador_nome}
                                         </span>
-                                        <span className="text-slate-200 shrink-0" style={{ fontSize: "14px" }}>
-                                            - {recordeEnviado ? recorde.pontos : "???"}
+                                        <span className="text-slate-200 shrink-0 ml-auto" style={{ fontSize: "14px" }}>
+                                            {usuario ? recorde.pontos : "???"}
                                         </span>
                                     </div>
                                 ))}
                         </div>
                     </div>
                 )}
-
-                <button
-                    onClick={() => (modoDeJogo === "aleatorio" ? novoJogo && novoJogo() : router.push("/jogar"))}
-                    className="nes-btn is-primary w-full "
-                    style={{ fontSize: "11px" }}
-                >
-                    ► JOGAR MODO ALEATÓRIO
-                </button>
+                {usuario && (
+                    <button
+                        onClick={() => router.push("/jogar")}
+                        className={`nes-btn w-full is-primary`}
+                        style={{ fontSize: "14px" }}
+                    >
+                        Explorar modos de jogo!
+                    </button>
+                )}
             </div>
         </div>
     );

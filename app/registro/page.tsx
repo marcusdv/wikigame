@@ -1,7 +1,8 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import BarraLogin from "@/app/components/BarraLogin";
+import { useUsuario } from "../lib/userContext";
 
 export default function Registro() {
     const router = useRouter();
@@ -9,11 +10,21 @@ export default function Registro() {
     const [segundaSenha, setSegundaSenha] = useState("");
     const [erro, setErro] = useState("");
     const [isPending, startTransition] = useTransition();
+    const [pontos, setPontos] = useState(1);
+    const { refreshUsuario } = useUsuario();
+
+    // ANIMAÇÃO DAS RETICÊNCIAS
+    useEffect(() => {
+        if (!isPending) return;
+        const id = setInterval(() => setPontos((p) => (p >= 3 ? 1 : p + 1)), 400);
+        return () => clearInterval(id);
+    }, [isPending]);
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
 
+    // REGISTRA USUÁRIO NO BANCO SUPABASE
     function handleSubmit(formData: FormData) {
         const nome = formData.get("nome") as string;
         const email = formData.get("email") as string;
@@ -40,6 +51,7 @@ export default function Registro() {
                 return;
             }
 
+            await refreshUsuario();
             router.push("/diario");
         });
     }
@@ -124,7 +136,7 @@ export default function Registro() {
                             style={{ fontSize: 8, marginTop: 30 }}
                             disabled={isPending}
                         >
-                            {isPending ? "Criando..." : "Criar conta"}
+                            {isPending ? `Criando${".".repeat(pontos)}` : "Criar conta"}
                         </button>
                         <p className="pixel-font text-center" style={{ fontSize: 8 }}>
                             Já tem uma conta?{" "}

@@ -8,28 +8,31 @@ type Usuario = {
     email: string;
 } | null;
 
-const UserContext = createContext<Usuario | null>(null);
+type UserContextType = {
+    usuario: Usuario;
+    carregando: boolean;
+    refreshUsuario: () => Promise<void>;
+};
+
+const UserContext = createContext<UserContextType>({ usuario: null, carregando: true, refreshUsuario: async () => {} });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-    const [usuario, setUsuario] = useState<Usuario | null>(null);
+    const [usuario, setUsuario] = useState<Usuario>(null);
+    const [carregando, setCarregando] = useState(true);
 
-    // O UserProvider fica no layout.tsx, que é persistente no Next.js. Então na prática roda uma vez por sessão (enquanto o usuário não der F5).
+    async function refreshUsuario() {
+        await fetch("/api/me")
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => setUsuario(data))
+            .catch(() => console.error("Erro ao buscar usuário"))
+            .finally(() => setCarregando(false));
+    }
+
     useEffect(() => {
-        fetch("/api/me")
-            .then((response) => {
-                // Se a resposta for bem-sucedida, retorna os dados do usuário; caso contrário, retorna null.
-                return response.ok ? response.json() : null;
-            })
-            .then((data) => {
-                // pega os dados já convertidos em JSON e atualiza o estado do usuário.
-                setUsuario(data);
-            })
-            .catch((error) => {
-                console.error("Erro ao buscar informações do usuário:", error);
-            });
+        refreshUsuario();
     }, []);
 
-    return <UserContext.Provider value={usuario}>{children}</UserContext.Provider>;
+    return <UserContext.Provider value={{ usuario, carregando, refreshUsuario }}>{children}</UserContext.Provider>;
 }
 
 export function useUsuario() {
