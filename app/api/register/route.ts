@@ -20,6 +20,11 @@ const dadosUsuarioSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+    // verifica se chave é válida
+    if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+        return NextResponse.json({ error: "Configuração inválida" }, { status: 500 });
+    }
+
     try {
         // 1. pega os dados do body
         const { nome, email, senha } = await request.json();
