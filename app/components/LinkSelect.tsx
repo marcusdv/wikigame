@@ -96,10 +96,10 @@ export default function LinkSelect({ wikiHtml }: { wikiHtml: string }) {
     if (links.length === 0) return null;
 
     return (
-        <div ref={containerRef} className="fixed left-2 bottom-2 z-20 pixel-font">
+        <div ref={containerRef} className="fixed right-2 bottom-2 z-20 pixel-font">
             {/* Painel flutuante — aparece acima do botão */}
             {aberto && (
-                <div className="absolute bottom-full mb-1 left-0 w-56 bg-slate-950/90 border border-slate-600 p-1 flex flex-col gap-1">
+                <div className="absolute bottom-full mb-1 right-0 w-56 bg-slate-950/90 border border-slate-600 p-1 flex flex-col gap-1">
                     <input
                         ref={inputRef}
                         type="text"
@@ -109,7 +109,7 @@ export default function LinkSelect({ wikiHtml }: { wikiHtml: string }) {
                         className="nes-input is-dark w-full"
                         style={{ fontSize: 8, padding: "4px 8px" }}
                     />
-                    <div className="flex flex-col gap-0.5 max-h-64 overflow-y-auto overflow-x-hidden">
+                    <div className="flex flex-col gap-0.5 max-h-75 overflow-y-auto overflow-x-hidden">
                         {linksFiltrados.length === 0 ? (
                             <span className="text-slate-500 px-2 py-1" style={{ fontSize: 8 }}>
                                 Nenhum link encontrado
