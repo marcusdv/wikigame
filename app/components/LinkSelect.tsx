@@ -63,8 +63,7 @@ export default function LinkSelect({ wikiHtml }: { wikiHtml: string }) {
 
     function toggleMenu() {
         setAberto((v) => {
-            if (!v) requestAnimationFrame(() => inputRef.current?.focus());
-            else setBusca("");
+            if (v) setBusca("");
             return !v;
         });
     }
