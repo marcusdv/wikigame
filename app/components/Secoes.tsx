@@ -25,7 +25,7 @@ export default function Secoes({ secoesDaPagina, irParaSecao }: SecoesType) {
                 <div className="fixed left-2 bottom-2 z-20 flex flex-col items-start pixel-font">
                     {/* painel de seções */}
                     {menuSecoesAberto && (
-                        <div className="bg-slate-950/90 border border-slate-600 p-1 flex flex-col gap-0.5 max-h-96 overflow-y-auto overflow-x-hidden max-w-50 md:max-w-100 mb-1">
+                        <div className="bg-slate-950/90 border border-slate-600 p-2 flex flex-col divide-y divide-slate-700/50 max-h-96 overflow-y-auto overflow-x-hidden overscroll-contain max-w-50 md:max-w-100 mb-2">
                             {secoesCopia.map((secao) => (
                                 <button
                                     key={secao.index}
@@ -34,11 +34,11 @@ export default function Secoes({ secoesDaPagina, irParaSecao }: SecoesType) {
                                             ? window.scrollTo({ top: 0, behavior: "smooth" })
                                             : irParaSecao(secao.index)
                                     }
-                                    className="text-left flex gap-2 items-center text-white hover:text-blue-400 hover:bg-slate-700/60 px-2 py-1 w-full truncate transition-colors"
+                                    className="text-left flex gap-2 items-center text-white hover:text-blue-400 hover:bg-slate-700/60 px-2 py-1.5 w-full truncate transition-colors"
                                     style={{ fontSize: window.innerWidth < 768 ? 8 : 9 }}
                                 >
-                                    <span>▶</span>
-                                    <span className="overflow-x-hidden">{secao.text}</span>
+                                    <span className="shrink-0">▶</span>
+                                    <span className="truncate">{secao.text}</span>
                                 </button>
                             ))}
                         </div>

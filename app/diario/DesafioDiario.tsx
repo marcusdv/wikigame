@@ -8,8 +8,6 @@ import { supabase } from "../lib/supabase";
 import { sortearJogo } from "../lib/sortearJogo";
 import { arrPaginasIniciais } from "../dados/paginasIniciais";
 import { arrPaginasObjetivo } from "../dados/paginasObjetivo";
-import Secoes from "../components/Secoes";
-import { useSecoes } from "../lib/useSecoes";
 import LinkSelect from "../components/LinkSelect";
 
 type DadosLocalStorage = {
@@ -143,10 +141,6 @@ export default function DesafioDiario() {
         }
     }, [balanEncontreAberto]);
 
-    // ==== HOOK QUE PEGA AS SEÇÕES DA PAGINA ====
-    // ==== E MONTA NUMA LISTA ====
-    const { secoesDaPagina, irParaSecao } = useSecoes(wikiHtml);
-
     // ==== HANDLE PARA REMOVER BALÃO DA TELA ====
     function handleBalaoEncontreClick() {
         setSaindoBalaoEncontrado(true);
@@ -213,7 +207,6 @@ export default function DesafioDiario() {
                 )}
 
                 {/* NAVEGAR PELA PÁGINA DO CONTEÚDO DA WIKI */}
-                <Secoes secoesDaPagina={secoesDaPagina} irParaSecao={irParaSecao} />
                 <LinkSelect wikiHtml={wikiHtml} />
 
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}

@@ -7,8 +7,6 @@ import { sortearJogo } from "../lib/sortearJogo";
 import { arrPaginasIniciais } from "../dados/paginasIniciais";
 import { arrPaginasObjetivo } from "../dados/paginasObjetivo";
 import { useState } from "react";
-import { useSecoes } from "../lib/useSecoes";
-import Secoes from "../components/Secoes";
 import LinkSelect from "../components/LinkSelect";
 
 export default function DesafioNormal() {
@@ -31,10 +29,6 @@ export default function DesafioNormal() {
         handleNavegarPeloHistorico,
         handleLinkClicado,
     } = useGameLogic(jogo.start, jogo.target);
-
-    // ==== HOOK QUE PEGA AS SEÇÕES DA PAGINA ====
-    // ==== E MONTA NUMA LISTA ====
-    const { secoesDaPagina, irParaSecao } = useSecoes(wikiHtml);
 
     return (
         <div className="min-h-screen flex flex-col justify-between">
@@ -89,8 +83,6 @@ export default function DesafioNormal() {
                     dangerouslySetInnerHTML={{ __html: wikiHtml }}
                 />
             </div>
-
-            <Secoes secoesDaPagina={secoesDaPagina} irParaSecao={irParaSecao} />
 
             <Footer historico={historico} pontos={pontos} />
         </div>
