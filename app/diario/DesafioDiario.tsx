@@ -10,6 +10,7 @@ import { arrPaginasIniciais } from "../dados/paginasIniciais";
 import { arrPaginasObjetivo } from "../dados/paginasObjetivo";
 import Secoes from "../components/Secoes";
 import { useSecoes } from "../lib/useSecoes";
+import LinkSelect from "../components/LinkSelect";
 
 type DadosLocalStorage = {
     historico: string[];
@@ -213,6 +214,7 @@ export default function DesafioDiario() {
 
                 {/* NAVEGAR PELA PÁGINA DO CONTEÚDO DA WIKI */}
                 <Secoes secoesDaPagina={secoesDaPagina} irParaSecao={irParaSecao} />
+                <LinkSelect wikiHtml={wikiHtml} />
 
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}
                 {wikiHtml ? (

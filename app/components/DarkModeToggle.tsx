@@ -50,17 +50,12 @@ export default function DarkModeToggle() {
             onClick={() => setDark(!dark)}
             title={dark ? "Modo claro" : "Modo escuro"}
             style={{
-                position: "fixed",
-                bottom: "10px",
-                left: "10px",
-                zIndex: 9999,
                 background: "none",
                 border: "none",
                 cursor: "pointer",
                 fontSize: "20px",
                 opacity: 0.5,
-                lineHeight: 1,
-                padding: "4px",
+                padding: "8px 10px",
             }}
         >
             {dark ? <BsSun /> : <BsMoon />}

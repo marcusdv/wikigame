@@ -7,13 +7,20 @@ type SecoesType = {
 
 // ==== COMPONENTE DE NAVEGAÇÃO ENTRE OS H2s DA WIKIPEDIA ====
 export default function Secoes({ secoesDaPagina, irParaSecao }: SecoesType) {
-    const [menuSecoesAberto, setMenuSecoesAberto] = useState(true);
+    const [menuSecoesAberto, setMenuSecoesAberto] = useState(false);
 
     // coloca um ínicio na frente para levar ao topo da página.
     const secoesCopia = [{ text: "Início", index: -1 }, ...secoesDaPagina];
 
     return (
-        <>
+        <div
+            onBlur={(e) => {
+                // só fecha se o novo foco saiu do container inteiro
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                    setMenuSecoesAberto(false);
+                }
+            }}
+        >
             {secoesCopia.length > 1 && (
                 <div className="fixed right-2 bottom-2 z-20 flex flex-col items-end pixel-font">
                     {/* painel de seções */}
@@ -48,6 +55,6 @@ export default function Secoes({ secoesDaPagina, irParaSecao }: SecoesType) {
                     </button>
                 </div>
             )}
-        </>
+        </div>
     );
 }

@@ -9,6 +9,7 @@ import { arrPaginasObjetivo } from "../dados/paginasObjetivo";
 import { useState } from "react";
 import { useSecoes } from "../lib/useSecoes";
 import Secoes from "../components/Secoes";
+import LinkSelect from "../components/LinkSelect";
 
 export default function DesafioNormal() {
     // Lazy initializer. Quando passa uma callback, o react não chama a função em todo o re-render. Somente na primeira vez.
@@ -77,6 +78,8 @@ export default function DesafioNormal() {
                     }}
                     tema={"jogoNormal"}
                 />
+
+                <LinkSelect wikiHtml={wikiHtml} />
 
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}
                 <div

@@ -138,15 +138,6 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
         return () => window.removeEventListener("beforeunload", handleBeforeUnload);
     }, [state.voceVenceu]);
 
-    // ==== BLOQUEIA CTRL+F ====
-    useEffect(() => {
-        const bloquear = (e: KeyboardEvent) => {
-            if (e.ctrlKey && e.key === "f") e.preventDefault();
-        };
-        window.addEventListener("keydown", bloquear);
-        return () => window.removeEventListener("keydown", bloquear);
-    }, []);
-
     // ==== NAVEGAÇÃO PELO HISTÓRICO ====
     // Permite voltar para qualquer página anterior clicando no breadcrumb.
     const handleNavegarPeloHistorico = (index: number) => {

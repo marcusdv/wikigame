@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { useUsuario } from "@/app/lib/userContext";
 import { useRouter } from "next/navigation";
+import DarkModeToggle from "@/app/components/DarkModeToggle";
 
 type BarraSuperiorFixaProps = {
     historico: string[];
@@ -211,7 +212,7 @@ export default function BarraSuperiorFixa({
                         {/* ── MENU HAMBURGUER — mobile col2 row1 | desktop col6 row1 ── */}
                         <div
                             ref={perfilRef}
-                            className={`flex col-start-2 row-start-1 md:col-start-6 items-center justify-center px-4 md:border-l-2  ${t.secaoBorderInterno}`}
+                            className={`flex col-start-2 row-start-1 md:col-start-6 md:border-l-2 ${t.secaoBorderInterno}`}
                         >
                             <button
                                 onClick={() => {
@@ -220,18 +221,18 @@ export default function BarraSuperiorFixa({
                                         setMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
                                     setMenuPerfil((v) => !v);
                                 }}
-                                className="cursor-pointer bg-transparent border-none p-0 flex flex-col items-center gap-1"
+                                className="flex flex-col items-center justify-between w-full h-full px-4 py-2 bg-transparent border-none cursor-pointer"
                                 title="Menu"
                             >
-                                <i className="snes-jp-logo"></i>
+                                <i className="snes-logo" style={{ display: "block" }}></i>
                                 {usuario ? (
-                                    <span className={t.labelTexto} style={{ fontSize: 6, lineHeight: 1.6 }}>
+                                    <span className={t.labelTexto} style={{ fontSize: 8, lineHeight: 1.6 }}>
                                         PLAYER
                                         <br />
                                         {usuario.nome}
                                     </span>
                                 ) : (
-                                    <span className={t.labelTexto} style={{ fontSize: 6 }}>
+                                    <span className={t.labelTexto} style={{ fontSize: 8 }}>
                                         INSERT COIN
                                     </span>
                                 )}
@@ -242,7 +243,16 @@ export default function BarraSuperiorFixa({
                                 <div
                                     className={`fixed ${t.divPaiBg} border-2 ${t.divPaiBorder} shadow-lg z-50 min-w-28`}
                                     style={{ top: menuPos.top, right: menuPos.right }}
+                                    onBlur={(e) => {
+                                        // só fecha se o novo foco saiu do container inteiro
+                                        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                                            setMenuPerfil(false);
+                                        }
+                                    }}
                                 >
+                                    {/* DARK MODE BUTTON TOGGLE */}
+                                    <DarkModeToggle />
+
                                     <Link
                                         href={tema === "jogoNormal" ? "/diario" : "/jogar"}
                                         replace
@@ -270,7 +280,11 @@ export default function BarraSuperiorFixa({
                                     >
                                         Perfil
                                     </Link>
+
+                                    {/* LINHA PARA SEPARAR O ÚLTIMO ITEM */}
                                     <div className={`border-t ${t.secaoBorderInterno}`} />
+
+                                    {/* SAIR  */}
                                     {usuario ? (
                                         <button
                                             onClick={handleLogout}

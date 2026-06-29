@@ -22,10 +22,20 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
     const router = useRouter();
 
     const [recordes, setRecordes] = useState<Recorde[]>([]);
+    const [carregandoRecores, setCarregandoRecordes] = useState<boolean>(true);
     const [idPalavraDoDia, setIdPalavraDoDia] = useState<number | null>(null);
     const [tempoRestante, setTempoRestante] = useState("");
     const [historicoCopiado, setHistoricoCopiado] = useState(false);
     const { usuario, carregando } = useUsuario();
+
+    const [reticencias, setReticencias] = useState(1);
+
+    // animação das reticências
+    useEffect(() => {
+        if (recordes) return;
+        const id = setInterval(() => setReticencias((p) => (p >= 3 ? 1 : p + 1)), 400);
+        return () => clearInterval(id);
+    }, [recordes]);
 
     // ==== CALCULA O TEMPO RESTANTE P PRÓXIMA PALAVRA DO DIA ====
     useEffect(() => {
@@ -59,6 +69,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
         return () => clearInterval(intervalo);
     }, [modoDeJogo]);
 
+    // ==== BUSCA RECORES DO DIA NO BANCO ====
     // auto-envia quando usuario E idPalavraDoDia estiverem disponíveis
     useEffect(() => {
         if (modoDeJogo !== "diario") return;
@@ -127,6 +138,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                             if (data) {
                                 console.log("loop");
                                 setRecordes(data);
+                                setCarregandoRecordes(false);
                             }
                         });
                 } else {
@@ -281,36 +293,43 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                                 <span>|</span>
                                 <h3 className=" ">Pontos</h3>
                             </div>
-                            {recordes
-                                ?.sort((a, b) => a.pontos - b.pontos)
-                                .map((recorde, idx) => (
-                                    <div key={recorde.id} className="flex items-center gap-4 px-8">
-                                        <span
-                                            className={` 
-                                            
-                                            ${idx === 0 ? "text-yellow-500 text-lg" : "text-sm"} 
+                            {/* RECORDES */}
+                            {!carregandoRecores ? (
+                                recordes
+                                    .sort((a, b) => a.pontos - b.pontos)
+                                    .map((recorde, idx) => (
+                                        <div key={recorde.id} className={`flex items-center gap-4 px-8  `}>
+                                            <span
+                                                className={` text-xs
+                                            ${idx === 0 && "text-yellow-500 "} 
                                             ${idx === 1 && "text-amber-300"} 
                                             ${idx === 2 && "text-orange-200 "} 
                                         `}
-                                        >
-                                            {idx + 1}
-                                        </span>
+                                            >
+                                                {idx + 1}
+                                            </span>
 
-                                        <span
-                                            className={` 
-                                            ${idx === 0 ? "text-yellow-500 text-lg animate-bounce" : "text-sm"} 
-                                            truncate ${idx === 0 ? "text-yellow-400 text-lg animate-bounce" : "text-sm"} 
+                                            <span
+                                                className={`text-md truncate
+                                            ${idx === 0 && "text-yellow-500"} 
                                             ${idx === 1 && "text-amber-200"} 
                                             ${idx === 2 && "text-orange-100"} 
                                         `}
-                                        >
-                                            {recorde.jogador_nome}
-                                        </span>
-                                        <span className="text-slate-200 shrink-0 ml-auto" style={{ fontSize: "14px" }}>
-                                            {usuario ? recorde.pontos : "???"}
-                                        </span>
-                                    </div>
-                                ))}
+                                            >
+                                                {recorde.jogador_nome}
+                                            </span>
+                                            <span className="text-slate-200 shrink-0 ml-auto">
+                                                {usuario ? recorde.pontos : "???"}
+                                            </span>
+                                        </div>
+                                    ))
+                            ) : (
+                                <div className="flex items-center gap-4 px-8">
+                                    <span className={`${"text-gray-500 text-md animate-bounce"}`}>
+                                        Carregando{".".repeat(reticencias)}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

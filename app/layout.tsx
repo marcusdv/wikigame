@@ -10,7 +10,6 @@ const pressStart2P = Press_Start_2P({
     weight: "400",
 });
 import { ToastProvider } from "@/app/components/Toast";
-import DarkModeToggle from "@/app/components/DarkModeToggle";
 
 export const metadata: Metadata = {
     title: "Wikirun",
@@ -42,7 +41,6 @@ export default function RootLayout({
             <body className="min-h-full flex flex-col">
                 <UserProvider>
                     <ToastProvider>{children}</ToastProvider>
-                    <DarkModeToggle />
                 </UserProvider>
             </body>
         </html>
