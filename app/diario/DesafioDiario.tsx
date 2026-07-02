@@ -207,7 +207,7 @@ export default function DesafioDiario() {
                 )}
 
                 {/* NAVEGAR PELA PÁGINA DO CONTEÚDO DA WIKI */}
-                <LinkSelect wikiHtml={wikiHtml} />
+                <LinkSelect wikiHtml={wikiHtml} titulo={historico[historico.length - 1] ?? ""} />
 
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}
                 {wikiHtml ? (

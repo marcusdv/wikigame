@@ -333,13 +333,20 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                         </div>
                     </div>
                 )}
+                {/* se já está na página, reseta o jogo */}
+                {novoJogo && (
+                    <button onClick={novoJogo} className="nes-btn w-full is-primary mb-2" style={{ fontSize: "14px" }}>
+                        Jogar novamente!
+                    </button>
+                )}
+                {/* se está no desafio diário, redireciona */}
                 {usuario && (
                     <button
                         onClick={() => router.push("/jogar")}
-                        className={`nes-btn w-full is-primary`}
+                        className="nes-btn w-full"
                         style={{ fontSize: "14px" }}
                     >
-                        Explorar modos de jogo!
+                        Jogar mais!
                     </button>
                 )}
             </div>

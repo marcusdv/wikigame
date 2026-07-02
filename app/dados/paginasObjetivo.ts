@@ -25,8 +25,6 @@ export const arrPaginasObjetivo = [
     "Frigorífico",
     "Torradeira",
     "Barbeador",
-    "Cortador de grama",
-    "Ferro de passar",
     "Extintor",
     "Hidrante",
     "Furadeira",

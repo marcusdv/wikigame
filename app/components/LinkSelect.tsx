@@ -6,7 +6,7 @@ type ItemSecao = { type: "secao"; text: string; index: number };
 type ItemLink = { type: "link"; texto: string; href: string };
 type ListItem = ItemSecao | ItemLink;
 
-export default function LinkSelect({ wikiHtml }: { wikiHtml: string }) {
+export default function LinkSelect({ wikiHtml, titulo }: { wikiHtml: string; titulo: string }) {
     const [items, setItems] = useState<ListItem[]>([]);
     const [busca, setBusca] = useState("");
     const [aberto, setAberto] = useState(false);
@@ -41,6 +41,7 @@ export default function LinkSelect({ wikiHtml }: { wikiHtml: string }) {
 
             // Intercala seções e links pela ordem do DOM
             const lista: ListItem[] = [];
+            if (titulo) lista.push({ type: "secao", text: titulo, index: -1 });
             let h2Idx = 0;
 
             for (const linkEl of allLinks) {
@@ -63,7 +64,7 @@ export default function LinkSelect({ wikiHtml }: { wikiHtml: string }) {
         });
 
         return () => cancelAnimationFrame(raf);
-    }, [wikiHtml]);
+    }, [wikiHtml, titulo]);
 
     // Restaura scroll ao abrir — reseta quando muda de artigo
     useEffect(() => {
@@ -101,6 +102,10 @@ export default function LinkSelect({ wikiHtml }: { wikiHtml: string }) {
     }
 
     function irParaSecao(index: number) {
+        if (index === -1) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
         const h2s = document.querySelectorAll("#wikicontent h2");
         h2s[index]?.scrollIntoView({ behavior: "smooth", block: "center" });
     }

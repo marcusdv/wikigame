@@ -47,11 +47,11 @@ export default function DesafioNormal() {
                 <VoceVenceu
                     historico={historico}
                     pontos={pontos}
+                    modoDeJogo={"aleatorio"}
                     novoJogo={() => {
                         const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo);
                         iniciarNovoJogo(start, target);
                     }}
-                    modoDeJogo={"aleatorio"}
                 />
             )}
 
@@ -73,7 +73,7 @@ export default function DesafioNormal() {
                     tema={"jogoNormal"}
                 />
 
-                <LinkSelect wikiHtml={wikiHtml} />
+                <LinkSelect wikiHtml={wikiHtml} titulo={historico[historico.length - 1] ?? ""} />
 
                 {/* Container do artigo. Delegamos cliques aqui para capturar qualquer link filho. */}
                 <div

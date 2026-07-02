@@ -1,6 +1,5 @@
 "use client";
 import { useSyncExternalStore } from "react";
-import { BsMoon, BsSun } from "react-icons/bs";
 
 // Estado global fora do componente — persiste entre re-renders sem useState
 let initialized = false;
@@ -46,19 +45,17 @@ export default function DarkModeToggle() {
     const dark = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
     return (
-        <button
-            onClick={() => setDark(!dark)}
-            title={dark ? "Modo claro" : "Modo escuro"}
-            style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "20px",
-                opacity: 0.5,
-                padding: "8px 10px",
-            }}
+        <label
+            style={{ fontSize: 8, display: "flex", alignItems: "center", gap: "8px" }}
+            className="pixel-font px-3 py-2 w-full hover:bg-slate-700 cursor-pointer text-blue-500 "
         >
-            {dark ? <BsSun /> : <BsMoon />}
-        </button>
+            <span>Dark Mode</span>
+            <input
+                type="checkbox"
+                className="cursor-pointer"
+                checked={dark}
+                onChange={(e) => setDark(e.target.checked)}
+            />
+        </label>
     );
 }

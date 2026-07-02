@@ -90,6 +90,15 @@ export default function BarraSuperiorFixa({
         }
     }, [historico]);
 
+    useEffect(() => {
+        if (!menuPerfil) return;
+        const fechar = (e: MouseEvent) => {
+            if (!perfilRef.current?.contains(e.target as Node)) setMenuPerfil(false);
+        };
+        document.addEventListener("mousedown", fechar);
+        return () => document.removeEventListener("mousedown", fechar);
+    }, [menuPerfil]);
+
     return (
         <div
             className={`sticky pixel-font top-0 z-30 select-none ${t.divPaiBg} border-b-4 ${t.divPaiBorder} shadow-lg`}
@@ -164,6 +173,7 @@ export default function BarraSuperiorFixa({
                             </span>
                         </div>
 
+                        {/* PONTOS */}
                         {/* ──  — mobile col1 row2 | desktop col4 row1 ── */}
                         <div
                             className={`
@@ -191,7 +201,7 @@ export default function BarraSuperiorFixa({
                             </div>
                         </div>
 
-                        {/* ── REINICIAR — mobile col2 row1 | desktop col4 row1 ── */}
+                        {/* REINICIAR */}
                         <div
                             className={`
                                     col-start-3 row-start-1 flex items-center justify-center border-l-2 ${t.secaoBorderInterno}
@@ -209,11 +219,12 @@ export default function BarraSuperiorFixa({
                             </button>
                         </div>
 
-                        {/* ── MENU HAMBURGUER — mobile col2 row1 | desktop col6 row1 ── */}
+                        {/* MENU */}
                         <div
                             ref={perfilRef}
                             className={`flex col-start-2 row-start-1 md:col-start-6 md:border-l-2 ${t.secaoBorderInterno}`}
                         >
+                            {/* NOME DO JOGADOR E CONTROLE REMOTO */}
                             <button
                                 onClick={() => {
                                     const rect = perfilRef.current?.getBoundingClientRect();
@@ -238,21 +249,13 @@ export default function BarraSuperiorFixa({
                                 )}
                             </button>
 
-                            {/* AREA DO PERFIL */}
+                            {/* LISTA DO MENU RETRÁTIL */}
                             {menuPerfil && (
                                 <div
-                                    className={`fixed ${t.divPaiBg} border-2 ${t.divPaiBorder} shadow-lg z-50 min-w-28`}
+                                    className={`fixed ${t.divPaiBg} border-2 ${t.divPaiBorder} shadow-lg z-50 min-w-28 `}
                                     style={{ top: menuPos.top, right: menuPos.right }}
-                                    onBlur={(e) => {
-                                        // só fecha se o novo foco saiu do container inteiro
-                                        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                                            setMenuPerfil(false);
-                                        }
-                                    }}
                                 >
-                                    {/* DARK MODE BUTTON TOGGLE */}
-                                    <DarkModeToggle />
-
+                                    {/* OPÇÃO DE JOGO */}
                                     <Link
                                         href={tema === "jogoNormal" ? "/diario" : "/jogar"}
                                         replace
@@ -262,6 +265,8 @@ export default function BarraSuperiorFixa({
                                     >
                                         {tema === "jogoNormal" ? "Desafio Diário" : "Desafio Aleatório"}
                                     </Link>
+
+                                    {/* LINK PÁGINA DE RECORDES */}
                                     <Link
                                         href={"/recordes"}
                                         replace
@@ -271,6 +276,8 @@ export default function BarraSuperiorFixa({
                                     >
                                         Recordes
                                     </Link>
+
+                                    {/* LINK MEU PERFIL */}
                                     <Link
                                         href={"/perfil"}
                                         replace
@@ -280,7 +287,8 @@ export default function BarraSuperiorFixa({
                                     >
                                         Perfil
                                     </Link>
-
+                                    {/* BOTÃO DE DARK MODE */}
+                                    <DarkModeToggle />
                                     {/* LINHA PARA SEPARAR O ÚLTIMO ITEM */}
                                     <div className={`border-t ${t.secaoBorderInterno}`} />
 
