@@ -81,7 +81,7 @@ export default function BarraSuperiorFixa({
     async function handleLogout() {
         await fetch("/api/logout", { method: "POST" });
         await refreshUsuario();
-        router.push("/login");
+        router.push("/");
     }
 
     useEffect(() => {

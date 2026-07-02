@@ -44,6 +44,7 @@ export default function Login() {
             }
 
             await refreshUsuario();
+            router.refresh();
             router.push("/diario");
         });
     }
