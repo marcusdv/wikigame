@@ -14,8 +14,8 @@ type VoceVenceuProps = {
 
 type Recorde = {
     id: number;
-    jogador_nome: string;
     pontos: number;
+    usuarios: { nome: string }[];
 };
 
 export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, seedProp }: VoceVenceuProps) {
@@ -75,40 +75,32 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
         if (modoDeJogo !== "diario") return;
         if (!usuario || !idPalavraDoDia) return;
 
-        // verifica no banco se já existe recorde deste usuário para hoje
+        // upsert, se mão existir, insere
+        // se já existir, com ignoreDuplicates: true, só ignora
+        // evitando ter que fazer um select antes para verificar se já há dados do usuario em recordes
         supabase
             .from("recordes")
-            .select("id")
-            .eq("id_palavras_do_dia", idPalavraDoDia)
-            .eq("jogador_nome", usuario.nome)
-            .maybeSingle()
-            .then(({ data }) => {
-                if (data) return; // já enviou, não duplica
+            .upsert(
+                { id_usuario: usuario.id, pontos, id_palavras_do_dia: idPalavraDoDia },
+                { onConflict: "id_usuario,id_palavras_do_dia", ignoreDuplicates: true },
+            )
+            .then(({ error }) => {
+                if (error) {
+                    console.log("Erro ao salvar recorde: ", error);
+                    return;
+                }
 
                 supabase
                     .from("recordes")
-                    .insert({ jogador_nome: usuario.nome, pontos, id_palavras_do_dia: idPalavraDoDia })
-                    .then(({ error }) => {
-                        if (error) {
-                            console.error("Erro ao salvar recorde:", error);
-                            return;
-                        }
-
-                        supabase
-                            .from("recordes")
-                            .select("id, jogador_nome, pontos")
-                            .eq("id_palavras_do_dia", idPalavraDoDia)
-                            .then(({ data }) => {
-                                if (data) setRecordes(data);
-                            });
+                    .select("id, pontos, usuarios!id_usuario(nome)")
+                    .eq("id_palavras_do_dia", idPalavraDoDia)
+                    .then(({ data }) => {
+                        if (data) setRecordes(data as Recorde[]);
                     });
             });
     }, [usuario, idPalavraDoDia, pontos, modoDeJogo]);
 
     // ==== PEGA OS RECORDES DE HOJE ====
-    // Pega os Recordes de hoje do supabase para montar
-    // a tabela de recordes na tela de vitória.
-    // Atualiza sempre que os recordes mudarem, para mostrar o novo recorde enviado.
     useEffect(() => {
         if (!seedProp) return;
         const dataDeHoje = seedProp;
@@ -129,7 +121,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                     // depois pega os recordes com o id da palavra do dia
                     supabase
                         .from("recordes")
-                        .select("id, jogador_nome, pontos")
+                        .select("id, pontos, usuarios!id_usuario(nome)")
                         .eq("id_palavras_do_dia", data.id)
                         .then(({ data, error }) => {
                             if (error) {
@@ -137,7 +129,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                             }
                             if (data) {
                                 console.log("loop");
-                                setRecordes(data);
+                                setRecordes(data as Recorde[]);
                                 setCarregandoRecordes(false);
                             }
                         });
@@ -316,7 +308,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                                             ${idx === 2 && "text-orange-100"} 
                                         `}
                                             >
-                                                {recorde.jogador_nome}
+                                                {recorde.usuarios?.[0]?.nome}
                                             </span>
                                             <span className="text-slate-200 shrink-0 ml-auto">
                                                 {usuario ? recorde.pontos : "???"}

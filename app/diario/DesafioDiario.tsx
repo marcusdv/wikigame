@@ -9,12 +9,12 @@ import { sortearJogo } from "../lib/sortearJogo";
 import { arrPaginasIniciais } from "../dados/paginasIniciais";
 import { arrPaginasObjetivo } from "../dados/paginasObjetivo";
 import LinkSelect from "../components/LinkSelect";
+import { useUsuario } from "../lib/userContext";
 
 type DadosLocalStorage = {
     historico: string[];
     objetivo: string;
     pontos: number;
-    jaVenceu: boolean;
     custoDeVoltar: number;
 };
 
@@ -22,12 +22,10 @@ export default function DesafioDiario() {
     const d = new Date(new Date().getTime() - 3 * 60 * 60 * 1000); // pega a data de uma maneira que seja igual para todos, e subtrai 3h → hora de Brasília em UTC
     const seed = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`; // data de hoje no formato "2026-05-24".
 
-    // para saber se renderiza balões na tela, só precisa uma vez para o jogador aprender e nunca mais
-    const precisaDeBaloes = !localStorage.getItem("ja-viu-os-baloes");
-
     const [jogoInicial, setJogoInicial] = useState<{ start: string; target: string }>({ start: "", target: "" }); // valor inicial vazio, vai ser atualizado depois com o valor do banco ou sorteado
-    const [balanEncontreAberto, setBalaoEncontreAberto] = useState<boolean>(true);
-    const [saindoBalaoEncontrado, setSaindoBalaoEncontrado] = useState(false);
+
+    const [idPalavraDoDia, setIdPalavraDoDia] = useState<number | null>(null);
+    const { usuario } = useUsuario();
 
     const {
         carregando,
@@ -45,7 +43,7 @@ export default function DesafioDiario() {
         carregarJogoExistente,
     } = useGameLogic(jogoInicial.start, jogoInicial.target);
 
-    // ==== SALVA PALAVRA DO DIA NO BANCO ==== //
+    // ==== SALVA PALAVRA DO DIA NO BANCO OU BUSCA A PALAVRA DO DIA ==== //
     useEffect(() => {
         if (!seed) return;
 
@@ -91,6 +89,7 @@ export default function DesafioDiario() {
             // e ignora os dados do banco
             if (data) {
                 carregarJogoExistente(data.objetivo, [data.inicial], 0, false, 0);
+                setIdPalavraDoDia(data.id);
             }
         }
 
@@ -105,13 +104,7 @@ export default function DesafioDiario() {
             const dados = JSON.parse(json);
 
             if (dados.historico && dados.historico.length > 0) {
-                carregarJogoExistente(
-                    dados.objetivo,
-                    dados.historico,
-                    dados.pontos,
-                    dados.jaVenceu,
-                    dados.custoDeVoltar,
-                );
+                carregarJogoExistente(dados.objetivo, dados.historico, dados.pontos, false, dados.custoDeVoltar);
             }
         } else {
             salvarPalavraDoDiaNoBanco();
@@ -120,6 +113,36 @@ export default function DesafioDiario() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [seed]);
 
+    // ==== BUSCA O ID DA PALAVRA DO DIA (sempre, independente do localStorage) ====
+    useEffect(() => {
+        supabase
+            .from("palavras_do_dia")
+            .select("id")
+            .eq("data", seed)
+            .maybeSingle()
+            .then(({ data }) => {
+                if (data) setIdPalavraDoDia(data.id);
+            });
+    }, [seed]);
+
+    // ==== VERIFICA SE USUARIO JÁ VENCEU O JOGO ====
+    useEffect(() => {
+        if (!usuario || !idPalavraDoDia) return;
+
+        supabase
+            .from("recordes")
+            .select("pontos")
+            .eq("id_usuario", usuario.id)
+            .eq("id_palavras_do_dia", idPalavraDoDia)
+            .maybeSingle()
+            .then(({ data }) => {
+                if (data) {
+                    // já venceu — carrega o estado de vitória
+                    carregarJogoExistente(paginaObjetivo, historico, data.pontos, true, custoDeVoltar);
+                }
+            });
+    }, [usuario, idPalavraDoDia]);
+
     // ==== SALVA PROGRESSO A CADA MUDANÇA E PRIMEIRO ACESSO ====
     useEffect(() => {
         if (pontos === 0) return; // não salva progresso se o jogo acabou de começar, para evitar sobrescrever a palavra do dia do banco com um progresso zerado.
@@ -127,25 +150,11 @@ export default function DesafioDiario() {
             historico: historico,
             objetivo: paginaObjetivo,
             pontos,
-            jaVenceu: voceVenceu,
             custoDeVoltar,
         };
         // seed é a data de hoje, então a chave é única por dia. Formato: "desafio-diario-2026-05-24"
         localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
-    }, [historico, paginaObjetivo, pontos, custoDeVoltar, voceVenceu, seed]);
-
-    // ==== REGISTRA QUE JÁ VIU O BALÃO SE FECHAR  ====
-    useEffect(() => {
-        if (!balanEncontreAberto) {
-            localStorage.setItem("ja-viu-os-baloes", "true");
-        }
-    }, [balanEncontreAberto]);
-
-    // ==== HANDLE PARA REMOVER BALÃO DA TELA ====
-    function handleBalaoEncontreClick() {
-        setSaindoBalaoEncontrado(true);
-        setTimeout(() => setBalaoEncontreAberto(false), 1000); // espera a animação terminar
-    }
+    }, [historico, paginaObjetivo, pontos, custoDeVoltar, seed]);
 
     return (
         <div className="min-h-screen relative">
@@ -174,37 +183,6 @@ export default function DesafioDiario() {
                     custoDeVoltar={custoDeVoltar}
                     titulo={"Desafio Diário"}
                 />
-
-                {/* Balão de ajuda com o objetivo */}
-                {wikiHtml && precisaDeBaloes && balanEncontreAberto && (
-                    <div
-                        // z da barra superior é 30
-                        className="z-20 absolute pixel-font top-70 md:top-55 left-1/2 -translate-x-1/2 w-9/10 md:w-5/12"
-                        style={{ color: "#000" }}
-                    >
-                        <div
-                            onClick={handleBalaoEncontreClick}
-                            className={`
-                                            nes-balloon
-                                            from-left nes-pointer
-                                            animate__animated ${saindoBalaoEncontrado ? "animate__bounceOutUp" : "animate__bounceInDown"}
-                                    `}
-                        >
-                            <span className="absolute right-0 top-0 text-gray-600"> X</span>
-                            <p className="" style={{ fontSize: 10 }}>
-                                Encontre a página{" "}
-                                <span className="text-md uppercase text-orange-800 font-extrabold bg-amber-300 px-2 py-1 rounded">
-                                    {paginaObjetivo}
-                                </span>{" "}
-                                <br />
-                                Mas só navegando pelos links! <br /> BOA SORTE!!!{" "}
-                            </p>
-                            <p className="text-center text-gray-500" style={{ fontSize: 9 }}>
-                                - clique para fechar -
-                            </p>
-                        </div>
-                    </div>
-                )}
 
                 {/* NAVEGAR PELA PÁGINA DO CONTEÚDO DA WIKI */}
                 <LinkSelect wikiHtml={wikiHtml} titulo={historico[historico.length - 1] ?? ""} />
