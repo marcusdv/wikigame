@@ -542,7 +542,6 @@ export const arrPaginasIniciais = [
     "Experimento de Rosenhan",
     "Piotr Kropotkin",
     "Fuga de Alcatraz em junho de 1962",
-    "Plano Madagáscar",
     "Operação Paperclip",
     "If Day",
     "Operação Carne Moída",
