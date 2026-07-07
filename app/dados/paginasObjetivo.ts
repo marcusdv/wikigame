@@ -12,7 +12,6 @@ export const arrPaginasObjetivo = [
     "Rede de pesca",
     "Anzol",
     "Impressora",
-    "Despertador",
     "Sofá",
     "Televisor",
     "Cadeira",
