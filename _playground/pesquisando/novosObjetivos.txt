@@ -1,64 +1,10 @@
-Ventilador
-Sanguessuga
-Pente
-Tesoura
-Machado
-Clipe
-Caneta
-Compasso (geometria)
-Agrafador
-Arpão
-Canhão
-Agulha
-Flauta
-Rede de pesca
-Anzol
-Impressora
-Despertador
-Sofá
-Tapete
-Televisor
-Cadeira
-Mesa
-Fogão
-Batedeira
-Forno de micro-ondas
-Frigorífico
-Torradeira
-Barbeador
-Cortador de grama
-Ferro de passar
-Extintor
-Hidrante
-Furadeira
-Máquina de costura
-Secador de cabelo
-Cafeteira
-Abridor de latas
-Panela
-Frigideira
-Panela de pressão
-Caldeirão
-Liquidificador
-Pia
-Cama
-Guarda-roupas
-Aspirador
-Balde
-Poço
-Lixeira
-Vassoura
-Cadeado
-Cofre
-Chave
-Desentupidor
-Janela
-Vitrine
-Maçaneta
-Porta
-Foice
-Lápis
-Papel
-Régua
-Alicate
-Picareta
+YouTube
+Pandemia
+Papa
+Pólvora
+Bazuca
+Pistola
+Vulcão
+Carapaça
+Edifício
+Arranha-céu

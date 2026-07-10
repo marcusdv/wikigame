@@ -6,15 +6,16 @@ const DURACAO = 5000;
 
 // Canal global que carrega a função mostrarErro para qualquer componente dentro do ToastProvider.
 // O valor padrão (função vazia) é usado se alguém chamar useToast() fora do provider.
-const ToastContext = createContext<{ mostrarErro: (msg: string) => void }>({
+const ToastContext = createContext<{ mostrarErro: (msg: string) => void; mostrarMensagem: (msg: string) => void }>({
     mostrarErro: () => {},
+    mostrarMensagem: () => {},
 });
 
 // Componente isolado para a barra de progresso.
 // Fica separado do ToastProvider de propósito: o setInterval roda ~60x por segundo,
 // e se estivesse no provider causaria re-render do app inteiro a cada tick.
 // Aqui, só a barra re-renderiza.
-function BarraProgresso() {
+function BarraProgresso({ tipo }: { tipo: "erro" | "mensagem" }) {
     const [progresso, setProgresso] = useState(100); // começa em 100% e vai até 0%
 
     useEffect(() => {
@@ -33,8 +34,7 @@ function BarraProgresso() {
     }, []); // [] = roda só na montagem. O key={toast.id} no pai garante remontagem a cada novo erro.
 
     return (
-        <div className="h-1 bg-red-800">
-            {/* largura controlada pelo estado progresso */}
+        <div className={tipo === "erro" ? "h-1 bg-red-800" : "h-1 bg-blue-800"}>
             <div className="h-full bg-white" style={{ width: `${progresso}%` }} />
         </div>
     );
@@ -43,12 +43,17 @@ function BarraProgresso() {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
     // null = toast invisível. { id, msg } = toast visível com aquela mensagem.
     // O id é o timestamp da criação — usado como key para forçar remontagem da BarraProgresso.
-    const [toast, setToast] = useState<{ id: number; msg: string } | null>(null);
+    const [toast, setToast] = useState<{ id: number; msg: string; tipo: "erro" | "mensagem" } | null>(null);
 
     // useCallback garante referência estável para mostrarErro entre renders,
     // evitando re-renders desnecessários nos filhos que consomem o context.
     const mostrarErro = useCallback((msg: string) => {
-        setToast({ id: Date.now(), msg });
+        setToast({ id: Date.now(), msg, tipo: "erro" });
+    }, []);
+    // useCallback garante referência estável para mostrarErro entre renders,
+    // evitando re-renders desnecessários nos filhos que consomem o context.
+    const mostrarMensagem = useCallback((msg: string) => {
+        setToast({ id: Date.now(), msg, tipo: "mensagem" });
     }, []);
 
     // Fecha o toast automaticamente após DURACAO ms.
@@ -60,16 +65,20 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }, [toast]);
 
     return (
-        <ToastContext.Provider value={{ mostrarErro }}>
+        <ToastContext.Provider value={{ mostrarErro, mostrarMensagem }}>
             {children}
 
             {/* Renderiza o toast apenas quando há mensagem */}
             {toast && (
-                <div className="fixed bottom-4 right-4 z-50 w-72 rounded-lg bg-red-600 text-white shadow-lg overflow-hidden">
+                <div
+                    className={`fixed bottom-4 right-4 z-50 w-72 rounded-lg text-white shadow-lg overflow-hidden ${
+                        toast.tipo === "erro" ? "bg-red-600" : "bg-blue-600"
+                    }`}
+                >
                     <div className="px-4 text-center py-3 text-md font-medium whitespace-pre-wrap">{toast.msg}</div>
                     {/* key={toast.id} faz o React desmontar e remontar a BarraProgresso a cada novo erro,
                         resetando o timer interno dela do zero */}
-                    <BarraProgresso key={toast.id} />
+                    <BarraProgresso key={toast.id} tipo={toast.tipo} />
                 </div>
             )}
         </ToastContext.Provider>

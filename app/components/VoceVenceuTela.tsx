@@ -22,7 +22,7 @@ type Recorde = {
 // Equivalente a:
 // SELECT recordes.id, recordes.pontos, usuarios.nome FROM recordes
 // JOIN usuarios ON usuarios.id = recordes.id_usuario
-// WHERE recordes.id_palavras_do_dia = idPalavraDoDia
+// WHERE recordes.id_palavra_do_dia = idPalavraDoDia
 //
 // Usamos duas queries separadas em vez do JOIN embutido do PostgREST
 // (.select("usuarios!id_usuario(nome)")) porque o PostgREST avalia RLS de forma
@@ -33,7 +33,7 @@ async function buscarRecordesComNomes(idPalavraDoDia: number): Promise<Recorde[]
     const { data: recordesData, error } = await supabase
         .from("recordes")
         .select("id, pontos, id_usuario")
-        .eq("id_palavras_do_dia", idPalavraDoDia);
+        .eq("id_palavra_do_dia", idPalavraDoDia);
 
     if (error || !recordesData || recordesData.length === 0) return [];
 
@@ -111,8 +111,8 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
         supabase
             .from("recordes")
             .upsert(
-                { id_usuario: usuario.id, pontos, id_palavras_do_dia: idPalavraDoDia },
-                { onConflict: "id_usuario,id_palavras_do_dia", ignoreDuplicates: true },
+                { id_usuario: usuario.id, pontos, id_palavra_do_dia: idPalavraDoDia },
+                { onConflict: "id_usuario,id_palavra_do_dia", ignoreDuplicates: true },
                 // onConflict: define qual constraint identificar o conflito
                 // ignoreDuplicates: se já existe, não atualiza (mantém o recorde original)
             )
@@ -288,7 +288,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                         {/* CTA de registro — só aparece para visitantes não logados */}
                         {!usuario && !carregando && (
                             <button
-                                onClick={() => router.push("/registro")}
+                                onClick={() => router.push("/login")}
                                 className="nes-btn w-full is-success"
                                 style={{ fontSize: "12px" }}
                             >

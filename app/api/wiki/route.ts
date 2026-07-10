@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
 
         if (!response.ok) {
             console.error("Problema com a resposta", response.status, response);
-            return;
+            return NextResponse.json({ message: "Erro ao buscar dados na Wikipedia" }, { status: response.status });
         }
 
         // captura os dados da resposta asíncrona e desempacota o JSON devolvido pela wikipedia.

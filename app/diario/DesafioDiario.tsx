@@ -16,6 +16,7 @@ type DadosLocalStorage = {
     objetivo: string;
     pontos: number;
     custoDeVoltar: number;
+    voceVenceu: boolean;
 };
 
 export default function DesafioDiario() {
@@ -104,7 +105,13 @@ export default function DesafioDiario() {
             const dados = JSON.parse(json);
 
             if (dados.historico && dados.historico.length > 0) {
-                carregarJogoExistente(dados.objetivo, dados.historico, dados.pontos, false, dados.custoDeVoltar);
+                carregarJogoExistente(
+                    dados.objetivo,
+                    dados.historico,
+                    dados.pontos,
+                    dados.voceVenceu ?? false,
+                    dados.custoDeVoltar,
+                );
             }
         } else {
             salvarPalavraDoDiaNoBanco();
@@ -133,7 +140,7 @@ export default function DesafioDiario() {
             .from("recordes")
             .select("pontos")
             .eq("id_usuario", usuario.id)
-            .eq("id_palavras_do_dia", idPalavraDoDia)
+            .eq("id_palavra_do_dia", idPalavraDoDia)
             .maybeSingle()
             .then(({ data }) => {
                 if (data) {
@@ -141,9 +148,9 @@ export default function DesafioDiario() {
                     carregarJogoExistente(paginaObjetivo, historico, data.pontos, true, custoDeVoltar);
                 }
             });
-    }, [usuario, idPalavraDoDia]);
+    }, [usuario, idPalavraDoDia, paginaObjetivo, historico, custoDeVoltar, carregarJogoExistente]);
 
-    // ==== SALVA PROGRESSO A CADA MUDANÇA E PRIMEIRO ACESSO ====
+    // ==== SALVA PROGRESSO A CADA MUDANÇA E PRIMEIRO CLIQUE EM LINK ====
     useEffect(() => {
         if (pontos === 0) return; // não salva progresso se o jogo acabou de começar, para evitar sobrescrever a palavra do dia do banco com um progresso zerado.
         const dados: DadosLocalStorage = {
@@ -151,10 +158,11 @@ export default function DesafioDiario() {
             objetivo: paginaObjetivo,
             pontos,
             custoDeVoltar,
+            voceVenceu,
         };
         // seed é a data de hoje, então a chave é única por dia. Formato: "desafio-diario-2026-05-24"
         localStorage.setItem(`desafio-diario-${seed}`, JSON.stringify(dados));
-    }, [historico, paginaObjetivo, pontos, custoDeVoltar, seed]);
+    }, [historico, paginaObjetivo, pontos, custoDeVoltar, voceVenceu, seed]);
 
     return (
         <div className="min-h-screen relative">
@@ -179,7 +187,7 @@ export default function DesafioDiario() {
                     pontoFlutuante={pontoFlutuante}
                     paginaObjetivo={paginaObjetivo}
                     handleNavegarParaHistorico={handleNavegarPeloHistorico}
-                    tema={"desafio"}
+                    modoDeJogo={"jogoDiario"}
                     custoDeVoltar={custoDeVoltar}
                     titulo={"Desafio Diário"}
                 />

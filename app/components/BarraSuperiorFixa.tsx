@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useUsuario } from "@/app/lib/userContext";
 import { useRouter } from "next/navigation";
 import DarkModeToggle from "@/app/components/DarkModeToggle";
+import { useToast } from "./Toast";
 
 type BarraSuperiorFixaProps = {
     historico: string[];
@@ -16,7 +17,7 @@ type BarraSuperiorFixaProps = {
     custoDeVoltar: number;
     novoJogo?: () => void;
     titulo: "Desafio Diário" | "Encontrar Página";
-    tema?: "desafio" | "jogoNormal";
+    modoDeJogo: "jogoDiario" | "jogoNormal";
 };
 
 const temas = {
@@ -36,7 +37,7 @@ const temas = {
         botaoToggleBorder: "border-blue-400",
         botaoToggleTexto: "text-blue-300 hover:text-white",
     },
-    desafio: {
+    jogoDiario: {
         divPaiBg: "bg-slate-900",
         divPaiBorder: "border-amber-400",
         secaoBorderInterno: "border-slate-700",
@@ -66,7 +67,7 @@ export default function BarraSuperiorFixa({
     novoJogo,
     titulo,
     custoDeVoltar,
-    tema = "jogoNormal",
+    modoDeJogo = "jogoNormal",
 }: BarraSuperiorFixaProps) {
     //
     const breadcrumbRef = useRef<HTMLDivElement>(null);
@@ -74,9 +75,11 @@ export default function BarraSuperiorFixa({
     const [hudOculto, setHudOculto] = useState(false);
     const [menuPerfil, setMenuPerfil] = useState(false);
     const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
-    const t = temas[tema];
+    const t = temas[modoDeJogo];
     const { usuario, carregando, refreshUsuario } = useUsuario();
     const router = useRouter();
+
+    const { mostrarMensagem } = useToast();
 
     async function handleLogout() {
         await fetch("/api/logout", { method: "POST" });
@@ -257,15 +260,14 @@ export default function BarraSuperiorFixa({
                                 >
                                     {/* OPÇÃO DE JOGO */}
                                     <Link
-                                        href={tema === "jogoNormal" ? "/diario" : "/jogar"}
+                                        href={modoDeJogo === "jogoNormal" ? "/diario" : "/jogar"}
                                         replace
                                         onClick={() => setMenuPerfil(false)}
                                         className={`pixel-font block px-3 py-2 ${t.labelTexto} hover:bg-slate-700`}
                                         style={{ fontSize: 8 }}
                                     >
-                                        {tema === "jogoNormal" ? "Desafio Diário" : "Desafio Aleatório"}
+                                        {modoDeJogo === "jogoNormal" ? "Desafio Diário" : "Desafio Aleatório"}
                                     </Link>
-
                                     {/* LINK PÁGINA DE RECORDES */}
                                     <Link
                                         href={"/recordes"}
@@ -276,7 +278,6 @@ export default function BarraSuperiorFixa({
                                     >
                                         Recordes
                                     </Link>
-
                                     {/* LINK MEU PERFIL */}
                                     <Link
                                         href={"/perfil"}
@@ -287,11 +288,26 @@ export default function BarraSuperiorFixa({
                                     >
                                         Perfil
                                     </Link>
+                                    {/* LINHA PARA SEPARAR O ÚLTIMO ITEM */}
+                                    {modoDeJogo === "jogoNormal" && (
+                                        <Link
+                                            href={""}
+                                            replace
+                                            onClick={() => {
+                                                const url = `${window.location.origin}/jogar?start=${historico[0]}&target=${paginaObjetivo}`;
+                                                navigator.clipboard.writeText(url);
+                                                setMenuPerfil(false);
+                                                mostrarMensagem("Link copiado para a área de transferência!");
+                                            }}
+                                            className="pixel-font block px-3 py-2 ${t.labelTexto} hover:bg-slate-700"
+                                            style={{ fontSize: 8 }}
+                                        >
+                                            Desafiar Amigo
+                                        </Link>
+                                    )}{" "}
                                     {/* BOTÃO DE DARK MODE */}
                                     <DarkModeToggle />
-                                    {/* LINHA PARA SEPARAR O ÚLTIMO ITEM */}
                                     <div className={`border-t ${t.secaoBorderInterno}`} />
-
                                     {/* SAIR  */}
                                     {usuario ? (
                                         <button

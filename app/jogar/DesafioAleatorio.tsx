@@ -8,12 +8,21 @@ import { arrPaginasIniciais } from "../dados/paginasIniciais";
 import { arrPaginasObjetivo } from "../dados/paginasObjetivo";
 import { useState } from "react";
 import LinkSelect from "../components/LinkSelect";
+import { useSearchParams } from "next/navigation";
 
 export default function DesafioNormal() {
+    // se tiverem parametros de configuração na URL, usa eles. Se não, sorteia um jogo aleatório.
+    const searchParams = useSearchParams();
+    const startParam = searchParams.get("start");
+    const targetParam = searchParams.get("target");
+    console.log("startParam:", startParam, "targetParam:", targetParam);
+
     // Lazy initializer. Quando passa uma callback, o react não chama a função em todo o re-render. Somente na primeira vez.
-    const [jogo] = useState<{ start: string; target: string }>(() =>
-        sortearJogo(arrPaginasIniciais, arrPaginasObjetivo),
-    );
+    const [jogo] = useState<{ start: string; target: string }>(() => {
+        return startParam && targetParam
+            ? { start: startParam, target: targetParam }
+            : sortearJogo(arrPaginasIniciais, arrPaginasObjetivo);
+    });
 
     const {
         carregando,
@@ -70,7 +79,7 @@ export default function DesafioNormal() {
                         const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo);
                         iniciarNovoJogo(start, target);
                     }}
-                    tema={"jogoNormal"}
+                    modoDeJogo={"jogoNormal"}
                 />
 
                 <LinkSelect wikiHtml={wikiHtml} titulo={historico[historico.length - 1] ?? ""} />
