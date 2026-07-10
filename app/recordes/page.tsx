@@ -2,6 +2,7 @@
 
 import { supabase } from "../lib/supabase";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type RecordeBruto = {
     id: number;
@@ -87,72 +88,61 @@ export default function Recordes() {
     const medalha = ["🥇", "🥈", "🥉"];
 
     return (
-        <div className="min-h-screen flex flex-col items-center px-4 py-8 pixel-font">
-            <div className="w-full max-w-[60%] flex flex-col gap-6">
-                {/* título */}
-                <h1 className="text-center text-white text-lg">
-                    <i className="nes-icon trophy is-small mr-2"></i>
-                    Recordes
-                </h1>
+        <div className="min-h-screen flex flex-col items-center px-3 py-6 md:px-4 md:py-8 pixel-font">
+            <div className="w-full md:max-w-[60%] flex flex-col gap-4 md:gap-6">
+                {/* TÍTULO */}
+                <div className="flex items-center justify-between">
+                    <Link href="/jogar" className="nes-btn text-[7px] md:text-[8px]">
+                        ← Jogar
+                    </Link>
+                    <h1 className="text-center text-white text-[12px] md:text-lg">
+                        <i className="nes-icon trophy is-small mr-2"></i>
+                        Recordes
+                    </h1>
+                    <div className="invisible nes-btn text-[7px]">←</div>
+                </div>
 
                 {/* CALENDÁRIO COM SETAS DE NAVEGAÇÃO */}
-                <div className="flex items-center gap-2">
-                    <button className="nes-btn" style={{ fontSize: 10 }} onClick={() => mudarDia(-1)}>
-                        ◀
-                    </button>
-                    {/* wrapper flex-1 isola o width:100% do nes-input ao seu próprio espaço */}
-                    <div className="flex-1 min-w-0">
-                        <input
-                            type="date"
-                            className="nes-input is-dark"
-                            style={{ fontSize: 18 }}
-                            value={dataSelecionada}
-                            onChange={(e) => setDataSelecionada(e.target.value)}
-                        />
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-1 md:gap-2">
+                        <button className="nes-btn text-[8px] md:text-[10px]" onClick={() => mudarDia(-1)}>◀</button>
+                        {/* wrapper flex-1 isola o width:100% do nes-input ao seu próprio espaço */}
+                        <div className="flex-1 min-w-0">
+                            <input
+                                type="date"
+                                className="nes-input is-dark"
+                                style={{ fontSize: 8 }}
+                                value={dataSelecionada}
+                                onChange={(e) => setDataSelecionada(e.target.value)}
+                            />
+                        </div>
+                        <button className="nes-btn text-[8px] md:text-[10px]" onClick={() => mudarDia(1)}>▶</button>
                     </div>
-                    <button className="nes-btn" style={{ fontSize: 10 }} onClick={() => mudarDia(1)}>
-                        ▶
-                    </button>
-                    <button
-                        className="nes-btn is-primary"
-                        style={{ fontSize: 8 }}
-                        onClick={() => setDataSelecionada(dataDeHoje())}
-                    >
-                        Hoje
-                    </button>
+                    <div className="flex justify-center">
+                        <button className="nes-btn is-primary text-[7px] md:text-[8px]" onClick={() => setDataSelecionada(dataDeHoje())}>
+                            Hoje
+                        </button>
+                    </div>
                 </div>
 
                 {carregando ? (
-                    <p className="text-slate-400 text-center" style={{ fontSize: 10 }}>
-                        Carregando...
-                    </p>
+                    <p className="text-slate-400 text-center text-[8px] md:text-[10px]">Carregando...</p>
                 ) : (
                     <>
-                        {/* par de páginas do jogo */}
+                        {/* DESAFIO DO DIA */}
                         {palavrasDoJogo.inicial ? (
                             <div
                                 className="nes-container is-dark is-rounded text-center"
                                 style={{ padding: "0.75rem", borderColor: "#334155" }}
                             >
-                                <span className="text-slate-400" style={{ fontSize: 8 }}>
-                                    DESAFIO DO DIA
-                                </span>
-                                <p className="text-white mt-2" style={{ fontSize: 14 }}>
-                                    {palavrasDoJogo.inicial}
-                                </p>
-                                <p className="text-blue-400" style={{ fontSize: 12 }}>
-                                    ↓
-                                </p>
-                                <p className="text-white" style={{ fontSize: 14 }}>
-                                    {palavrasDoJogo.objetivo}
-                                </p>
+                                <span className="text-slate-400 text-[6px] md:text-[8px]">DESAFIO DO DIA</span>
+                                <p className="text-white mt-2 text-[10px] md:text-[14px]">{palavrasDoJogo.inicial}</p>
+                                <p className="text-blue-400 text-[10px] md:text-[12px]">↓</p>
+                                <p className="text-white text-[10px] md:text-[14px]">{palavrasDoJogo.objetivo}</p>
                             </div>
                         ) : (
-                            <div
-                                className="nes-container is-dark is-rounded text-center"
-                                style={{ padding: "0.75rem" }}
-                            >
-                                <p className="text-slate-500" style={{ fontSize: 9 }}>
+                            <div className="nes-container is-dark is-rounded text-center" style={{ padding: "0.75rem" }}>
+                                <p className="text-slate-500 text-[8px] md:text-[9px]">
                                     Nenhum desafio registrado nessa data.
                                 </p>
                             </div>
@@ -160,8 +150,8 @@ export default function Recordes() {
 
                         {/* SCOREBOARD */}
                         {recordes.length > 0 && (
-                            <div className="overflow-x-hidden relative">
-                                <table className="nes-table is-bordered is-dark w-full" style={{ fontSize: 16 }}>
+                            <div className="relative overflow-hidden">
+                                <table className="nes-table is-bordered is-dark w-full text-[8px] md:text-[12px]">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -172,9 +162,8 @@ export default function Recordes() {
                                     <tbody>
                                         {recordes.map((recorde, idx) => (
                                             <tr key={recorde.id}>
-                                                <td style={{ fontSize: 16 }}>{medalha[idx] ?? idx + 1}</td>
+                                                <td>{medalha[idx] ?? idx + 1}</td>
                                                 <td
-                                                    style={{ fontSize: 16 }}
                                                     className={
                                                         idx === 0
                                                             ? "text-yellow-400"
@@ -187,7 +176,7 @@ export default function Recordes() {
                                                 >
                                                     {recorde.nome_usuario}
                                                 </td>
-                                                <td style={{ fontSize: 16 }}>{recorde.pontos}</td>
+                                                <td>{recorde.pontos}</td>
                                             </tr>
                                         ))}
                                     </tbody>
