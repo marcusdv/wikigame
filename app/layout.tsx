@@ -13,7 +13,7 @@ import { ToastProvider } from "@/app/components/Toast";
 
 export const metadata: Metadata = {
     title: "Wikirun",
-    description: "Pule pelas páginas da wikipédia",
+    description: "navegue pelas páginas da wikipédia",
 };
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="pt-br" className={`${pressStart2P.variable} h-full antialiased`} suppressHydrationWarning>
+        <html lang="pt-br" className={`${pressStart2P.variable}  antialiased`} suppressHydrationWarning>
             <head>
                 <script
                     // garantir que o modo escuro seja aplicado antes do conteúdo ser renderizado.
@@ -38,7 +38,7 @@ export default function RootLayout({
                 />
             </head>
 
-            <body className="min-h-full flex flex-col">
+            <body>
                 <UserProvider>
                     <ToastProvider>{children}</ToastProvider>
                 </UserProvider>

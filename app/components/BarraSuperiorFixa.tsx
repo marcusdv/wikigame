@@ -258,6 +258,16 @@ export default function BarraSuperiorFixa({
                                     className={`fixed ${t.divPaiBg} border-2 ${t.divPaiBorder} shadow-lg z-50 min-w-28 `}
                                     style={{ top: menuPos.top, right: menuPos.right }}
                                 >
+                                    {/* HOME */}
+                                    <Link
+                                        href="/"
+                                        replace
+                                        onClick={() => setMenuPerfil(false)}
+                                        className={`pixel-font block px-3 py-2 ${t.labelTexto} hover:bg-slate-700`}
+                                        style={{ fontSize: 8 }}
+                                    >
+                                        Home
+                                    </Link>
                                     {/* OPÇÃO DE JOGO */}
                                     <Link
                                         href={modoDeJogo === "jogoNormal" ? "/diario" : "/jogar"}

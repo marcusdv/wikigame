@@ -10,7 +10,7 @@
 }
 
 .pixel-font {
-    font-family: var(--pixel-font) !important;
+    font-family: var(--pixel-font);
 }
 
 body {
@@ -116,7 +116,6 @@ a:not(#wikicontent a):hover {
         linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
 }
-
 
 /* wikicontent base */
 .dark #wikicontent {

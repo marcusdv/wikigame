@@ -7,7 +7,7 @@ export default function Footer({ historico, pontos }: FooterProps) {
     const ultimoNo = historico[historico.length - 1] || "Início";
 
     return (
-        <footer className="bg-slate-800 border-t-4 border-blue-500 mt-12">
+        <footer className="bg-slate-800/80 backdrop-blur-sm border-t-4 border-blue-500 mt-12">
             <div className="max-w-5xl mx-auto px-4 sm:px-8 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div className="hidden sm:flex flex-col gap-1">
                     <p className="pixel-font text-slate-500 select-none" style={{ fontSize: "9px" }}>

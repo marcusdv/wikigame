@@ -92,8 +92,8 @@ export default function Recordes() {
             <div className="w-full md:max-w-[60%] flex flex-col gap-4 md:gap-6">
                 {/* TÍTULO */}
                 <div className="flex items-center justify-between">
-                    <Link href="/jogar" className="nes-btn text-[7px] md:text-[8px]">
-                        ← Jogar
+                    <Link href="/" className="nes-btn text-[7px] md:text-[8px]">
+                        ← Home
                     </Link>
                     <h1 className="text-center text-white text-[12px] md:text-lg">
                         <i className="nes-icon trophy is-small mr-2"></i>
@@ -105,7 +105,9 @@ export default function Recordes() {
                 {/* CALENDÁRIO COM SETAS DE NAVEGAÇÃO */}
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-1 md:gap-2">
-                        <button className="nes-btn text-[8px] md:text-[10px]" onClick={() => mudarDia(-1)}>◀</button>
+                        <button className="nes-btn text-[8px] md:text-[10px]" onClick={() => mudarDia(-1)}>
+                            ◀
+                        </button>
                         {/* wrapper flex-1 isola o width:100% do nes-input ao seu próprio espaço */}
                         <div className="flex-1 min-w-0">
                             <input
@@ -116,10 +118,15 @@ export default function Recordes() {
                                 onChange={(e) => setDataSelecionada(e.target.value)}
                             />
                         </div>
-                        <button className="nes-btn text-[8px] md:text-[10px]" onClick={() => mudarDia(1)}>▶</button>
+                        <button className="nes-btn text-[8px] md:text-[10px]" onClick={() => mudarDia(1)}>
+                            ▶
+                        </button>
                     </div>
                     <div className="flex justify-center">
-                        <button className="nes-btn is-primary text-[7px] md:text-[8px]" onClick={() => setDataSelecionada(dataDeHoje())}>
+                        <button
+                            className="nes-btn is-primary text-[7px] md:text-[8px]"
+                            onClick={() => setDataSelecionada(dataDeHoje())}
+                        >
                             Hoje
                         </button>
                     </div>
@@ -141,7 +148,10 @@ export default function Recordes() {
                                 <p className="text-white text-[10px] md:text-[14px]">{palavrasDoJogo.objetivo}</p>
                             </div>
                         ) : (
-                            <div className="nes-container is-dark is-rounded text-center" style={{ padding: "0.75rem" }}>
+                            <div
+                                className="nes-container is-dark is-rounded text-center"
+                                style={{ padding: "0.75rem" }}
+                            >
                                 <p className="text-slate-500 text-[8px] md:text-[9px]">
                                     Nenhum desafio registrado nessa data.
                                 </p>
