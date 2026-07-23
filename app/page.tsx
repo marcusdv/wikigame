@@ -141,8 +141,7 @@ export default function HomePage() {
                     <div className="text-center flex flex-col gap-4">
                         <h1 className="text-black dark:text-white text-2xl md:text-5xl">WikiRun</h1>
                         <p className="text-slate-500 dark:text-slate-400 text-[9px] md:text-[11px] leading-relaxed">
-                            Clique nos links dos artigos para navegar entre páginas e chegue na página destino da
-                            Wikipedia, com o menor número de pontos possível.
+                            Clique nos links dos artigos e chegue na página objetivo do dia da Wikipedia.
                         </p>
                     </div>
 
