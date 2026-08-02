@@ -146,15 +146,6 @@ export default function LinkSelect({ wikiHtml, titulo }: { wikiHtml: string; tit
             {/* Painel flutuante */}
             {aberto && (
                 <div className="absolute bottom-full mb-2 right-0 w-75 bg-slate-950/90 border border-slate-600 p-2 flex flex-col gap-2">
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        value={busca}
-                        onChange={(e) => setBusca(e.target.value)}
-                        placeholder="Buscar link..."
-                        className="nes-input is-dark"
-                        style={{ fontSize: 8, maxWidth: "95%" }}
-                    />
                     <div
                         ref={listaRef}
                         className="flex flex-col max-h-75 overflow-y-auto overflow-x-hidden overscroll-contain"
@@ -199,6 +190,15 @@ export default function LinkSelect({ wikiHtml, titulo }: { wikiHtml: string; tit
                             )
                         )}
                     </div>
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        value={busca}
+                        onChange={(e) => setBusca(e.target.value)}
+                        placeholder="Buscar link..."
+                        className="nes-input is-dark"
+                        style={{ fontSize: 8, maxWidth: "95%" }}
+                    />
                 </div>
             )}
 
