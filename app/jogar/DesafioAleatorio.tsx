@@ -13,8 +13,8 @@ import { useSearchParams } from "next/navigation";
 export default function DesafioNormal() {
     // se tiverem parametros de configuração na URL, usa eles. Se não, sorteia um jogo aleatório.
     const searchParams = useSearchParams();
-    const startParam = searchParams.get("start");
-    const targetParam = searchParams.get("target");
+    const startParam = searchParams.get("start"); // pagina inicial na url
+    const targetParam = searchParams.get("target"); // pagina objetivo na url
     console.log("startParam:", startParam, "targetParam:", targetParam);
 
     // Lazy initializer. Quando passa uma callback, o react não chama a função em todo o re-render. Somente na primeira vez.

@@ -7,6 +7,7 @@ import { sortearJogo } from "./lib/sortearJogo";
 import { arrPaginasIniciais } from "./dados/paginasIniciais";
 import { arrPaginasObjetivo } from "./dados/paginasObjetivo";
 import Footer from "./components/Footer";
+import Image from "next/image";
 
 // ==== SEED DO DIA NO FUSO DE BRASÍLIA ==== //
 function seedDeHoje() {
@@ -75,8 +76,8 @@ export default function HomePage() {
                                 </p>
                             </div>
                             <div className="mt-4 mx-auto">
-                                <Link href="/diario" className="nes-btn is-primary text-[7px] md:text-[16px]">
-                                    Jogar agora →
+                                <Link href="/diario" className="nes-btn is-primary text-[24px] md:text-[24px]">
+                                    JOGAR!!
                                 </Link>
                             </div>
                         </div>
@@ -86,77 +87,85 @@ export default function HomePage() {
                     <div className="nes-container dark:bg-[#212529] dark:border-white" style={{ padding: "1.25rem" }}>
                         <p className="text-slate-500 dark:text-slate-400 text-[7px] text-center mb-4">COMO JOGAR</p>
                         <div className="flex flex-col gap-4">
-                            <div className="flex items-start gap-3">
-                                <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">1.</span>
-                                <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
-                                    Você começa em uma página da Wikipedia
-                                </p>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">2.</span>
-                                <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
-                                    Clique nos links dos artigos para navegar entre páginas
-                                </p>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">3.</span>
-                                <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
-                                    Chegue na página destino com o menor número de pontos
-                                </p>
-                            </div>
-
-                            {/* EXEMPLO VISUAL */}
-                            <div className="border-t border-slate-200 dark:border-slate-600 pt-4 flex flex-col gap-2">
-                                <p className="text-slate-500 dark:text-slate-400 text-[6px] text-center mb-1">
-                                    EXEMPLO
-                                </p>
-
-                                <div className="border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-3 py-2">
-                                    <p className="text-[6px] text-slate-400 dark:text-slate-500 mb-1">INÍCIO</p>
-                                    <p className="text-slate-900 dark:text-white text-[8px]">Amazônia</p>
-                                    <p className="text-[7px] text-slate-500 dark:text-slate-400 mt-1">
-                                        ...cobre grande parte da{" "}
-                                        <span className="text-blue-600 dark:text-blue-400 underline">
-                                            floresta tropical
-                                        </span>{" "}
-                                        🖱️...
+                            <div className="flex flex-col">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
+                                        1.
+                                    </span>
+                                    <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
+                                        Você começa em uma página da Wikipedia e precisa chegar em outra.
                                     </p>
                                 </div>
-
-                                <p className="text-center text-slate-400 dark:text-slate-500 text-[7px]">
-                                    ↓ clicou em &quot;floresta tropical&quot;
-                                </p>
-
-                                <div className="border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-3 py-2">
-                                    <p className="text-slate-900 dark:text-white text-[8px]">Floresta Tropical</p>
-                                    <p className="text-[7px] text-slate-500 dark:text-slate-400 mt-1">
-                                        ...abriga milhares de espécies de{" "}
-                                        <span className="text-blue-600 dark:text-blue-400 underline">árvores</span>{" "}
-                                        🖱️...
+                                <div className=" flex flex-col" style={{ fontSize: " 9px" }}>
+                                    <p>
+                                        Exemplo: <span className="text-blue-400">Brasil</span>
+                                    </p>
+                                    <p>
+                                        {" "}
+                                        Objetivo: <span className="text-blue-400">Vincent van Gogh</span>
                                     </p>
                                 </div>
+                                <Image
+                                    src="/tutorialImagens/tuto_1.png"
+                                    width={300}
+                                    height={650}
+                                    alt="Exemplo de como jogar"
+                                />
+                            </div>
 
-                                <p className="text-center text-slate-400 dark:text-slate-500 text-[7px]">
-                                    ↓ clicou em &quot;árvores&quot;
-                                </p>
-
-                                <div className="border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 px-3 py-2">
-                                    <p className="text-slate-900 dark:text-white text-[8px]">Árvore</p>
-                                    <p className="text-[7px] text-slate-500 dark:text-slate-400 mt-1">
-                                        ...sua estrutura é composta principalmente de{" "}
-                                        <span className="text-blue-600 dark:text-blue-400 underline">madeira</span>{" "}
-                                        🖱️...
+                            <div className="flex flex-col">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
+                                        2.
+                                    </span>
+                                    <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
+                                        Clique nos links para a página que você acha que vai te levar mais perto do
+                                        objetivo.
                                     </p>
                                 </div>
-
-                                <p className="text-center text-slate-400 dark:text-slate-500 text-[7px]">
-                                    ↓ clicou em &quot;madeira&quot;
+                                <p className=" flex flex-col" style={{ fontSize: " 9px" }}>
+                                    <span className="text-blue-400">
+                                        Clicando em artistas para tentar encontrar Vincent van Gogh
+                                    </span>
                                 </p>
-
-                                <div className="border-2 border-green-400 dark:border-green-500 bg-green-50 dark:bg-green-950 px-3 py-2">
-                                    <p className="text-[6px] text-green-600 dark:text-green-400 mb-1">DESTINO ✓</p>
-                                    <p className="text-slate-900 dark:text-white text-[8px]">Madeira</p>
+                                <Image
+                                    src="/tutorialImagens/artista_palavra_tuto.png"
+                                    width={300}
+                                    height={650}
+                                    alt="Exemplo de como jogar"
+                                />{" "}
+                            </div>
+                            <div className="flex flex-col">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
+                                        3.
+                                    </span>
+                                    <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
+                                        Que Sorte! Alí está o link para a página objetivo.
+                                    </p>
                                 </div>
+                                <Image
+                                    src="/tutorialImagens/tuto_artistas.png"
+                                    width={300}
+                                    height={650}
+                                    alt="Exemplo de como jogar"
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
+                                        4.
+                                    </span>
+                                    <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
+                                        BOA! E quantos menos cliques, melhor você ficará no ranking dos jogadores!
+                                    </p>
+                                </div>
+                                <Image
+                                    src="/tutorialImagens/voce_venceu_tuto.png"
+                                    width={300}
+                                    height={650}
+                                    alt="Exemplo de como jogar"
+                                />
                             </div>
                         </div>
                     </div>
@@ -164,14 +173,10 @@ export default function HomePage() {
                     {/* BOTÕES */}
                     <div className="flex flex-col items-center gap-4">
                         <>
-                            <Link href="/diario" className="nes-btn is-primary text-[8px] md:text-[10px]">
-                                Desafio Diário
-                            </Link>
-                            <Link href="/jogar" className="nes-btn text-[8px] md:text-[10px]">
-                                Jogo Aleatório
+                            <Link href="/diario" className="nes-btn is-primary text-[24px] md:text-[24px]">
+                                JOGAR!!
                             </Link>
                         </>
-                        )
                     </div>
                 </div>
             </div>

@@ -344,7 +344,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                     </button>
                 )}
                 {/* Botão para ir ao modo aleatório — só para usuários logados */}
-                {usuario && (
+                {usuario && !novoJogo && (
                     <button
                         onClick={() => router.push("/jogar")}
                         className="nes-btn w-full"

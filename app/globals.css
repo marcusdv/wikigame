@@ -3,6 +3,12 @@
 @import "tailwindcss";
 @import "animate.css";
 
+/* Faz o variant dark: responder à classe .dark no <html> (controlada pelo
+   DarkModeToggle), em vez do padrão do Tailwind v4 de seguir a preferência
+   do sistema operacional (prefers-color-scheme). Sem isso, dark:* e o CSS
+   manual baseado em .dark (mais abaixo neste arquivo) ficavam dessincronizados. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
     --primary-font: "Plus Jakarta Sans", sans-serif;
     --serif-font: "Playfair Display", serif;

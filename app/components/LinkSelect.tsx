@@ -34,7 +34,13 @@ export default function LinkSelect({ wikiHtml, titulo }: { wikiHtml: string; tit
                 vistos.add(href);
                 const rect = el.getBoundingClientRect();
                 if (rect.width === 0 || rect.height === 0) return false;
-                if (!el.checkVisibility()) return false;
+                // checkVisibility() só existe a partir do Safari 17.4 — em iPhones antigos
+                // presos numa versão anterior do iOS, chamar direto lança TypeError e quebra
+                // o useEffect inteiro (o componente nunca chega a renderizar). offsetParent
+                // é suportado universalmente e cobre o caso comum de display:none num ancestral.
+                const visivel =
+                    typeof el.checkVisibility === "function" ? el.checkVisibility() : el.offsetParent !== null;
+                if (!visivel) return false;
                 if (el.querySelector("img")) return false;
                 return true;
             });
