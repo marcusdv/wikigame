@@ -9,13 +9,6 @@ import { arrPaginasObjetivo } from "./dados/paginasObjetivo";
 import Footer from "./components/Footer";
 import Image from "next/image";
 
-const imagensTutorial = [
-    "/tutorialImagens/tuto_1.png",
-    "/tutorialImagens/tuto_2.png",
-    "/tutorialImagens/tuto_3.png",
-    "/tutorialImagens/tuto_4.png",
-];
-
 // ==== SEED DO DIA NO FUSO DE BRASÍLIA ==== //
 function seedDeHoje() {
     const d = new Date(new Date().getTime() - 3 * 60 * 60 * 1000);
@@ -24,18 +17,6 @@ function seedDeHoje() {
 
 export default function HomePage() {
     const [desafio, setDesafio] = useState<{ inicial: string; objetivo: string } | null>(null);
-    const [menuAberto, setMenuAberto] = useState(false);
-    const perfilRef = useRef<HTMLDivElement>(null);
-
-    // ==== FECHA O MENU AO CLICAR FORA ==== //
-    useEffect(() => {
-        if (!menuAberto) return;
-        const fechar = (e: MouseEvent) => {
-            if (!perfilRef.current?.contains(e.target as Node)) setMenuAberto(false);
-        };
-        document.addEventListener("mousedown", fechar);
-        return () => document.removeEventListener("mousedown", fechar);
-    }, [menuAberto]);
 
     // ==== BUSCA O DESAFIO DO DIA OU GERA LOCALMENTE PARA O PREVIEW ==== //
     useEffect(() => {
@@ -69,27 +50,28 @@ export default function HomePage() {
                         </p>
                     </div>
 
-                    {/* DESAFIO DO DIA */}
-                    {desafio && (
-                        <div className="flex flex-col items-stretch  gap-2">
-                            <div className="nes-container is-dark is-rounded text-center" style={{ padding: "1rem" }}>
-                                <p className="text-slate-400 text-[7px] mb-4">★ DESAFIO DE HOJE ★</p>
-                                <p className="text-white text-[10px] md:text-[13px] leading-relaxed">
-                                    {desafio.inicial}
-                                </p>
-                                <p className="text-blue-400 text-[14px] my-2">↓</p>
-                                <p className="text-white text-[10px] md:text-[13px] leading-relaxed">
-                                    {desafio.objetivo}
-                                </p>
-                            </div>
-                            dark:border-white
-                            <div className="mt-4 mx-auto">
-                                <Link href="/diario" className="nes-btn is-primary text-[24px] md:text-[24px]">
-                                    JOGAR!!
-                                </Link>
-                            </div>
+                    <div className="flex flex-col items-stretch  gap-2">
+                        <div className="nes-container is-dark is-rounded text-center" style={{ padding: "1rem" }}>
+                            <p className="text-slate-400 text-[7px] mb-4">★ DESAFIO DE HOJE ★</p>
+                            {/* DESAFIO DO DIA */}
+                            {desafio && (
+                                <>
+                                    <p className="text-white text-[10px] md:text-[13px] leading-relaxed">
+                                        {desafio.inicial}
+                                    </p>
+                                    <p className="text-blue-400 text-[14px] my-2">↓</p>
+                                    <p className="text-white text-[10px] md:text-[13px] leading-relaxed">
+                                        {desafio.objetivo}
+                                    </p>
+                                </>
+                            )}
                         </div>
-                    )}
+                        <div className="mt-4 mx-auto">
+                            <Link href="/diario" className="nes-btn is-primary text-[24px] md:text-[24px]">
+                                JOGAR!!
+                            </Link>
+                        </div>
+                    </div>
 
                     {/* COMO JOGAR — só para não logados */}
                     <div className="nes-container  flex flex-col text-[12px] dark:bg-[#212529] dark:border-white">
