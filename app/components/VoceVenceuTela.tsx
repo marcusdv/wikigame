@@ -338,19 +338,19 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                 )}
 
                 {/* Botão de novo jogo — só presente no modo aleatório (prop novoJogo) */}
-                {novoJogo && (
+                {modoDeJogo === "aleatorio" && (
                     <button onClick={novoJogo} className="nes-btn w-full is-primary mb-2" style={{ fontSize: "14px" }}>
                         Jogar novamente!
                     </button>
                 )}
                 {/* Botão para ir ao modo aleatório — só para usuários logados */}
-                {usuario && !novoJogo && (
+                {modoDeJogo === "diario" && (
                     <button
                         onClick={() => router.push("/jogar")}
                         className="nes-btn w-full"
                         style={{ fontSize: "14px" }}
                     >
-                        Jogar mais!
+                        Jogar modo treinamento!
                     </button>
                 )}
             </div>
