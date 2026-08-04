@@ -298,7 +298,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
 
                         {/* RANKING DO DIA */}
                         <div className="flex flex-col gap-2">
-                            <div className="flex justify-around">
+                            <div className="flex justify-between">
                                 <h3>Jogadores</h3>
                                 <span>|</span>
                                 <h3>Pontos</h3>
@@ -308,7 +308,10 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                                 recordes
                                     .sort((a, b) => a.pontos - b.pontos) // menor pontuação = melhor (menos cliques)
                                     .map((recorde, idx) => (
-                                        <div key={recorde.id} className="flex items-center gap-4 px-8">
+                                        <div
+                                            key={recorde.id}
+                                            className={`flex items-center gap-3 px-1 ${idx === 0 && "text-yellow-500 animate-bounce"}`}
+                                        >
                                             {/* posição com cor do pódio para os três primeiros */}
                                             <span
                                                 className={`text-xs ${idx === 0 ? "text-yellow-500" : idx === 1 ? "text-amber-300" : idx === 2 ? "text-orange-200" : ""}`}
