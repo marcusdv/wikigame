@@ -9,6 +9,13 @@ import { arrPaginasObjetivo } from "./dados/paginasObjetivo";
 import Footer from "./components/Footer";
 import Image from "next/image";
 
+const imagensTutorial = [
+    "/tutorialImagens/tuto_1.png",
+    "/tutorialImagens/tuto_2.png",
+    "/tutorialImagens/tuto_3.png",
+    "/tutorialImagens/tuto_4.png",
+];
+
 // ==== SEED DO DIA NO FUSO DE BRASÍLIA ==== //
 function seedDeHoje() {
     const d = new Date(new Date().getTime() - 3 * 60 * 60 * 1000);
@@ -75,6 +82,7 @@ export default function HomePage() {
                                     {desafio.objetivo}
                                 </p>
                             </div>
+                            dark:border-white
                             <div className="mt-4 mx-auto">
                                 <Link href="/diario" className="nes-btn is-primary text-[24px] md:text-[24px]">
                                     JOGAR!!
@@ -84,89 +92,88 @@ export default function HomePage() {
                     )}
 
                     {/* COMO JOGAR — só para não logados */}
-                    <div className="nes-container dark:bg-[#212529] dark:border-white" style={{ padding: "1.25rem" }}>
+                    <div className="nes-container  flex flex-col text-[12px] dark:bg-[#212529] dark:border-white">
+                        {/* TITULO COMO JOGAR */}
                         <p className="text-slate-500 dark:text-slate-400 text-[7px] text-center mb-4">COMO JOGAR</p>
-                        <div className="flex flex-col gap-4">
-                            <div className="flex flex-col">
-                                <div className="flex items-start gap-3">
-                                    <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
-                                        1.
-                                    </span>
-                                    <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
-                                        Você começa em uma página da Wikipedia e precisa chegar em outra.
+
+                        {/* IMAGENS */}
+                        <div className="grid col-span-3 mx-auto gap-4" style={{ maxWidth: "380px" }}>
+                            <figure className="flex flex-col ">
+                                <figcaption>
+                                    <p className="text-slate-800 dark:text-white leading-relaxed">
+                                        <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
+                                            1.{" "}
+                                        </span>
+                                        Você começa em uma página da Wikipedia e precisa chegar em outra. <br /> <br />
+                                        <span>
+                                            Exemplo: <span className="text-blue-400">Brasil</span> <br />
+                                            Objetivo: <span className="text-blue-400">Vincent van Gogh</span>
+                                        </span>
                                     </p>
-                                </div>
-                                <div className=" flex flex-col" style={{ fontSize: " 9px" }}>
-                                    <p>
-                                        Exemplo: <span className="text-blue-400">Brasil</span>
-                                    </p>
-                                    <p>
-                                        {" "}
-                                        Objetivo: <span className="text-blue-400">Vincent van Gogh</span>
-                                    </p>
-                                </div>
+                                </figcaption>
                                 <Image
+                                    className="m-auto"
                                     src="/tutorialImagens/tuto_1.png"
-                                    width={300}
-                                    height={650}
+                                    width={380}
+                                    height={680}
                                     alt="Exemplo de como jogar"
                                 />
-                            </div>
+                            </figure>
 
-                            <div className="flex flex-col">
-                                <div className="flex items-start gap-3">
-                                    <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
-                                        2.
-                                    </span>
-                                    <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
+                            <figure className="flex flex-col">
+                                <figcaption>
+                                    <p className="text-slate-800 dark:text-white leading-relaxed">
+                                        <span className="text-yellow-500 dark:text-yellow-40e shrink-0">2. </span>
                                         Clique nos links para a página que você acha que vai te levar mais perto do
                                         objetivo.
+                                        <span className="text-blue-400">
+                                            Clicando em artistas para tentar encontrar Vincent van Gogh
+                                        </span>
                                     </p>
-                                </div>
-                                <p className=" flex flex-col" style={{ fontSize: " 9px" }}>
-                                    <span className="text-blue-400">
-                                        Clicando em artistas para tentar encontrar Vincent van Gogh
-                                    </span>
-                                </p>
+                                </figcaption>
                                 <Image
-                                    src="/tutorialImagens/artista_palavra_tuto.png"
-                                    width={300}
-                                    height={650}
+                                    className="m-auto"
+                                    src="/tutorialImagens/tuto_2.png"
+                                    width={380}
+                                    height={669}
                                     alt="Exemplo de como jogar"
-                                />{" "}
-                            </div>
-                            <div className="flex flex-col">
-                                <div className="flex items-start gap-3">
-                                    <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
-                                        3.
-                                    </span>
-                                    <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
+                                />
+                            </figure>
+                            <figure className="flex flex-col">
+                                <figcaption>
+                                    <p className="text-slate-800 dark:text-white leading-relaxed">
+                                        <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
+                                            3.{" "}
+                                        </span>
                                         Que Sorte! Alí está o link para a página objetivo.
                                     </p>
-                                </div>
+                                </figcaption>
                                 <Image
-                                    src="/tutorialImagens/tuto_artistas.png"
-                                    width={300}
-                                    height={650}
+                                    className="m-auto"
+                                    src="/tutorialImagens/tuto_3.png"
+                                    width={380}
+                                    height={669}
                                     alt="Exemplo de como jogar"
                                 />
-                            </div>
-                            <div className="flex flex-col">
-                                <div className="flex items-start gap-3">
-                                    <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
-                                        4.
-                                    </span>
-                                    <p className="text-slate-800 dark:text-white text-[8px] leading-relaxed">
+                            </figure>
+                            <figure className="flex flex-col">
+                                <figcaption>
+                                    <p className="text-slate-800 dark:text-white leading-relaxed">
+                                        <span className="text-yellow-500 dark:text-yellow-400 text-[10px] shrink-0">
+                                            4.{" "}
+                                        </span>
                                         BOA! E quantos menos cliques, melhor você ficará no ranking dos jogadores!
                                     </p>
-                                </div>
+                                </figcaption>
+
                                 <Image
-                                    src="/tutorialImagens/voce_venceu_tuto.png"
-                                    width={300}
-                                    height={650}
+                                    className="m-auto"
+                                    src="/tutorialImagens/tuto_4.png"
+                                    width={380}
+                                    height={669}
                                     alt="Exemplo de como jogar"
                                 />
-                            </div>
+                            </figure>
                         </div>
                     </div>
 
