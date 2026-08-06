@@ -10,7 +10,7 @@ import { useState } from "react";
 import LinkSelect from "../components/LinkSelect";
 import { useSearchParams } from "next/navigation";
 
-export default function DesafioNormal() {
+export default function Treinamento() {
     // se tiverem parametros de configuração na URL, usa eles. Se não, sorteia um jogo aleatório.
     const searchParams = useSearchParams();
     const startParam = searchParams.get("start"); // pagina inicial na url
@@ -56,7 +56,7 @@ export default function DesafioNormal() {
                 <VoceVenceu
                     historico={historico}
                     pontos={pontos}
-                    modoDeJogo={"aleatorio"}
+                    modoDeJogo={"treinamento"}
                     novoJogo={() => {
                         const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo);
                         iniciarNovoJogo(start, target);
@@ -79,7 +79,7 @@ export default function DesafioNormal() {
                         const { start, target } = sortearJogo(arrPaginasIniciais, arrPaginasObjetivo);
                         iniciarNovoJogo(start, target);
                     }}
-                    modoDeJogo={"jogoNormal"}
+                    modoDeJogo={"treinamento"}
                 />
 
                 <LinkSelect wikiHtml={wikiHtml} titulo={historico[historico.length - 1] ?? ""} />

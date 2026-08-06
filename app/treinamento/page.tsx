@@ -6,8 +6,8 @@ import dynamic from "next/dynamic";
 // Necessário porque useGameLogic chama Math.random() para sortear as páginas.
 // Se renderizasse no servidor, o par sorteado seria diferente do que o cliente
 // recalcularia na hidratação, causando erro de hydration mismatch do React.
-const DesafioNormal = dynamic(() => import("./DesafioAleatorio"), { ssr: false });
+const ModoTreinamento = dynamic(() => import("./Treinamento"), { ssr: false });
 
 export default function Page() {
-    return <DesafioNormal />;
+    return <ModoTreinamento />;
 }

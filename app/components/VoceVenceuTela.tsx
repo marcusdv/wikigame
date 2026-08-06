@@ -7,7 +7,7 @@ import { useUsuario } from "../lib/userContext";
 type VoceVenceuProps = {
     historico: string[]; // lista de páginas visitadas
     pontos: number; // pontuação final do jogador
-    modoDeJogo: "diario" | "aleatorio";
+    modoDeJogo: "diario" | "treinamento";
     novoJogo?: () => void; // só presente no modo aleatório
     seedProp?: string; // data do desafio ("2026-07-05"), usada para buscar a palavra do dia
 };
@@ -320,9 +320,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                                             </span>
                                             <span
                                                 className={`text-md truncate ${idx === 0 ? "text-yellow-500" : idx === 1 ? "text-amber-200" : idx === 2 ? "text-orange-100" : ""}`}
-                                            >
-                                                {recorde.nome}
-                                            </span>
+                                            ></span>
                                             {/* pontuação oculta para visitantes não logados */}
                                             <span className="text-slate-200 shrink-0 ml-auto">
                                                 {usuario ? recorde.pontos : "???"}
@@ -341,7 +339,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                 )}
 
                 {/* Botão de novo jogo — só presente no modo aleatório (prop novoJogo) */}
-                {modoDeJogo === "aleatorio" && (
+                {modoDeJogo === "treinamento" && (
                     <button onClick={novoJogo} className="nes-btn w-full is-primary mb-2" style={{ fontSize: "14px" }}>
                         Jogar novamente!
                     </button>
@@ -349,7 +347,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                 {/* Botão para ir ao modo aleatório — só para usuários logados */}
                 {modoDeJogo === "diario" && (
                     <button
-                        onClick={() => router.push("/jogar")}
+                        onClick={() => router.push("/treinamento")}
                         className="nes-btn w-full"
                         style={{ fontSize: "14px" }}
                     >

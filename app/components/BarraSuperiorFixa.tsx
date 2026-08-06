@@ -17,11 +17,11 @@ type BarraSuperiorFixaProps = {
     custoDeVoltar: number;
     novoJogo?: () => void;
     titulo: "Desafio Diário" | "Encontrar Página";
-    modoDeJogo: "jogoDiario" | "jogoNormal";
+    modoDeJogo: "jogoDiario" | "treinamento";
 };
 
 const temas = {
-    jogoNormal: {
+    treinamento: {
         divPaiBg: "bg-slate-700",
         divPaiBorder: "border-blue-400",
         secaoBorderInterno: "border-slate-400",
@@ -67,7 +67,7 @@ export default function BarraSuperiorFixa({
     novoJogo,
     titulo,
     custoDeVoltar,
-    modoDeJogo = "jogoNormal",
+    modoDeJogo = "treinamento",
 }: BarraSuperiorFixaProps) {
     //
     const breadcrumbRef = useRef<HTMLDivElement>(null);
@@ -270,13 +270,13 @@ export default function BarraSuperiorFixa({
                                     </Link>
                                     {/* OPÇÃO DE JOGO */}
                                     <Link
-                                        href={modoDeJogo === "jogoNormal" ? "/diario" : "/jogar"}
+                                        href={modoDeJogo === "treinamento" ? "/diario" : "/treinamento"}
                                         replace
                                         onClick={() => setMenuPerfil(false)}
                                         className={`pixel-font block px-3 py-2 ${t.labelTexto} hover:bg-slate-700`}
                                         style={{ fontSize: 8 }}
                                     >
-                                        {modoDeJogo === "jogoNormal" ? "Desafio Diário" : "Desafio Aleatório"}
+                                        {modoDeJogo === "treinamento" ? "Desafio Diário" : "Treinamento"}
                                     </Link>
                                     {/* LINK PÁGINA DE RECORDES */}
                                     <Link
@@ -299,7 +299,7 @@ export default function BarraSuperiorFixa({
                                         Perfil
                                     </Link>
                                     {/* LINHA PARA SEPARAR O ÚLTIMO ITEM */}
-                                    {modoDeJogo === "jogoNormal" && (
+                                    {modoDeJogo === "treinamento" && (
                                         <Link
                                             href={""}
                                             replace
