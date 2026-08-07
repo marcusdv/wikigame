@@ -261,7 +261,7 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                                 {/* seta entre etapas, omitida no último item */}
                                 {idx < historico.length - 1 && (
                                     <span className="text-slate-600 shrink-0" style={{ fontSize: "10px" }}>
-                                        ▶
+                                        ▶Z
                                     </span>
                                 )}
                             </div>
@@ -320,7 +320,9 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                                             </span>
                                             <span
                                                 className={`text-md truncate ${idx === 0 ? "text-yellow-500" : idx === 1 ? "text-amber-200" : idx === 2 ? "text-orange-100" : ""}`}
-                                            ></span>
+                                            >
+                                                {recorde.nome}
+                                            </span>
                                             {/* pontuação oculta para visitantes não logados */}
                                             <span className="text-slate-200 shrink-0 ml-auto">
                                                 {usuario ? recorde.pontos : "???"}
