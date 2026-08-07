@@ -47,6 +47,9 @@ export default function HomePage() {
                         <h1 className="text-black dark:text-white text-2xl md:text-5xl">WikiRun</h1>
                         <p className="text-slate-500 dark:text-slate-400 text-[9px] md:text-[11px] leading-relaxed">
                             Clique nos links dos artigos e chegue na página objetivo do dia da Wikipedia.
+                            <br />
+                            <br />
+                            Todo dia um desafio novo! <br />
                         </p>
                     </div>
 
@@ -79,7 +82,7 @@ export default function HomePage() {
                         <p className="text-slate-500 dark:text-slate-400 text-[7px] text-center mb-4">COMO JOGAR</p>
 
                         {/* IMAGENS */}
-                        <div className="grid col-span-3 mx-auto gap-4" style={{ maxWidth: "380px" }}>
+                        <div className="grid col-span-3 mx-auto gap-10" style={{ maxWidth: "380px" }}>
                             <figure className="flex flex-col ">
                                 <figcaption>
                                     <p className="text-slate-800 dark:text-white leading-relaxed">
@@ -107,7 +110,7 @@ export default function HomePage() {
                                     <p className="text-slate-800 dark:text-white leading-relaxed">
                                         <span className="text-yellow-500 dark:text-yellow-40e shrink-0">2. </span>
                                         Clique nos links para a página que você acha que vai te levar mais perto do
-                                        objetivo.
+                                        objetivo. <br /> <br />
                                         <span className="text-blue-400">
                                             Clicando em artistas para tentar encontrar Vincent van Gogh
                                         </span>
