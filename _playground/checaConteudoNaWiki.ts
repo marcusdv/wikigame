@@ -33,7 +33,8 @@ function primeirasNPalavras(texto: string, n: number): string {
     return palavras.length > n ? cortado + "..." : cortado;
 }
 
-const paginas = novasPaginasIniciais;
+// COLOQUE AS PALAVRA SAQUI
+const paginas = arrNovosObjetivos;
 
 async function main() {
     // Acumula tudo na memória e escreve de uma vez — evita I/O a cada iteração.

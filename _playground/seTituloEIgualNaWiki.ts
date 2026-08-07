@@ -26,7 +26,8 @@ async function verificar(titulo: string) {
     }
 }
 
-const paginas = novasPaginasIniciais;
+// COLOQUE PAGINAS AQUI PARA VERIFICAR
+const paginas = arrNovosObjetivos;
 
 async function main() {
     console.log(`Verificando ${paginas.length} páginas (${DELAY_MS}ms entre cada)...\n`);

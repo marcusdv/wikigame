@@ -9,8 +9,8 @@ import { arrPaginasObjetivo } from "../app/dados/paginasObjetivo";
 import { arrNovosObjetivos } from "./novos-dados/novosObjetivo";
 import { novasPaginasIniciais } from "./novos-dados/novasIniciais";
 // ==== COLOQUE OS ARRAYS AQUI ====
-const arr1: string[] = arrPaginasIniciais;
-const arr2: string[] = novasPaginasIniciais;
+const arr1: string[] = arrNovosObjetivos;
+const arr2: string[] = arrPaginasObjetivo;
 // ================================
 
 const resultado = [...new Set([...arr1, ...arr2])];
