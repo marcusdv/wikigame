@@ -5,7 +5,6 @@ export const arrPaginasObjetivo = [
     "Vulcão",
     "Boxe",
     "Medalha de ouro",
-    "Tsunâmi",
     "Seca",
     "Eclipse solar",
     "Buraco negro",
