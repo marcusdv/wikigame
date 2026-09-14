@@ -69,7 +69,7 @@ export default function Treinamento() {
                 <BarraSuperiorFixa
                     historico={historico}
                     pontos={pontos}
-                    titulo={"Encontrar Página"}
+                    titulo={"Modo Treinamento"}
                     handleBotaoVoltar={handleBotaoVoltar}
                     pontoFlutuante={pontoFlutuante}
                     custoDeVoltar={custoDeVoltar}
