@@ -16,7 +16,7 @@ type BarraSuperiorFixaProps = {
     handleNavegarParaHistorico: (index: number) => void;
     custoDeVoltar: number;
     novoJogo?: () => void;
-    titulo: "Desafio Diário" | "Encontrar Página";
+    titulo: "Desafio Diário" | "Modo Treinamento";
     modoDeJogo: "jogoDiario" | "treinamento";
 };
 
