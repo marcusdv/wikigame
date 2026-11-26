@@ -3,7 +3,7 @@ import { useGameLogic } from "../lib/useGameLogic";
 import BarraSuperiorFixa from "../components/BarraSuperiorFixa";
 import Footer from "../components/Footer";
 import VoceVenceu from "../components/VoceVenceuTela";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { sortearJogo } from "../lib/sortearJogo";
 import { arrPaginasIniciais } from "../dados/paginasIniciais";
@@ -133,8 +133,29 @@ export default function DesafioDiario() {
     }, [seed]);
 
     // ==== VERIFICA SE USUARIO JÁ VENCEU O JOGO ====
+    // Se o usuário logado já tem recorde neste desafio (ex.: venceu em outro aparelho),
+    // mostra a tela de vitória com os pontos do banco.
+    //
+    // ANTES este efeito tinha `historico`, `paginaObjetivo`, `custoDeVoltar` e
+    // `carregarJogoExistente` nas dependências. A função era recriada a cada render, então o
+    // efeito rodava em TODO render: achava o recorde → dispatch → novo render → efeito de novo →
+    // nova consulta... um loop de consultas ao Supabase para quem já tinha vencido.
+    //
+    // AGORA:
+    // - `carregarJogoExistente` é estável (useCallback no useGameLogic);
+    // - os valores do jogo são lidos de uma ref (`jogoRef`), sem entrar nas dependências;
+    // - `jaConferiuVitoria` garante uma consulta só por usuário e desafio.
+    const jogoRef = useRef({ paginaObjetivo, historico, custoDeVoltar });
     useEffect(() => {
-        if (!usuario || !idPalavraDoDia) return;
+        // Mantém a ref com os valores mais recentes (roda depois de cada render).
+        jogoRef.current = { paginaObjetivo, historico, custoDeVoltar };
+    });
+
+    const jaConferiuVitoria = useRef(false);
+    useEffect(() => {
+        if (!usuario || !idPalavraDoDia) return; // espera saber quem é o usuário e qual é o desafio
+        if (jaConferiuVitoria.current) return; // já consultou: não repete
+        jaConferiuVitoria.current = true;
 
         supabase
             .from("recordes")
@@ -144,11 +165,12 @@ export default function DesafioDiario() {
             .maybeSingle()
             .then(({ data }) => {
                 if (data) {
-                    // já venceu — carrega o estado de vitória
+                    // já venceu — carrega o estado de vitória com os valores atuais do jogo
+                    const { paginaObjetivo, historico, custoDeVoltar } = jogoRef.current;
                     carregarJogoExistente(paginaObjetivo, historico, data.pontos, true, custoDeVoltar);
                 }
             });
-    }, [usuario, idPalavraDoDia, paginaObjetivo, historico, custoDeVoltar, carregarJogoExistente]);
+    }, [usuario, idPalavraDoDia, carregarJogoExistente]);
 
     // ==== SALVA PROGRESSO A CADA MUDANÇA E PRIMEIRO CLIQUE EM LINK ====
     useEffect(() => {

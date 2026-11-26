@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { useToast } from "../components/Toast";
 import { gameReducer } from "./gameReducer";
 
@@ -72,20 +72,21 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
     }, [state.paginaAtual, mostrarErro]);
 
     // ==== INICIA NOVO JOGO ====
-    const iniciarNovoJogo = (start: string, target: string) => {
+    // useCallback mantém a MESMA função entre os renders (o `dispatch` do useReducer nunca muda,
+    // então não há dependências). Sem isso, a função seria recriada a cada render, e qualquer
+    // useEffect que a tivesse nas dependências rodaria em todo render.
+    const iniciarNovoJogo = useCallback((start: string, target: string) => {
         dispatch({ type: "NOVO_JOGO", start, target });
-    };
+    }, []);
 
     // ==== CARREGA JOGO (LOCALSTORAGE E BANCO) ====
-    const carregarJogoExistente = (
-        target: string,
-        historico: string[],
-        pontos: number,
-        voceVenceu: boolean,
-        custoDeVoltar: number,
-    ) => {
-        dispatch({ type: "CARREGAR_JOGO_EXISTENTE", target, historico, pontos, voceVenceu, custoDeVoltar });
-    };
+    // Também estável (useCallback): o DesafioDiario a usa dentro de um useEffect.
+    const carregarJogoExistente = useCallback(
+        (target: string, historico: string[], pontos: number, voceVenceu: boolean, custoDeVoltar: number) => {
+            dispatch({ type: "CARREGAR_JOGO_EXISTENTE", target, historico, pontos, voceVenceu, custoDeVoltar });
+        },
+        [],
+    );
 
     // ==== MANIPULA CLIQUES NOS LINKS DO ARTIGO E DISPARA O USEEFFECT DE BUSCA NA WIKIPEDIA====
     const handleLinkClicado = (e: React.MouseEvent<HTMLDivElement>) => {

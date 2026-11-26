@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
 import { useUsuario } from "../lib/userContext";
@@ -54,7 +54,6 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
 
     const [recordes, setRecordes] = useState<Recorde[]>([]);
     const [carregandoRecordes, setCarregandoRecordes] = useState<boolean>(true); // controla o spinner da lista de recordes
-    const [idPalavraDoDia, setIdPalavraDoDia] = useState<number | null>(null); // id da linha em palavras_do_dia
     const [tempoRestante, setTempoRestante] = useState(""); // string "HH:MM:SS" para o contador regressivo
     const [historicoCopiado, setHistoricoCopiado] = useState(false); // feedback visual do botão de copiar
     const { usuario, carregando } = useUsuario();
@@ -102,34 +101,50 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
     }, [modoDeJogo]);
 
     // ==== SALVA O RECORDE DO USUÁRIO E ATUALIZA A LISTA ====
-    // Dispara quando o usuário vence e o idPalavraDoDia já foi resolvido.
-    // Usa upsert para não duplicar: se o usuário já tem recorde de hoje, ignora.
+    // Dispara quando o usuário vence no modo diário e está logado.
+    //
+    // O navegador NÃO grava mais direto no Supabase: ele manda a partida para a rota
+    // /api/recordes, que descobre o usuário pelo cookie (JWT), confere a partida com a
+    // palavra do dia e grava no banco (ver app/api/recordes/route.ts).
+    //
+    // `recordeEnviado` garante um envio só por partida: em desenvolvimento o React roda os
+    // efeitos duas vezes (StrictMode), e sem isso sairiam dois POSTs.
+    // (Mesmo se sair um segundo, o servidor ignora duplicatas, então é só economia.)
+    const recordeEnviado = useRef(false);
+
     useEffect(() => {
         if (modoDeJogo !== "diario") return;
-        if (!usuario || !idPalavraDoDia) return; // aguarda os dois estarem disponíveis
+        if (!usuario || !seedProp) return; // precisa estar logado e saber de que dia é o desafio
+        if (recordeEnviado.current) return; // já enviou nesta partida
+        recordeEnviado.current = true;
 
-        supabase
-            .from("recordes")
-            .upsert(
-                { id_usuario: usuario.id, pontos, id_palavra_do_dia: idPalavraDoDia },
-                { onConflict: "id_usuario,id_palavra_do_dia", ignoreDuplicates: true },
-                // onConflict: define qual constraint identificar o conflito
-                // ignoreDuplicates: se já existe, não atualiza (mantém o recorde original)
-            )
-            .then(({ error }) => {
-                if (error) {
-                    console.error("Erro ao salvar recorde:", error);
+        fetch("/api/recordes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            // Só o que aconteceu na partida. O id do usuário NÃO vai: o servidor lê do cookie.
+            body: JSON.stringify({ historico, pontos, data: seedProp }),
+        })
+            .then(async (resposta) => {
+                const dados = await resposta.json();
+                if (!resposta.ok) {
+                    // Ex.: 401 (sessão expirou), 400 (partida inválida), 500 (erro no banco).
+                    console.error("Erro ao salvar recorde:", dados.error ?? resposta.status);
                     return;
                 }
-                // Após salvar, atualiza a lista de recordes do dia (inclui o recorde recém inserido)
-                buscarRecordesComNomes(idPalavraDoDia).then((data) => setRecordes(data));
+                // Após salvar, atualiza a lista de recordes do dia (inclui o recorde recém inserido).
+                // A rota devolve o id da palavra do dia, então não precisamos esperar o outro efeito.
+                buscarRecordesComNomes(dados.idPalavraDoDia).then((lista) => setRecordes(lista));
+            })
+            .catch((err) => {
+                console.error("Erro de rede ao salvar recorde:", err);
+                recordeEnviado.current = false; // falhou a conexão: permite tentar de novo
             });
-    }, [usuario, idPalavraDoDia, pontos, modoDeJogo]);
+    }, [usuario, seedProp, historico, pontos, modoDeJogo]);
 
     // ==== BUSCA O ID DA PALAVRA DO DIA E OS RECORDES ====
     // Roda ao montar o componente para carregar a lista de recordes do dia,
-    // mesmo quando o usuário já tinha vencido antes (sem fazer upsert novamente).
-    // O idPalavraDoDia resolvido aqui também é usado pelo useEffect de upsert acima.
+    // mesmo quando o usuário já tinha vencido antes (sem salvar o recorde de novo).
+    // (Só leitura: a gravação do recorde é feita pela rota /api/recordes, no efeito acima.)
     useEffect(() => {
         if (!seedProp) return;
 
@@ -142,7 +157,6 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                 if (error) console.error("Erro ao buscar palavra do dia:", error);
 
                 if (data?.id) {
-                    setIdPalavraDoDia(data.id); // disponibiliza o id para o useEffect de upsert
                     buscarRecordesComNomes(data.id).then((recordes) => {
                         setRecordes(recordes);
                         setCarregandoRecordes(false); // libera a lista para exibição
@@ -285,15 +299,31 @@ export default function VoceVenceu({ historico, pontos, modoDeJogo, novoJogo, se
                             </span>
                         </div>
 
-                        {/* CTA de registro — só aparece para visitantes não logados */}
+                        {/* CONVITE PARA SALVAR O RECORDE — só aparece para visitantes não logados.
+                            O progresso do diário fica no localStorage; o login e o registro levam de
+                            volta ao /diario, que mostra esta tela de novo e aí o recorde é salvo. */}
                         {!usuario && !carregando && (
-                            <button
-                                onClick={() => router.push("/login")}
-                                className="nes-btn w-full is-success"
-                                style={{ fontSize: "12px" }}
-                            >
-                                ✓ Registre-se para participar!
-                            </button>
+                            <div className="flex flex-col gap-2">
+                                <p className="text-center" style={{ fontSize: "12px" }}>
+                                    Entre para salvar seu recorde de {pontos} {pontos === 1 ? "ponto" : "pontos"}!
+                                </p>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => router.push("/login")}
+                                        className="nes-btn w-full is-success"
+                                        style={{ fontSize: "12px" }}
+                                    >
+                                        Entrar
+                                    </button>
+                                    <button
+                                        onClick={() => router.push("/registro")}
+                                        className="nes-btn w-full is-primary"
+                                        style={{ fontSize: "12px" }}
+                                    >
+                                        Criar conta
+                                    </button>
+                                </div>
+                            </div>
                         )}
 
                         {/* RANKING DO DIA */}
