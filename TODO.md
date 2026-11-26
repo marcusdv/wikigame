@@ -56,12 +56,16 @@ Falta só o INSERT do anon em `palavras_do_dia`, que sai com o item 2.
 - [x] `revoke truncate, trigger, references` do anon/authenticated em `palavras_do_dia` e `recordes`.
 - [x] Política "inserção pública" de `recordes` apagada.
 - [ ] Desligar "Allow new users to sign up" do Supabase Auth (o site não usa; não afeta o /registro).
-- [ ] Sobra o aviso "RLS Policy Always True" em `palavras_do_dia` (política "inserção pública"):
-  sai com o item 2.
+- [x] Aviso "RLS Policy Always True" em `palavras_do_dia`: política "inserção pública" apagada e
+  INSERT do anon revogado (item 2).
 
 ---
 
-## 🔴 2. A palavra do dia é criada pelo navegador
+## ✅ 2. A palavra do dia é criada pelo navegador
+
+**Status (26/11/2026): concluído.** Rota `GET /api/palavra-do-dia` criada; o DesafioDiario usa a rota;
+criação testada pelo dono (apagou a linha do dia no banco e a rota gerou de novo); INSERT do anon e a
+política "inserção pública" de `palavras_do_dia` removidos. O navegador não grava mais nada no banco.
 
 **O que acontece hoje**
 - `app/diario/DesafioDiario.tsx` (linha ~74): o primeiro visitante do dia sorteia a palavra
@@ -74,16 +78,16 @@ a função só roda quando alguém acessa. Isso continua valendo na solução ab
 **quem** grava (o servidor, e não o navegador), não **quando**.
 
 **O que fazer (opção A, recomendada, gratuita e no mesmo modelo de hoje)**
-- [ ] Criar a rota `app/api/palavra-do-dia/route.ts` (GET):
+- [x] Criar a rota `app/api/palavra-do-dia/route.ts` (GET):
   1. Calcula a data de hoje em Brasília (mesma conta de hoje: UTC − 3h).
   2. Busca a linha dessa data em `palavras_do_dia` com `supabaseAdmin`.
   3. Se não existir: sorteia com `sortearJogo(iniciais, objetivos, data)` (é determinístico,
      então dá sempre o mesmo resultado) e insere com `supabaseAdmin`.
      Se o insert falhar por duplicidade (`23505`, outra pessoa criou ao mesmo tempo), busca de novo.
   4. Devolve `{ id, inicial, objetivo, data }`.
-- [ ] Em `DesafioDiario.tsx`, trocar as consultas/insert do Supabase por `fetch("/api/palavra-do-dia")`.
+- [x] Em `DesafioDiario.tsx`, trocar as consultas/insert do Supabase por `fetch("/api/palavra-do-dia")`.
   Isso também resolve o item 7 (tela em branco).
-- [ ] No Supabase, **remover a política de INSERT do anon** em `palavras_do_dia`.
+- [x] No Supabase, **remover a política de INSERT do anon** em `palavras_do_dia`.
 
 **Opção B (extra, opcional): gerar a palavra antes de alguém acessar**
 - Vercel Cron Jobs: no plano gratuito (Hobby) dá para agendar uma chamada por dia.
@@ -209,11 +213,11 @@ Não é preciso compartilhar chaves, só o resultado das consultas.)
 
 ---
 
-## 🟠 7. Desafio diário trava se o insert da palavra do dia falhar
+## ✅ 7. Desafio diário trava se o insert da palavra do dia falhar
 
 - `DesafioDiario.tsx` (linha ~80): `iniciarNovoJogo` só roda se o insert der certo.
   Se duas pessoas abrirem ao mesmo tempo, a segunda recebe erro de duplicidade → tela em branco.
-- [ ] Resolvido junto com o item 2 (a rota busca de novo quando há duplicidade).
+- [x] Resolvido junto com o item 2 (a rota busca de novo quando há duplicidade; erro vira toast).
   Enquanto isso não é feito: chamar `iniciarNovoJogo(start, target)` mesmo se o insert falhar.
 
 ---
@@ -243,8 +247,8 @@ Não é preciso compartilhar chaves, só o resultado das consultas.)
 - [ ] `proxy.ts`: o código protege `/jogar`, mas o `matcher` lista `/treinamento` (e não `/jogar`).
   Decidir o que exige login e alinhar os dois.
 - [ ] Limpeza: `console.log` em `Treinamento.tsx` e no `register`; `setJogoInicial` sem efeito no
-  diário; `dataDeHoje()` duplicada (diário e recordes) → mover para `app/lib/`;
-  `JSON.parse` do localStorage sem `try/catch`.
+  diário (✅ removido no item 2); `dataDeHoje()` duplicada (✅ agora em `app/lib/dataBrasilia.ts`);
+  `JSON.parse` do localStorage sem `try/catch` (✅ no diário).
 - [ ] Brecha de jogabilidade: dá para descobrir o caminho deslogado (ou limpando o localStorage)
   e depois repetir logado. Ideia: o servidor registra a hora de início do desafio do usuário.
 

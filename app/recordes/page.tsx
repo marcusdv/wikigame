@@ -1,6 +1,7 @@
 "use client";
 
 import { supabase } from "../lib/supabase";
+import { dataEmBrasilia } from "../lib/dataBrasilia";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -16,11 +17,8 @@ type Recorde = {
     nome_usuario: string;
 };
 
-// ==== DATA DE HOJE NO FUSO DE BRASÍLIA (UTC-3), FORMATO "YYYY-MM-DD" ==== //
-function dataDeHoje() {
-    const d = new Date(new Date().getTime() - 3 * 60 * 60 * 1000);
-    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-}
+// Data de hoje no fuso de Brasília ("2026-11-26"): função compartilhada em app/lib/dataBrasilia.ts.
+const dataDeHoje = () => dataEmBrasilia();
 
 export default function Recordes() {
     const [recordes, setRecordes] = useState<Recorde[]>([]);

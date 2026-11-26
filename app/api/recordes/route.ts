@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import * as z from "zod";
 import { supabaseAdmin } from "@/app/lib/supabaseAdmin";
+import { dataEmBrasilia } from "@/app/lib/dataBrasilia";
 
 // ==== ROTA QUE SALVA O RECORDE DO DESAFIO DIÁRIO ====
 //
@@ -39,14 +40,6 @@ const recordeSchema = z.object({
     // Data do desafio no formato "2026-11-25" (é a "seed" do desafio diário).
     data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida"),
 });
-
-// ==== DATA NO FUSO DE BRASÍLIA (UTC-3), FORMATO "YYYY-MM-DD" ====
-// Mesma conta usada no DesafioDiario: tira 3h do horário UTC e lê a data.
-// `diasAtras` permite pegar a data de ontem (1).
-function dataEmBrasilia(diasAtras = 0): string {
-    const d = new Date(Date.now() - 3 * 60 * 60 * 1000 - diasAtras * 24 * 60 * 60 * 1000);
-    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-}
 
 // Compara títulos de página sem diferenciar maiúsculas e espaços nas pontas
 // (a mesma regra que o gameReducer usa para decidir a vitória).
