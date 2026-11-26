@@ -48,6 +48,19 @@ Falta só o INSERT do anon em `palavras_do_dia`, que sai com o item 2.
 
 ---
 
+## ✅ Revisão de segurança do Supabase (26/11/2026)
+- [x] Security Advisor conferido (0 erros).
+- [x] RLS ligado em `palavras_do_dia`, `recordes` e `usuarios`.
+- [x] anon lê só `id` e `nome` de `usuarios`.
+- [x] `revoke execute` na função `rls_auto_enable()` para anon/authenticated/public.
+- [x] `revoke truncate, trigger, references` do anon/authenticated em `palavras_do_dia` e `recordes`.
+- [x] Política "inserção pública" de `recordes` apagada.
+- [ ] Desligar "Allow new users to sign up" do Supabase Auth (o site não usa; não afeta o /registro).
+- [ ] Sobra o aviso "RLS Policy Always True" em `palavras_do_dia` (política "inserção pública"):
+  sai com o item 2.
+
+---
+
 ## 🔴 2. A palavra do dia é criada pelo navegador
 
 **O que acontece hoje**
