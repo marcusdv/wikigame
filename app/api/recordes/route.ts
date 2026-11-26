@@ -3,6 +3,8 @@ import { jwtVerify } from "jose";
 import * as z from "zod";
 import { supabaseAdmin } from "@/app/lib/supabaseAdmin";
 import { dataEmBrasilia } from "@/app/lib/dataBrasilia";
+import { buscarNomesDaPagina } from "@/app/lib/wikipedia";
+import { normalizarTitulo, valeVitoria } from "@/app/lib/titulos";
 
 // ==== ROTA QUE SALVA O RECORDE DO DESAFIO DIÁRIO ====
 //
@@ -43,8 +45,9 @@ const recordeSchema = z.object({
 
 // Compara títulos de página sem diferenciar maiúsculas e espaços nas pontas
 // (a mesma regra que o gameReducer usa para decidir a vitória).
+// (mesma normalização do jogo, em app/lib/titulos.ts: também trata "_" como espaço).
 function mesmaPagina(a: string, b: string): boolean {
-    return a.toLocaleLowerCase().trim() === b.toLocaleLowerCase().trim();
+    return normalizarTitulo(a) === normalizarTitulo(b);
 }
 
 export async function POST(request: NextRequest) {
@@ -109,8 +112,25 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "A partida não começa na página do desafio" }, { status: 400 });
     }
     // Terminou na página objetivo do dia?
-    if (!mesmaPagina(historico[historico.length - 1], palavraDoDia.objetivo)) {
-        return NextResponse.json({ error: "A partida não termina no objetivo do desafio" }, { status: 400 });
+    // O histórico guarda o título VERDADEIRO das páginas. Se o objetivo for um apelido (ex.: objetivo
+    // "Avalanche", título oficial "Avalancha"), a última página não é igual ao texto do objetivo,
+    // mas a vitória é legítima. Por isso usamos a MESMA regra do jogo (valeVitoria):
+    //   1. comparação direta com o objetivo (sem custo);
+    //   2. se não bater, busca na Wikipedia o título oficial e os apelidos do objetivo e confere de novo.
+    const ultimaPagina = historico[historico.length - 1];
+    if (!mesmaPagina(ultimaPagina, palavraDoDia.objetivo)) {
+        let nomesDoObjetivo: string[];
+        try {
+            const resultado = await buscarNomesDaPagina(palavraDoDia.objetivo);
+            nomesDoObjetivo = resultado?.nomes ?? [palavraDoDia.objetivo];
+        } catch (err) {
+            console.error("[recordes] erro ao consultar a Wikipedia:", err instanceof Error ? err.message : err);
+            return NextResponse.json({ error: "Não foi possível conferir a partida agora" }, { status: 502 });
+        }
+
+        if (!valeVitoria(nomesDoObjetivo, ultimaPagina)) {
+            return NextResponse.json({ error: "A partida não termina no objetivo do desafio" }, { status: 400 });
+        }
     }
     // Cada salto custa 1 ponto, e voltar só soma pontos. Então os pontos nunca podem ser
     // menores que o número de saltos (páginas do histórico menos a inicial).

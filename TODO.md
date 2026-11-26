@@ -157,7 +157,16 @@ Não é preciso compartilhar chaves, só o resultado das consultas.)
 
 ---
 
-## 🟠 5. Vitória não é detectada ao chegar por redirecionamento ou link de seção
+## ✅ 5. Vitória não é detectada ao chegar por redirecionamento ou link de seção
+
+**Status (26/11/2026): implementado** (falta o teste do dono no navegador). Solução combinada com o dono:
+- 1 requisição no início da partida (`GET /api/nomes-da-pagina`): título oficial + apelidos do objetivo.
+- `/api/wiki` com `redirects=1` (1 requisição por clique em vez de 2), devolve `parse.title`.
+- Vence se o NOME DO LINK ou o TÍTULO da página que abriu estiver em {objetivo + título oficial + apelidos}
+  (regra em `app/lib/titulos.ts`, usada pelo jogo e pela rota de recordes). A página carrega antes da vitória.
+- Histórico guarda o título verdadeiro; links com `#seção` cortados; `/api/recordes` aceita apelidos.
+- User-Agent da Wikipedia agora vem de `WIKIPEDIA_USER_AGENT` (sem contato pessoal no código).
+- "Satélite" (página de desambiguação) removido de `paginasObjetivo.ts`.
 
 **O problema, com exemplo**
 1. O objetivo é **"Estados Unidos"**.

@@ -8,6 +8,7 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
         paginaAtual: paginaInicialParam,
         pontos: 0,
         paginaObjetivo: paginaObjetivoParam,
+        nomesDoObjetivo: [], // preenchido pelo efeito "BUSCA OS NOMES DO OBJETIVO"
         voceVenceu: false,
         carregando: false,
         custoDeVoltar: 0,
@@ -47,15 +48,26 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
 
                 const dados = await resposta.json();
                 const html = dados.parse.text["*"];
-                setWikiHtml(html);
+                setWikiHtml(html); // a página aparece na tela ANTES de checar a vitória
+
+                // Título VERDADEIRO da página que abriu (a rota segue redirecionamentos):
+                // clicou em "EUA" → abre e vem "Estados Unidos". Sem título na resposta, usa o nome pedido.
+                const tituloVerdadeiro: string = dados.parse.title ?? state.paginaAtual;
 
                 // Usamos o historicoRef aqui, verificamos se a última página é a mesma que a página atual.
                 // Porque quando carregamos dados do LocalStorage, Banco ou é o primeiro acesso da página, ele não deve adicionar ao estado, pois já foi carregado.
                 const ultimaPaginaNoHistorico = historicoRef.current[historicoRef.current.length - 1];
-                const eNavegacaoNova = state.paginaAtual.toLowerCase() !== ultimaPaginaNoHistorico?.toLowerCase();
+                // Compara os DOIS nomes com a última página: o pedido ("EUA") e o verdadeiro ("Estados Unidos").
+                // O histórico guarda o verdadeiro, então só o nome pedido não bastaria: se este efeito rodasse
+                // de novo, "EUA" ≠ "Estados Unidos" contaria o mesmo clique duas vezes.
+                const ultima = ultimaPaginaNoHistorico?.toLowerCase();
+                const eNavegacaoNova =
+                    state.paginaAtual.toLowerCase() !== ultima && tituloVerdadeiro.toLowerCase() !== ultima;
                 // Assim não entramos esse if e não colocamos a mesma página no histórico novamente.
                 if (eNavegacaoNova) {
-                    dispatch({ type: "NAVEGOU", pagina: state.paginaAtual });
+                    // O reducer guarda o título verdadeiro no histórico e checa a vitória com os DOIS nomes:
+                    // o título ("Estados Unidos") e o nome do link clicado ("EUA").
+                    dispatch({ type: "NAVEGOU", pagina: tituloVerdadeiro, nomeDoLink: state.paginaAtual });
                     setPontoFlutuante({ id: ++animacaoIdRef.current, valor: 1 });
                 }
 
@@ -70,6 +82,32 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
 
         buscarNaApiDaWiki();
     }, [state.paginaAtual, mostrarErro]);
+
+    // ==== BUSCA OS NOMES DO OBJETIVO (1 requisição por partida) ====
+    // Sempre que o objetivo muda (partida nova, jogo carregado do localStorage...), pergunta ao servidor o
+    // título oficial e os apelidos do objetivo. Ex.: "Avalanche" → ["Avalanche", "Avalancha", "Alude", ...].
+    // O reducer usa essa lista para reconhecer a vitória mesmo quando o objetivo é um apelido.
+    // Se falhar (Wikipedia fora do ar...), o jogo segue normalmente: vale pelo menos o nome do objetivo.
+    useEffect(() => {
+        const objetivo = state.paginaObjetivo;
+        if (!objetivo) return;
+
+        // `cancelado` evita aplicar a resposta de um objetivo antigo se o objetivo mudar antes dela chegar.
+        let cancelado = false;
+        fetch(`/api/nomes-da-pagina?pagina=${encodeURIComponent(objetivo)}`)
+            .then((resposta) => (resposta.ok ? resposta.json() : null))
+            .then((dados: { nomes?: string[] } | null) => {
+                if (cancelado || !dados?.nomes) return;
+                dispatch({ type: "NOMES_DO_OBJETIVO", objetivo, nomes: dados.nomes });
+            })
+            .catch(() => {
+                // Sem lista: a vitória continua valendo pelo nome exato do objetivo.
+            });
+
+        return () => {
+            cancelado = true;
+        };
+    }, [state.paginaObjetivo]);
 
     // ==== INICIA NOVO JOGO ====
     // useCallback mantém a MESMA função entre os renders (o `dispatch` do useReducer nunca muda,
@@ -114,7 +152,9 @@ export function useGameLogic(paginaInicialParam: string, paginaObjetivoParam: st
         if (href && href.startsWith("/wiki/")) {
             // Transforma o href em nome de página legível:
             // "/wiki/Am%C3%A9rica_do_Sul" → "América do Sul"
-            const paginaClicada = decodeURIComponent(href.replace("/wiki/", "").replace(/_/g, " "));
+            // O split("#") corta a seção: "/wiki/Chocolate#Hist%C3%B3ria" → "Chocolate" (a página é a mesma).
+            const semSecao = href.split("#")[0];
+            const paginaClicada = decodeURIComponent(semSecao.replace("/wiki/", "").replace(/_/g, " "));
 
             dispatch({ type: "CLICOU_NUM_LINK", pagina: paginaClicada });
         }

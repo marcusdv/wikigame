@@ -1,4 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
+import { USER_AGENT } from "@/app/lib/wikipedia";
 
 // Tempo máximo (em segundos) que o Vercel aguarda essa função responder antes de cancelar.
 export const maxDuration = 30;
@@ -6,59 +7,41 @@ export const maxDuration = 30;
 // Rota GET chamada pelo frontend quando o jogador navega para uma página da Wikipedia.
 // Recebe o nome da página como query param e devolve o JSON da Wikipedia com o HTML renderizado.
 // Exemplo de chamada: GET /api/wiki?pagina=Imp%C3%A9rio%20Romano
+//
+// O QUE A RESPOSTA TRAZ (formato da API de parse da Wikipedia):
+//   dados.parse.title     → título VERDADEIRO da página que abriu (ex.: pediu "EUA", vem "Estados Unidos")
+//   dados.parse.text["*"] → HTML do artigo, que o frontend injeta no DOM
 export async function GET(request: NextRequest) {
     // Busca o nome da página nos query params. Se não existir, usa "Brasil" como página inicial padrão.
     const pagina = request.nextUrl.searchParams.get("pagina") || "Brasil";
 
     try {
-        const paginaLimpa = pagina.trim();
+        // Corta "#seção" por segurança ("Chocolate#História" → "Chocolate"): a página é a mesma.
+        const paginaLimpa = pagina.split("#")[0].trim();
 
         // Obrigatório para requests vindos de servidores em cloud (Vercel, AWS, etc.).
         // Sem ele, a Wikipedia bloqueia requisições de IPs de datacenter.
-        const headers = {
-            "User-Agent": "WikiRun/1.0 (https://github.com/wikirun; marcus.vinicius.bittencourt.c@gmail.com)",
-        };
+        const headers = { "User-Agent": USER_AGENT };
 
-        // PASSO 1 — Resolver o título ORIGINAL via API de Sumário
+        // ==== UMA REQUISIÇÃO SÓ: API de parse com `redirects=1` ====
         //
-        // A API de parse é sensível ao título exato. Se o jogador clicou em "EUA",
-        // A wikipedia tem redirecionamentos automáticos para lidar com sinônimos, grafias alternativas, capitalização, etc.
-        // A Wikipedia redireciona para "Estados Unidos" — e a API de parse falha com "EUA".
-        // A API de sumário segue o redirecionamento e devolve o título correto.
+        // ANTES eram duas: a API de sumário (para descobrir o título oficial de um apelido, ex.: "EUA")
+        // e depois a de parse. A de parse sabe seguir redirecionamentos sozinha com `redirects=1`:
+        // pede "EUA" e devolve o HTML de "Estados Unidos" com `parse.title = "Estados Unidos"`.
+        // Resultado: metade das requisições por clique, e o título verdadeiro vem junto
+        // (o jogo usa esse título para o histórico e para checar a vitória).
         //
-        // Ex: "EUA" → summary → title: "Estados Unidos" → tituloOficial: "Estados_Unidos"
-        const urlSumario = `https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURI(paginaLimpa)}`;
-        const respostaSumario = await fetch(urlSumario, { headers });
+        // encodeURIComponent (e não encodeURI): títulos com "/", "?", "&" ou "#" não quebram a URL.
+        const url = `https://pt.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(paginaLimpa)}&redirects=1&format=json&prop=text`;
 
-        // Se o sumário falhar, continua com o valor original como fallback.
-        let tituloOficial = paginaLimpa;
-
-        // Se a resposta do sumário for bem-sucedida, extrai o título oficial da página, que é o formato esperado pela API de parse.
-        // ex: "Estados Unidos" → "Estados_Unidos"
-        // A API de parse é sensível a underlines vs espaços, então substituímos espaços por underlines no título oficial.
-        if (respostaSumario.ok) {
-            const dadosSumario = await respostaSumario.json();
-            // A API de parse espera underlines em vez de espaços no título.
-            tituloOficial = dadosSumario.title.replace(/\s+/g, "_");
-        }
-
-        // PASSO 2 — Buscar o HTML completo via API de Parse
-        //
-        // A WIKIPEDIA tem uma API para devolver o HTML renderizado de uma página.
-        // Retorna o HTML renderizado da página dentro de dados.parse.text["*"],
-        // que o frontend injeta no DOM via dangerouslySetInnerHTML.
-
-        const url = `https://pt.wikipedia.org/w/api.php?action=parse&page=${encodeURI(tituloOficial)}&format=json&prop=text`;
-
-        // e faz a requisição
         const response = await fetch(url, { headers });
 
         if (!response.ok) {
-            console.error("Problema com a resposta", response.status, response);
+            console.error("Problema com a resposta", response.status);
             return NextResponse.json({ message: "Erro ao buscar dados na Wikipedia" }, { status: response.status });
         }
 
-        // captura os dados da resposta asíncrona e desempacota o JSON devolvido pela wikipedia.
+        // Desempacota o JSON devolvido pela wikipedia.
         const dados = await response.json();
 
         // Se dados.parse não existir, a Wikipedia retornou um erro (ex: página inexistente).

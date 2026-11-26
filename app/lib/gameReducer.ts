@@ -1,15 +1,24 @@
+import { valeVitoria } from "./titulos";
+
 export type GameState = {
     historico: string[];
     paginaAtual: string;
     pontos: number;
     paginaObjetivo: string;
+    // Título oficial e apelidos do objetivo, vindos da Wikipedia no início da partida
+    // (ex.: objetivo "Avalanche" → ["Avalanche", "Avalancha", "Alude", ...]). Vazio até a resposta chegar.
+    nomesDoObjetivo: string[];
     voceVenceu: boolean;
     carregando: boolean;
     custoDeVoltar: number;
 };
 
 export type GameAction =
-    | { type: "NAVEGOU"; pagina: string }
+    // `pagina`: título VERDADEIRO da página que abriu (ex.: "Estados Unidos").
+    // `nomeDoLink`: nome do link que o jogador clicou (ex.: "EUA").
+    | { type: "NAVEGOU"; pagina: string; nomeDoLink: string }
+    // Chegou a lista de nomes do objetivo. `objetivo` serve para ignorar respostas atrasadas de outra partida.
+    | { type: "NOMES_DO_OBJETIVO"; objetivo: string; nomes: string[] }
     | { type: "CLICOU_NUM_LINK"; pagina: string }
     | { type: "ERRO_AO_BUSCAR_PAGINA_ATUAL" }
     | { type: "VOLTOU" }
@@ -32,16 +41,35 @@ export type GameAction =
 export function gameReducer(state: GameState, action: GameAction) {
     switch (action.type) {
         case "NAVEGOU": {
-            const ganhou =
-                state.paginaAtual.toLocaleLowerCase().trim() === state.paginaObjetivo.toLocaleLowerCase().trim();
+            // Só chega aqui DEPOIS que a página carregou e apareceu na tela (ver useGameLogic).
+            //
+            // VITÓRIA: vale o objetivo + título oficial + apelidos (nomesDoObjetivo). O jogador vence se:
+            //   - o NOME DO LINK clicado estiver na lista (ex.: objetivo "Avalanche", clicou em "Avalanche"); ou
+            //   - o TÍTULO da página que abriu estiver na lista (ex.: objetivo "Humano", clicou em
+            //     "Homo sapiens" e abriu "Humano"; ou objetivo "Avalanche", abriu "Avalancha").
+            // Se a lista ainda não chegou (ou falhou), vale pelo menos o próprio objetivo.
+            const ganhou = valeVitoria(
+                [state.paginaObjetivo, ...state.nomesDoObjetivo],
+                action.pagina,
+                action.nomeDoLink,
+            );
             return {
                 ...state,
+                // O histórico guarda o título verdadeiro ("Estados Unidos"), que é a página que o jogador viu.
                 historico: [...state.historico, action.pagina],
-                paginaAtual: action.pagina,
+                // paginaAtual NÃO muda: continua o nome do link ("EUA"). Se mudasse para "Estados Unidos",
+                // o efeito de busca do useGameLogic rodaria de novo e baixaria a mesma página duas vezes.
                 pontos: state.pontos + 1,
                 voceVenceu: ganhou,
             };
         }
+        case "NOMES_DO_OBJETIVO":
+            // Resposta de uma partida anterior (o objetivo mudou no meio do caminho): ignora.
+            if (action.objetivo !== state.paginaObjetivo) return state;
+            return {
+                ...state,
+                nomesDoObjetivo: action.nomes,
+            };
         case "ERRO_AO_BUSCAR_PAGINA_ATUAL":
             return {
                 ...state,
@@ -83,6 +111,8 @@ export function gameReducer(state: GameState, action: GameAction) {
                 historico: [action.start],
                 paginaAtual: action.start,
                 paginaObjetivo: action.target,
+                // Mesmo objetivo: mantém a lista já buscada. Objetivo novo: zera (o useGameLogic busca de novo).
+                nomesDoObjetivo: action.target === state.paginaObjetivo ? state.nomesDoObjetivo : [],
                 pontos: 0,
                 voceVenceu: false,
                 carregando: false,
@@ -93,6 +123,8 @@ export function gameReducer(state: GameState, action: GameAction) {
                 historico: action.historico,
                 paginaAtual: action.historico[action.historico.length - 1],
                 paginaObjetivo: action.target,
+                // Mesma regra do NOVO_JOGO: não perde a lista se o objetivo não mudou.
+                nomesDoObjetivo: action.target === state.paginaObjetivo ? state.nomesDoObjetivo : [],
                 pontos: action.pontos,
                 voceVenceu: action.voceVenceu,
                 carregando: false,

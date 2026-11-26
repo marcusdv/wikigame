@@ -18,7 +18,6 @@ export const arrPaginasObjetivo = [
     "Skate",
     "Pinguim",
     "Cometa",
-    "Satélite",
     "Biblioteca",
     "Deserto",
     "Caatinga",
