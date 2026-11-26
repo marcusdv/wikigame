@@ -55,7 +55,7 @@ Falta só o INSERT do anon em `palavras_do_dia`, que sai com o item 2.
 - [x] `revoke execute` na função `rls_auto_enable()` para anon/authenticated/public.
 - [x] `revoke truncate, trigger, references` do anon/authenticated em `palavras_do_dia` e `recordes`.
 - [x] Política "inserção pública" de `recordes` apagada.
-- [ ] Desligar "Allow new users to sign up" do Supabase Auth (o site não usa; não afeta o /registro).
+- [x] Desligar "Allow new users to sign up" do Supabase Auth (o site não usa; não afeta o /registro).
 - [x] Aviso "RLS Policy Always True" em `palavras_do_dia`: política "inserção pública" apagada e
   INSERT do anon revogado (item 2).
 
@@ -260,6 +260,63 @@ Não é preciso compartilhar chaves, só o resultado das consultas.)
   `JSON.parse` do localStorage sem `try/catch` (✅ no diário).
 - [ ] Brecha de jogabilidade: dá para descobrir o caminho deslogado (ou limpando o localStorage)
   e depois repetir logado. Ideia: o servidor registra a hora de início do desafio do usuário.
+
+---
+
+## ✅ Botão "Links": rolagem e piscada (26/11/2026)
+- [x] A rolagem parava antes do link (imagens carregando mudavam o tamanho da página no caminho):
+  agora espera a página parar, confere se o link está na tela e corrige até 3 vezes.
+- [x] A piscada começava com 500 ms fixos (antes do link chegar): agora só pisca quando chegou.
+- [x] Botões de seção podiam ir para a seção errada (títulos escondidos): agora usam o próprio elemento.
+- [x] Cliques seguidos cancelam a rolagem/piscada anterior; rolar com roda/dedo/teclado interrompe.
+- Testado pelo dono no navegador. (Um teste automático no Chrome sem janela não detectou a piscada;
+  provável limitação do script, não confirmada.)
+
+---
+
+## 🏆 Achievements (conquistas) — ideia do dono
+
+Ainda não começado. Primeira versão das ideias, para discutir.
+
+**Ideias de conquistas**
+- Primeira vitória.
+- Vencer em até 3 saltos ("Atalho"); em 1 salto ("Teletransporte").
+- Vencer sem usar o botão de voltar.
+- Desafio diário: vencer 3, 7, 30 dias seguidos (sequência).
+- 10, 50, 100 vitórias no total.
+- Ficar em 1º lugar no ranking de um dia.
+- Vencer chegando por um apelido do objetivo (ex.: clicou em "Homo sapiens" e chegou em "Humano").
+- Visitar 100 / 1000 páginas diferentes.
+- Vencer passando por uma página específica (ex.: "Brasil") ou por uma categoria de tema.
+
+**Como funcionaria (esboço técnico)**
+- Tabelas no Supabase: `conquistas` (lista fixa: id, nome, descrição, ícone) e
+  `usuario_conquistas` (id_usuario, id_conquista, data).
+- As conquistas são decididas no SERVIDOR (ex.: dentro de `/api/recordes`, depois de validar a partida),
+  pelo mesmo motivo dos recordes: se o navegador decidisse, qualquer um poderia se dar conquistas pelo console.
+- A rota devolve as conquistas novas, e a tela de vitória mostra ("🏆 Conquista desbloqueada: ...").
+- Sequência de dias: calculada a partir da tabela `recordes` (um recorde por dia do desafio).
+- Página para ver as conquistas: o `/perfil` já existe.
+
+**Decisões do dono (26/11/2026)**
+- [x] **Só para quem está logado** (salvo no banco).
+- [x] **Só o desafio diário** conta (o treinamento não entra).
+- [ ] **Ranking por conquistas:** mostrar no ranking a posição da pessoa de acordo com a quantidade de
+  conquistas, ou algo parecido. Formato a pensar.
+- [ ] **Quais conquistas entram na primeira versão:** o dono vai decidir depois.
+
+---
+
+## 🎉 Tela de vitória: mais opções de para onde ir — ideia do dono
+
+Ainda não começado. Hoje a tela de vitória do diário mostra o ranking e o tempo até o próximo desafio.
+Acrescentar botões de redirecionamento, por exemplo:
+- [ ] **Perfil**: ir para o `/perfil`.
+- [ ] **Ver meu jogo**: rever a partida, com os passos que a pessoa deu (as páginas do histórico, na ordem),
+  e poder **continuar navegando** a partir delas (sem contar pontos, já que o jogo acabou).
+  - Ideia de como: fechar a tela de vitória e deixar a pessoa navegar no artigo, com o histórico visível;
+    ou uma tela própria com a lista de passos, cada um abrindo a página correspondente.
+  - Cuidado: depois de vencer, navegar não pode mudar os pontos nem o recorde já salvo.
 
 ---
 
