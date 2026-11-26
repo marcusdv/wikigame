@@ -16,9 +16,11 @@ Legenda: 🔴 grave · 🟠 bug de lógica · 🟡 qualidade · 🧪 testes
   Qualquer pessoa, pelo console do navegador, consegue:
   `supabase.from("recordes").insert({ id_usuario: "<id de alguém>", pontos: 1, id_palavra_do_dia: 42 })`
 
-**Status (25/11/2026):** rota criada e tela de vitória usando a rota. Falta liberar o `service_role`
-nas tabelas do jogo (o primeiro teste falhou com `permission denied for table palavras_do_dia`)
-e remover a política de INSERT do anon em `recordes`.
+**Status (26/11/2026):** rota criada, tela de vitória usando a rota e recorde salvando (testado:
+jogar deslogado, vencer, entrar). O `service_role` tinha perdido o acesso às tabelas e à sequence
+`pontuacao_id_seq`; foi restaurado com `grant all ... to service_role` (+ `alter default privileges`).
+Os `revoke` do anon foram rodados em 26/11/2026; recorde e página de recordes conferidos depois.
+Falta só o INSERT do anon em `palavras_do_dia`, que sai com o item 2.
 
 **O que fazer**
 - [x] Criar a rota `app/api/recordes/route.ts` (POST):
@@ -30,8 +32,12 @@ e remover a política de INSERT do anon em `recordes`.
      (comparando sem maiúsculas) e o histórico não está vazio.
   6. Calcula os pontos no servidor (ou, no mínimo, rejeita `pontos < saltos`).
   7. Grava com `supabaseAdmin` (upsert com `ignoreDuplicates`, como hoje).
-- [ ] No Supabase: `grant select on public.palavras_do_dia to service_role;` e
-  `grant select, insert, update on public.recordes to service_role;`
+- [x] No Supabase: devolver ao `service_role` o acesso às tabelas e sequences do schema `public`.
+- [x] No Supabase, tirar do anon o que o navegador não usa mais:
+  `revoke insert, update, delete on public.recordes from anon, authenticated;`
+  `revoke all on public.usuarios from anon, authenticated;` + `grant select (id, nome) on public.usuarios to anon;`
+  `revoke update, delete on public.palavras_do_dia from anon, authenticated;`
+  (o INSERT do anon em `palavras_do_dia` só sai junto com o item 2.)
 - [x] Em `VoceVenceuTela.tsx`, trocar o `supabase.from("recordes").upsert(...)` por
   `fetch("/api/recordes", { method: "POST", body: JSON.stringify({ historico, data }) })`.
 - [ ] No Supabase, **remover a política de INSERT/UPDATE do anon** na tabela `recordes`
